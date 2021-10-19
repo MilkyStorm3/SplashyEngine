@@ -42,7 +42,7 @@ file(GLOB_RECURSE forbidden_imgui_src
 ${PROJECT_SOURCE_DIR}/vendor/imgui/backends/*.cpp
 ${PROJECT_SOURCE_DIR}/vendor/imgui/examples/*.cpp
 ${PROJECT_SOURCE_DIR}/vendor/imgui/misc/*.cpp
-) #excuded cpp
+) #excluded cpp
 
 file(GLOB_RECURSE imgui_src_add 
     ${PROJECT_SOURCE_DIR}/vendor/imgui/backends/*glfw*.cpp
@@ -61,14 +61,19 @@ set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
 
 target_sources(Engine PUBLIC ${imgui_src})
 
+target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/src/)
+target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/src/Pch)
+set_property(TARGET Engine PROPERTY CXX_STANDARD 20)
+# libs
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/stbimage/)
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/spdlog/include/)
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/entt/src)
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/glfw/include/)
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/glew/include/)
-target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/glm/include/)
-target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/include/)
+# target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/glm/include/)
+# target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/include/)
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui/)
+target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/)
 
 target_link_directories(Engine PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/Engine/vendor/glew/lib)
 
@@ -84,6 +89,7 @@ target_link_libraries(Engine OpenGL::GL)
 
 file(GLOB editor_SRC ${PROJECT_SOURCE_DIR}/Editor/src/*.cpp)
 add_executable(Editor ${editor_SRC} )
+set_property(TARGET Editor PROPERTY CXX_STANDARD 20)
 
 set_target_properties(Editor PROPERTIES LINKER_LANGUAGE CXX)
 

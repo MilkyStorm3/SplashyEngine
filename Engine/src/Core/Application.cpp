@@ -1,5 +1,5 @@
-#include "Application.h"
-#include "Logger.h"
+#include "Application.hpp"
+#include "Logger.hpp"
 
 void test();
 namespace ant

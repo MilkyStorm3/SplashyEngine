@@ -1,9 +1,9 @@
 #include "Pch.h"
-#include "Input/GlErrorHandler.hpp"
+#include "debug/GlErrorHandler.hpp"
 
 #include <Gl.h>
 
-namespace df
+namespace ant
 {
     void GlErrorHandler::GlErrorCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity,
                                                  GLsizei length, const GLchar *message, const void *userParam)
@@ -124,4 +124,4 @@ namespace df
         }
     }
 
-} // namespace df
+} // namespace ant

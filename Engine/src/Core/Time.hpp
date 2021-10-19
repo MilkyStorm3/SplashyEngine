@@ -1,6 +1,6 @@
 #pragma once
 
-namespace df
+namespace ant
 {
     class TimeStep
     {
@@ -26,4 +26,4 @@ namespace df
         static TimeStep s_frameTime;
     };
 
-} // namespace df
+} // namespace ant

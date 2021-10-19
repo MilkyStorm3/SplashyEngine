@@ -6,7 +6,7 @@
 #include "Graphics/VertexLayout.hpp"
 #include "Core/Core.hpp"
 
-namespace df
+namespace ant
 {
     class Uniform
     {
@@ -159,4 +159,4 @@ namespace df
         Ref<Shader> m_shader;
     };
 
-} // namespace df
+} // namespace ant

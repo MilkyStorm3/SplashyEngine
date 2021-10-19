@@ -4,7 +4,7 @@
 #include "Core/Logger.hpp"
 #include "Core/Types.hpp"
 
-namespace df
+namespace ant
 {
 
 // #define CORE_BREAK() std::raise(SIGINT)
@@ -46,4 +46,4 @@ namespace df
     }
 #define CORE_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
-} // namespace df
+} // namespace ant

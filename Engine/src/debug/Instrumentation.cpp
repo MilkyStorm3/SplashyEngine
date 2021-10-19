@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "Core/Core.hpp"
 
-namespace df
+namespace ant
 {
     void Instrumentor::BeginSession(const std::string &name)
     {

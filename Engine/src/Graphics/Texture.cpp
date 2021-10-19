@@ -5,7 +5,7 @@
 #include <Gl.h>
 #include <filesystem>
 
-namespace df
+namespace ant
 {
 
     std::unordered_map<std::string,Ref<Texture>> Texture::s_loadedTextures;
@@ -143,4 +143,4 @@ namespace df
         m_coordinates[3] = {(r.left + r.width) / size.x, (r.bottom + r.height) / size.y};
     }
 
-} // namespace df
+} // namespace ant

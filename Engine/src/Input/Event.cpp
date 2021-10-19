@@ -1,7 +1,7 @@
 #include "Pch.h"
 #include "Input/Event.hpp"
 
-namespace df
+namespace ant
 {
     EventCategory Event::GetEventCategory()
     {
@@ -61,24 +61,6 @@ namespace df
         return o.str();
     }
 
-    void EventDispatcher::AddEventHandler(EventHandler handler, EventType type)
-    {
-        m_handlers.push_back({handler, type});
-    }
-
-    void EventDispatcher::DispatchEvent()
-    {
-        for (auto &it : m_handlers)
-        {
-            if (m_event->GetEventType() == it.second)
-            {
-                it.first(m_event);
-            }
-            if (m_event->m_handled)
-                break;
-        }
-    }
-
     bool KeyEvent::HasModifier(KeyModifier mod) const
     {
         return int16_t(mod) & int16_t(m_modifier);
@@ -89,4 +71,4 @@ namespace df
         return int16_t(mod) & int16_t(m_modifier);
     }
 
-} // namespace df
+} // namespace ant

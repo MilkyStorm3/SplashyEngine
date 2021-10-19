@@ -7,7 +7,7 @@
 #include "Camera/Camera.hpp"
 #include "Graphics/FrameBuffer.hpp"
 #include "Scene/Components.hpp"
-namespace df
+namespace ant
 {
     class RendererCommands
     {
@@ -110,4 +110,4 @@ namespace df
         static RendererStats s_stats;
     };
 
-} // namespace df
+} // namespace ant

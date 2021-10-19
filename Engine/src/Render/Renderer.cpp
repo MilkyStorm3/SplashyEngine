@@ -6,7 +6,7 @@
 
 #include <Gl.h>
 
-namespace df
+namespace ant
 {
     Renderer2D::SceneData Renderer2D::s_sceneData;
     Renderer2D::RendererStats Renderer2D::s_stats;
@@ -278,4 +278,4 @@ namespace df
         glDrawElements(GL_TRIANGLES, vertexArray.GetIndexBuffer().GetCount(), GL_UNSIGNED_INT, nullptr);
     }
 
-} // namespace df
+} // namespace ant

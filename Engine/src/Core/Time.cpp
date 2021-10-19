@@ -1,7 +1,7 @@
 #include "Core/Time.hpp"
 #include <GLFW/glfw3.h>
 
-namespace df
+namespace ant
 {
     TimeStep TimeStep::s_frameTime;
 
@@ -37,4 +37,4 @@ namespace df
         return (l.m_time - r.m_time);
     }
 
-} // namespace df
+} // namespace ant

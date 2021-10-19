@@ -9,7 +9,7 @@ typedef int GLsizei;
 
 #endif
 
-namespace df
+namespace ant
 {
     class GlErrorHandler
     {
@@ -26,4 +26,4 @@ namespace df
         static std::string GetSeverityStr(GLenum severity);
     };
 
-} // namespace df
+} // namespace ant

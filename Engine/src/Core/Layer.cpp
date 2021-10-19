@@ -2,7 +2,7 @@
 #include "Core/Layer.hpp"
 #include "Input/Event.hpp"
 #include "debug/Instrumentation.hpp"
-namespace df
+namespace ant
 {
     LayerStack::~LayerStack()
     {
@@ -87,4 +87,4 @@ namespace df
         }
         return end();
     }
-} // namespace df
+} // namespace ant

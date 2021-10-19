@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <stdint.h>
-namespace df
+namespace ant
 {
 
     enum class AttributeType
@@ -53,4 +53,4 @@ namespace df
         uint32_t m_vertexSize = 0;
     };
 
-} // namespace df
+} // namespace ant

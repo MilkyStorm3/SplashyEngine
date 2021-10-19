@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "debug/Instrumentation.hpp"
 
-namespace df
+namespace ant
 {
     OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
         : m_projectionMatrix(glm::ortho(left, right, bottom, top, -1.f, 1.f)), m_viewMatrix(1.f)
@@ -73,4 +73,4 @@ namespace df
         m_translationVector = position;
     }
 
-} // namespace df
+} // namespace ant

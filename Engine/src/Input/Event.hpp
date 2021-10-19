@@ -3,10 +3,11 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <typeinfo>
 #include <utility>
 #include "Input/KeyCodes.hpp"
 
-namespace df
+namespace ant
 {
     using KeycodeType = KeyCode;
     using ButtoncodeType = MouseButtonCode;
@@ -38,12 +39,14 @@ namespace df
         Window
     };
 
-    class Event
-    {
-#define SET_EVENT_TYPE(event_type) \
-    virtual const char *GetLog() override { return "Event: " #event_type; }
+#define SET_EVENT_TYPE(event_type)                                          \
+    virtual const char *GetLog() override { return "Event: " #event_type; } \
+    inline static EventType GetStaticType() { return EventType::event_type; }
+
 #define LOG_FUNC_OVERRIDE() virtual std::string GetStringLog() override;
 
+    class Event
+    {
     public:
         virtual ~Event() {}
 
@@ -67,22 +70,26 @@ namespace df
     class EventDispatcher
     {
     public:
-        using EventHandler = std::function<void(Event *)>;
-
         EventDispatcher() {}
+        EventDispatcher(Event &e) : m_event(&e) {}
         ~EventDispatcher() {}
 
-        void AddEventHandler(EventHandler handler, EventType type);
-        void DispatchEvent();
         void SetEventPtr(Event *e) { m_event = e; }
 
-    private:
-        using AutoHandler = std::pair<EventHandler, EventType>;
-        std::vector<AutoHandler> m_handlers;
-        Event *m_event;
+        template <class evType>
+        bool DispatchEvent(const std::function<void(evType &)> &handler) //?check these casts
+        {
 
-        //? vector of handlers
-        //! event dispatcher per lapplication
+            if (evType::GetStaticType() == m_event->GetEventType())
+            {
+                handler(static_cast<evType &>(*m_event));
+                return true;
+            }
+            return false;
+        }
+
+    private:
+        Event *m_event;
     };
 
     // KeyEvents
@@ -263,4 +270,4 @@ namespace df
         SET_EVENT_TYPE(WindowUnfocused);
     };
 
-} // namespace df
+} // namespace ant

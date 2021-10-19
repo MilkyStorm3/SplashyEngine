@@ -3,7 +3,7 @@
 
 #include <Gl.h>
 
-namespace df
+namespace ant
 {
     inline uint32_t VertexBufferLayout::GetAttribGlType(AttributeType type) const
     {
@@ -76,4 +76,4 @@ namespace df
             m_vertexSize += GetAttribTypeSize(it);
     }
 
-} // namespace df
+} // namespace ant

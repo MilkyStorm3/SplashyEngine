@@ -4,7 +4,7 @@
 #include <string>
 #include <glm/vec2.hpp>
 
-namespace df
+namespace ant
 {
 
     class Texture
@@ -71,4 +71,4 @@ namespace df
         std::array<glm::vec2, 4> m_coordinates;
     };
 
-} // namespace df
+} // namespace ant

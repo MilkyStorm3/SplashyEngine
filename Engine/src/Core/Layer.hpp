@@ -2,7 +2,7 @@
 #include <vector>
 #include "Core/Core.hpp"
 
-namespace df
+namespace ant
 {
 
     class Event;
@@ -56,4 +56,4 @@ namespace df
         size_t m_overlayIndex = 0;
     };
 
-} // namespace df
+} // namespace ant

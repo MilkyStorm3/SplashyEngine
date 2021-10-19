@@ -7,13 +7,13 @@
 
 class GLFWwindow;
 
-namespace df
+namespace ant
 {
     class Event;
     class Window
     {
-    public: // public data types
-        using EventCallback = std::function<void(Event *)>;
+    public:
+        using EventCallback = std::function<void(Event &)>;
 
         struct Properties
         {
@@ -23,20 +23,7 @@ namespace df
             bool resizable = true;
         };
 
-    private: // private data types
-        class GlLibsWrangler
-        {
-        public:
-            void InitGlfw();
-            void InitGlad();
-            void DeactivateGlfw();
-
-        private:
-            static bool s_glProfileSet;
-            static bool s_gladLoaded;
-        };
-
-    public: //public functions
+    public:
         Window() {}
         ~Window();
         void Init(const Properties &props);
@@ -52,10 +39,10 @@ namespace df
         void SetWindowSize(int width, int height);
 
     private: //member varibles
+        void SetCallbacks();
         GLFWwindow *m_nativeWindow;
         Properties m_properties;
-        GlLibsWrangler m_glLibsWrangler;
         EventCallback m_eventCallback;
     };
 
-} // namespace df
+} // namespace ant

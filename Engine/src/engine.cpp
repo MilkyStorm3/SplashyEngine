@@ -15,6 +15,7 @@ void test()
     GLFWwindow *window;
     if (!glfwInit())
         exit(EXIT_FAILURE);
+        
     window = glfwCreateWindow(640, 480, "Simple example", NULL, NULL);
     if (!window)
     {

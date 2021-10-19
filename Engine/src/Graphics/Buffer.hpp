@@ -3,7 +3,7 @@
 #include <array>
 #include "Graphics/VertexLayout.hpp"
 
-namespace df
+namespace ant
 {
 	enum class BufferType : uint8_t
 	{
@@ -142,4 +142,4 @@ namespace df
 		IndexBuffer m_indexBuffer;
 	};
 
-} // namespace df
+} // namespace ant

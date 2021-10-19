@@ -5,7 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <filesystem>
 
-namespace df
+namespace ant
 {
 	Uniform::DataType Uniform::GetDataTypeEnum(const std::string &name)
 	{
@@ -369,4 +369,4 @@ namespace df
 		buffer.mat4f = val;
 	}
 
-} // namespace df
+} // namespace ant

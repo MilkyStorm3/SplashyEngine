@@ -8,7 +8,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/compatibility.hpp>
 
-namespace df
+namespace ant
 {
     Particle::Particle(const ParticleProps &props)
         : m_props(props)

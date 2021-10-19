@@ -3,7 +3,7 @@
 #include <Gl.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "debug/Instrumentation.hpp"
-namespace df
+namespace ant
 {
 
     Window *Input::s_activeWindow = nullptr;
@@ -86,4 +86,4 @@ namespace df
         return false;
     }
 
-} // namespace df
+} // namespace ant

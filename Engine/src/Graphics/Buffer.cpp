@@ -5,7 +5,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace df
+namespace ant
 {
 
     Buffer::Buffer(BufferType bufferType)
@@ -96,4 +96,4 @@ namespace df
         m_layout.SetAttribPtrs();
     }
 
-} // namespace df
+} // namespace ant

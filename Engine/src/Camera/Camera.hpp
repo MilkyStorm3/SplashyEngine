@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include "Core/Core.hpp"
 
-namespace df
+namespace ant
 {
     struct CameraBoundaries
     {
@@ -80,4 +80,4 @@ namespace df
         
     };
 
-} // namespace df
+} // namespace ant

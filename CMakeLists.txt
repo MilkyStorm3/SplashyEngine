@@ -74,6 +74,7 @@ target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vend
 # target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/include/)
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui/)
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/)
+target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/src/)
 
 target_link_directories(Engine PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/Engine/vendor/glew/lib)
 

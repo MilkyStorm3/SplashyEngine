@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace df
+namespace ant
 {
     void TransformComponent::CalculateTranformationMatrix()
     {
@@ -14,4 +14,4 @@ namespace df
                 glm::scale(glm::mat4(1.f), glm::vec3(m_scale.x, m_scale.y, 1.f));
     }
   
-} // namespace df
+} // namespace ant

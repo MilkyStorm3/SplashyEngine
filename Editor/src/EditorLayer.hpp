@@ -18,6 +18,8 @@ namespace Editor
         virtual void OnEvent(ant::Event *event) override;
 
     private:
+
+        void DockSpace();
     };
 
 }

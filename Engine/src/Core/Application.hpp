@@ -26,6 +26,8 @@ namespace ant
         void Init();
         void Run();
 
+        void Terminate() { m_appdata.running = false; }
+
         void OnEvent(Event &e);
 
         const Window &GetWindow() const { return m_window; }

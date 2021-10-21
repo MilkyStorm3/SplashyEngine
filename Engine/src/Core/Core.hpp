@@ -44,6 +44,6 @@ namespace ant
     inline Ref<_Type> MakeUniqueRef(_Args... args){
         return std::make_unique<_Type>(args...);
     }
-#define CORE_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+#define CORE_BIND_EVENT_FN(target,fn) std::bind(&fn, target, std::placeholders::_1)
 
 } // namespace ant

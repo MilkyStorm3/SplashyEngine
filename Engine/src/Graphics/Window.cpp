@@ -23,6 +23,22 @@ namespace ant
         }
     }
 
+    void Window::SetResizeability(bool resizeable)
+    {
+        m_properties.resizeable = resizeable;
+
+        int gl_bool = resizeable ? GL_TRUE : GL_FALSE;
+
+        glfwWindowHint(GLFW_RESIZABLE, gl_bool);
+    }
+
+    void Window::SetVsync(bool vsync)
+    {
+        m_properties.vsync = vsync;
+
+        glfwSwapInterval(int(vsync));
+    }
+
     void Window::SetWindowSize(int width, int height)
     {
         m_properties.width = width;
@@ -31,11 +47,10 @@ namespace ant
 
     void Window::Init(const Properties &props)
     {
-        m_properties = props;
+
         RendererCommands::InitGlfw();
 
-        m_nativeWindow = glfwCreateWindow(m_properties.width, m_properties.height, m_properties.title.c_str(), NULL, NULL);
-
+        m_nativeWindow = glfwCreateWindow(props.width, props.height, props.title.c_str(), NULL, NULL);
 
         if (m_nativeWindow == NULL)
         {
@@ -44,139 +59,137 @@ namespace ant
         }
 
         glfwMakeContextCurrent(m_nativeWindow);
-
-        if (props.vsync)
-            glfwSwapInterval(1);
-        else
-            glfwSwapInterval(0);
-
-        if (props.resizable)
-            glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-        else
-            glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-
         RendererCommands::InitGlew();
 
+        SetVsync(props.vsync);
+        SetResizeability(props.resizeable);
+
+        m_properties = props;
         // set callbacks
         {
-        glfwSetWindowUserPointer(m_nativeWindow, this);
+            glfwSetWindowUserPointer(m_nativeWindow, this);
 
-        glfwSetKeyCallback(m_nativeWindow, [](GLFWwindow *window, int key, int scancode, int action, int mods) {
-            auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
-            auto EventCallback = windowPtr->GetEventCallback();
+            glfwSetKeyCallback(m_nativeWindow, [](GLFWwindow *window, int key, int scancode, int action, int mods)
+                               {
+                                   auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+                                   auto EventCallback = windowPtr->GetEventCallback();
 
-            KeyCode myKey = KeyCode(key);
-            KeyModifier myMod = KeyModifier(mods);
+                                   KeyCode myKey = KeyCode(key);
+                                   KeyModifier myMod = KeyModifier(mods);
 
-            switch (action)
-            {
-            case GLFW_PRESS:
-            {
-                KeyPressedEvent e(myKey,myMod);
-                EventCallback(e);
-                break;
-            }
-            case GLFW_RELEASE:
-            {
-                KeyReleasedEvent e(myKey,myMod);
-                EventCallback(e);
-                break;
-            }
-            case GLFW_REPEAT:
-            {
-                KeyPressedEvent e(myKey, myMod, true);
-                EventCallback(e);
-                break;
-            }
-            default:
-                break;
-            }
-        });
+                                   switch (action)
+                                   {
+                                   case GLFW_PRESS:
+                                   {
+                                       KeyPressedEvent e(myKey, myMod);
+                                       EventCallback(e);
+                                       break;
+                                   }
+                                   case GLFW_RELEASE:
+                                   {
+                                       KeyReleasedEvent e(myKey, myMod);
+                                       EventCallback(e);
+                                       break;
+                                   }
+                                   case GLFW_REPEAT:
+                                   {
+                                       KeyPressedEvent e(myKey, myMod, true);
+                                       EventCallback(e);
+                                       break;
+                                   }
+                                   default:
+                                       break;
+                                   }
+                               });
 
-        glfwSetMouseButtonCallback(m_nativeWindow, [](GLFWwindow *window, int button, int action, int mods) {
-            auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
-            auto EventCallback = windowPtr->GetEventCallback();
+            glfwSetMouseButtonCallback(m_nativeWindow, [](GLFWwindow *window, int button, int action, int mods)
+                                       {
+                                           auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+                                           auto EventCallback = windowPtr->GetEventCallback();
 
-            auto myButton = MouseButtonCode(button);
-            KeyModifier myMod = KeyModifier(mods);
-            switch (action)
-            {
-            case GLFW_PRESS:
-            {
-                MouseButtonPressedEvent e(myButton,myMod);
-                EventCallback(e);
-                break;
-            }
-            case GLFW_RELEASE:
-            {
-                MouseButtonReleasedEvent e(myButton, myMod);
-                EventCallback(e);
-                break;
-            }
+                                           auto myButton = MouseButtonCode(button);
+                                           KeyModifier myMod = KeyModifier(mods);
+                                           switch (action)
+                                           {
+                                           case GLFW_PRESS:
+                                           {
+                                               MouseButtonPressedEvent e(myButton, myMod);
+                                               EventCallback(e);
+                                               break;
+                                           }
+                                           case GLFW_RELEASE:
+                                           {
+                                               MouseButtonReleasedEvent e(myButton, myMod);
+                                               EventCallback(e);
+                                               break;
+                                           }
 
-            default:
-                break;
-            }
-        });
+                                           default:
+                                               break;
+                                           }
+                                       });
 
-        glfwSetScrollCallback(m_nativeWindow, [](GLFWwindow *window, double xoffset, double yoffset) {
-            auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
-            auto EventCallback = windowPtr->GetEventCallback();
+            glfwSetScrollCallback(m_nativeWindow, [](GLFWwindow *window, double xoffset, double yoffset)
+                                  {
+                                      auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+                                      auto EventCallback = windowPtr->GetEventCallback();
 
-            MouseScrolledEvent e({xoffset, yoffset});
-            EventCallback(e);
-        });
+                                      MouseScrolledEvent e({xoffset, yoffset});
+                                      EventCallback(e);
+                                  });
 
-        glfwSetCursorPosCallback(m_nativeWindow, [](GLFWwindow *window, double xpos, double ypos) {
-            auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
-            auto EventCallback = windowPtr->GetEventCallback();
+            glfwSetCursorPosCallback(m_nativeWindow, [](GLFWwindow *window, double xpos, double ypos)
+                                     {
+                                         auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+                                         auto EventCallback = windowPtr->GetEventCallback();
 
-            MouseMovedEvent e({xpos, ypos});
-            EventCallback(e);
-        });
+                                         MouseMovedEvent e({xpos, ypos});
+                                         EventCallback(e);
+                                     });
 
-        glfwSetWindowCloseCallback(m_nativeWindow, [](GLFWwindow *window) {
-            auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
-            auto EventCallback = windowPtr->GetEventCallback();
+            glfwSetWindowCloseCallback(m_nativeWindow, [](GLFWwindow *window)
+                                       {
+                                           auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+                                           auto EventCallback = windowPtr->GetEventCallback();
 
-            WindowClosedEvent e;
-            EventCallback(e);
-        });
+                                           WindowClosedEvent e;
+                                           EventCallback(e);
+                                       });
 
-        glfwSetWindowFocusCallback(m_nativeWindow, [](GLFWwindow *window, int iconified) {
-            auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
-            auto EventCallback = windowPtr->GetEventCallback();
+            glfwSetWindowFocusCallback(m_nativeWindow, [](GLFWwindow *window, int iconified)
+                                       {
+                                           auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+                                           auto EventCallback = windowPtr->GetEventCallback();
 
-            switch (iconified)
-            {
-            case GLFW_TRUE:
-            {
-                WindowFocusedEvent e;
-                EventCallback(e);
-                break;
-            }
-            case GLFW_FALSE:
-            {
-                WindowUnfocusedEvent e;
-                EventCallback(e);
-                break;
-            }
-            default:
-                break;
-            }
-        });
+                                           switch (iconified)
+                                           {
+                                           case GLFW_TRUE:
+                                           {
+                                               WindowFocusedEvent e;
+                                               EventCallback(e);
+                                               break;
+                                           }
+                                           case GLFW_FALSE:
+                                           {
+                                               WindowUnfocusedEvent e;
+                                               EventCallback(e);
+                                               break;
+                                           }
+                                           default:
+                                               break;
+                                           }
+                                       });
 
-        glfwSetWindowSizeCallback(m_nativeWindow, [](GLFWwindow *window, int width, int height) {
-            auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
-            auto EventCallback = windowPtr->GetEventCallback();
+            glfwSetWindowSizeCallback(m_nativeWindow, [](GLFWwindow *window, int width, int height)
+                                      {
+                                          auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+                                          auto EventCallback = windowPtr->GetEventCallback();
 
-            WindowRezisedEvent e({width, height});
-            windowPtr->SetWindowSize(width, height);
-            glViewport(0, 0, width, height);
-            EventCallback(e);
-        });
-
+                                          WindowRezisedEvent e({width, height});
+                                          windowPtr->SetWindowSize(width, height);
+                                          glViewport(0, 0, width, height);
+                                          EventCallback(e);
+                                      });
         }
     }
 

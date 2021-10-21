@@ -1,5 +1,5 @@
 #pragma once
-
+#include <glm/vec4.hpp>
 namespace ant
 {
 
@@ -13,6 +13,9 @@ namespace ant
         static bool InitGlfw();
         static bool InitGlew();
         static bool ShutdownGlfw();
+
+        static void SetClearColor(glm::vec4 color);
+        static void Clear();
 
         static bool EnableGlDebugMessages();
 

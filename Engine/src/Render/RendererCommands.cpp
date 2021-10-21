@@ -3,6 +3,7 @@
 #include <Gl.h>
 #include "Core/Core.hpp"
 #include <stb_image.h>
+#include "debug/Instrumentation.hpp"
 
 namespace ant
 {
@@ -24,6 +25,19 @@ namespace ant
     bool RendererCommands::ShutdownGlfw()
     {
         glfwTerminate();
+    }
+
+    void RendererCommands::SetClearColor(glm::vec4 color)
+    {
+        glClearColor(color.r, color.g, color.b, color.a);
+    }
+
+    void RendererCommands::Clear()
+    {
+        CORE_PROFILE_FUNC();
+        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glClear(GL_STENCIL_BUFFER_BIT);
     }
 
     bool RendererCommands::InitGlew()

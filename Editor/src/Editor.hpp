@@ -1,5 +1,6 @@
 #pragma once
 #include <Core/Application.hpp>
+#include "EditorLayer.hpp"
 
 namespace Editor
 {
@@ -7,10 +8,17 @@ namespace Editor
     class EditorApp : public ant::Application
     {
     public:
-        EditorApp() {}
+        EditorApp(){
+
+            m_appInitFn = [this](){
+                m_layerStack.PushLayer(ant::MakeRef<EditorLayer>());
+            };
+
+        }
         ~EditorApp() {}
 
     private:
+
     };
 
 }

@@ -12,7 +12,7 @@ namespace ant
     class RendererCommands
     {
     public:
-        static void SetClearColor(glm::vec4 color);
+        
         static void Clear();
 
     private:

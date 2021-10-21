@@ -1,163 +1,165 @@
-// #include "Pch.h"
 
-// #include "ImGuiLayer.hpp"
+#include "ImGuiLayer.hpp"
 
-// #include <imgui/backends/imgui_impl_opengl3.h>
-// #include <imgui/backends/imgui_impl_glfw.h>
+#include <imgui/backends/imgui_impl_opengl3.h>
+#include <imgui/backends/imgui_impl_glfw.h>
 
-// #include "Render/Renderer.hpp"
-// #include "Core/Application.hpp"
+// #include <Render/Renderer.hpp>
+#include <Core/Application.hpp>
 
-// #include "Gl.h"
+#include "Gl.h"
 
-// #include <GLFW/glfw3.h>
+#include <imgui/imgui.h>
 
-// namespace ant
-// {
-//     bool ImGuiLayer::s_blockEvents = false;
+#include "Input/KeyCodes.hpp"
+#include "Core/Application.hpp"
 
-//     void ImGuiLayer::OnAttach()
-//     {
+namespace ant
+{
+    bool ImGuiLayer::s_blockEvents = false;
 
-//         ImGui::CreateContext();
-//         ImGui::StyleColorsDark();
-//         ImGuiIO &io = ImGui::GetIO();
+    void ImGuiLayer::OnAttach()
+    {
 
-//         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-//         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-//         // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+        ImGui::CreateContext();
+        ImGui::StyleColorsDark();
+        ImGuiIO &io = ImGui::GetIO();
 
-//         io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
-//         io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+        // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-//         io.KeyMap[ImGuiKey_Tab] = int(ant::KeyCode::KEY_TAB);
-//         io.KeyMap[ImGuiKey_LeftArrow] = int(ant::KeyCode::KEY_LEFT);
-//         io.KeyMap[ImGuiKey_RightArrow] = int(ant::KeyCode::KEY_RIGHT);
-//         io.KeyMap[ImGuiKey_UpArrow] = int(ant::KeyCode::KEY_UP);
-//         io.KeyMap[ImGuiKey_DownArrow] = int(ant::KeyCode::KEY_DOWN);
-//         io.KeyMap[ImGuiKey_PageUp] = int(ant::KeyCode::KEY_PAGE_UP);
-//         io.KeyMap[ImGuiKey_PageDown] = int(ant::KeyCode::KEY_PAGE_DOWN);
-//         io.KeyMap[ImGuiKey_Home] = int(ant::KeyCode::KEY_HOME);
-//         io.KeyMap[ImGuiKey_End] = int(ant::KeyCode::KEY_END);
-//         io.KeyMap[ImGuiKey_Insert] = int(ant::KeyCode::KEY_INSERT);
-//         io.KeyMap[ImGuiKey_Delete] = int(ant::KeyCode::KEY_DELETE);
-//         io.KeyMap[ImGuiKey_Backspace] = int(ant::KeyCode::KEY_BACKSPACE);
-//         io.KeyMap[ImGuiKey_Space] = int(ant::KeyCode::KEY_SPACE);
-//         io.KeyMap[ImGuiKey_Enter] = int(ant::KeyCode::KEY_ENTER);
-//         io.KeyMap[ImGuiKey_Escape] = int(ant::KeyCode::KEY_ESCAPE);
-//         io.KeyMap[ImGuiKey_KeyPadEnter] = int(ant::KeyCode::KEY_KP_ENTER);
-//         io.KeyMap[ImGuiKey_A] = int(ant::KeyCode::KEY_A);
-//         io.KeyMap[ImGuiKey_C] = int(ant::KeyCode::KEY_C);
-//         io.KeyMap[ImGuiKey_V] = int(ant::KeyCode::KEY_V);
-//         io.KeyMap[ImGuiKey_X] = int(ant::KeyCode::KEY_X);
-//         io.KeyMap[ImGuiKey_Y] = int(ant::KeyCode::KEY_Y);
-//         io.KeyMap[ImGuiKey_Z] = int(ant::KeyCode::KEY_Z);
+        io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+        io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 
-//         auto window = Application::GetInstance()->GetWindow().GetNativeWindow();
-//         ImGui_ImplGlfw_InitForOpenGL(window, true);
-//         ImGui_ImplOpenGL3_Init("#version 450");
-//     }
+        io.KeyMap[ImGuiKey_Tab] = int(KeyCode::KEY_TAB);
+        io.KeyMap[ImGuiKey_LeftArrow] = int(KeyCode::KEY_LEFT);
+        io.KeyMap[ImGuiKey_RightArrow] = int(KeyCode::KEY_RIGHT);
+        io.KeyMap[ImGuiKey_UpArrow] = int(KeyCode::KEY_UP);
+        io.KeyMap[ImGuiKey_DownArrow] = int(KeyCode::KEY_DOWN);
+        io.KeyMap[ImGuiKey_PageUp] = int(KeyCode::KEY_PAGE_UP);
+        io.KeyMap[ImGuiKey_PageDown] = int(KeyCode::KEY_PAGE_DOWN);
+        io.KeyMap[ImGuiKey_Home] = int(KeyCode::KEY_HOME);
+        io.KeyMap[ImGuiKey_End] = int(KeyCode::KEY_END);
+        io.KeyMap[ImGuiKey_Insert] = int(KeyCode::KEY_INSERT);
+        io.KeyMap[ImGuiKey_Delete] = int(KeyCode::KEY_DELETE);
+        io.KeyMap[ImGuiKey_Backspace] = int(KeyCode::KEY_BACKSPACE);
+        io.KeyMap[ImGuiKey_Space] = int(KeyCode::KEY_SPACE);
+        io.KeyMap[ImGuiKey_Enter] = int(KeyCode::KEY_ENTER);
+        io.KeyMap[ImGuiKey_Escape] = int(KeyCode::KEY_ESCAPE);
+        io.KeyMap[ImGuiKey_KeyPadEnter] = int(KeyCode::KEY_KP_ENTER);
+        io.KeyMap[ImGuiKey_A] = int(KeyCode::KEY_A);
+        io.KeyMap[ImGuiKey_C] = int(KeyCode::KEY_C);
+        io.KeyMap[ImGuiKey_V] = int(KeyCode::KEY_V);
+        io.KeyMap[ImGuiKey_X] = int(KeyCode::KEY_X);
+        io.KeyMap[ImGuiKey_Y] = int(KeyCode::KEY_Y);
+        io.KeyMap[ImGuiKey_Z] = int(KeyCode::KEY_Z);
 
-//     void ImGuiLayer::OnUpdate()
-//     {
-//         ImGuiIO &io = ImGui::GetIO();
-//         auto size = Application::GetInstance()->GetWindow().GetSize();
-//         io.DisplaySize = ImVec2(size.x, size.y);
-//         ImGui_ImplOpenGL3_NewFrame();
-//         ImGui_ImplGlfw_NewFrame();
-//         ImGui::NewFrame();
-//     }
+        auto window = Application::GetInstance()->GetWindow().GetNativeWindow();
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplOpenGL3_Init("#version 450");
+    }
 
-//     void ImGuiLayer::OnDraw()
-//     {
-//         ImGui::EndFrame();
-//         ImGui::Render();
-//         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    void ImGuiLayer::OnUpdate()
+    {
+        ImGuiIO &io = ImGui::GetIO();
+        auto size = Application::GetInstance()->GetWindow().GetSize();
+        io.DisplaySize = ImVec2(size.x, size.y);
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+    }
 
-//         ImGuiIO &io = ImGui::GetIO();
+    void ImGuiLayer::OnDraw()
+    {
+        ImGui::EndFrame();
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-//         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-//         {
-//             GLFWwindow *backup_current_context = glfwGetCurrentContext();
-//             ImGui::UpdatePlatformWindows();
-//             ImGui::RenderPlatformWindowsDefault();
-//             glfwMakeContextCurrent(backup_current_context);
-//         }
-//     }
+        ImGuiIO &io = ImGui::GetIO();
 
-//     void ImGuiLayer::OnDetach()
-//     {
-//         ImGui_ImplOpenGL3_Shutdown();
-//         ImGui_ImplGlfw_Shutdown();
-//         ImGui::DestroyContext();
-//     }
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow *backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
+    }
 
-// #define BlockEvent(expr)      \
-//     if (expr)                 \
-//     {                         \
-//         event->MarkHandled(); \
-//         return;               \
-//     }
+    void ImGuiLayer::OnDetach()
+    {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+    }
 
-//     void ImGuiLayer::OnEvent(Event *event)
-//     {
-//         if (s_blockEvents)
-//         {
-//             auto &io = ImGui::GetIO();
-//             BlockEvent(event->IsInCategory(EventCategory::Mouse) & io.WantCaptureMouse);
-//             BlockEvent(event->IsInCategory(EventCategory::Keyboard) & io.WantCaptureKeyboard);
-//         }
-//     }
+#define BlockEvent(expr)      \
+    if (expr)                 \
+    {                         \
+        event->MarkHandled(); \
+        return;               \
+    }
 
-//     /*  void ImGuiLayer::OnMouseMoved(Event *e)
-//     {
-//         auto ev = (MouseMovedEvent *)e;
-//         auto &io = ImGui::GetIO();
-//         io.MousePos = ImVec2(ev->GetMousePos().x, ev->GetMousePos().y);
-//     }
+    void ImGuiLayer::OnEvent(Event *event)
+    {
+        if (s_blockEvents)
+        {
+            auto &io = ImGui::GetIO();
+            BlockEvent(event->IsInCategory(EventCategory::Mouse) & io.WantCaptureMouse);
+            BlockEvent(event->IsInCategory(EventCategory::Keyboard) & io.WantCaptureKeyboard);
+        }
+    }
 
-//     void ImGuiLayer::OnMouseScrolled(Event *e)
-//     {
-//         auto ev = (MouseScrolledEvent *)e;
-//         auto &io = ImGui::GetIO();
-//         io.MouseWheel = ev->GetScrollOffset().x;
-//         io.MouseWheelH = ev->GetScrollOffset().y;
-//     }
+    /*  void ImGuiLayer::OnMouseMoved(Event *e)
+    {
+        auto ev = (MouseMovedEvent *)e;
+        auto &io = ImGui::GetIO();
+        io.MousePos = ImVec2(ev->GetMousePos().x, ev->GetMousePos().y);
+    }
 
-//     void ImGuiLayer::OnMouseClicked(Event *e)
-//     {
-//         auto ev = (MouseButtonPressedEvent *)e;
-//         auto &io = ImGui::GetIO();
-//         io.MouseDown[int(ev->GetButtonCode())] = true;
-//     }
+    void ImGuiLayer::OnMouseScrolled(Event *e)
+    {
+        auto ev = (MouseScrolledEvent *)e;
+        auto &io = ImGui::GetIO();
+        io.MouseWheel = ev->GetScrollOffset().x;
+        io.MouseWheelH = ev->GetScrollOffset().y;
+    }
 
-//     void ImGuiLayer::OnMouseReleased(Event *e)
-//     {
-//         auto ev = (MouseButtonPressedEvent *)e;
-//         auto &io = ImGui::GetIO();
-//         io.MouseDown[int(ev->GetButtonCode())] = false;
-//     }
+    void ImGuiLayer::OnMouseClicked(Event *e)
+    {
+        auto ev = (MouseButtonPressedEvent *)e;
+        auto &io = ImGui::GetIO();
+        io.MouseDown[int(ev->GetButtonCode())] = true;
+    }
 
-//     void ImGuiLayer::OnKeyPressed(Event *e)
-//     {
-//         auto ev = (KeyPressedEvent *)e;
-//         auto &io = ImGui::GetIO();
-//         io.KeysDown[int(ev->GetKeyCode())] = true;
-//         io.AddInputCharacter(int(ev->GetKeyCode()));
-//     }
+    void ImGuiLayer::OnMouseReleased(Event *e)
+    {
+        auto ev = (MouseButtonPressedEvent *)e;
+        auto &io = ImGui::GetIO();
+        io.MouseDown[int(ev->GetButtonCode())] = false;
+    }
 
-//     void ImGuiLayer::OnKeyReleased(Event *e)
-//     {
-//         auto ev = (KeyReleasedEvent *)e;
-//         auto &io = ImGui::GetIO();
-//         io.KeysDown[int(ev->GetKeyCode())] = false;
-//     }
+    void ImGuiLayer::OnKeyPressed(Event *e)
+    {
+        auto ev = (KeyPressedEvent *)e;
+        auto &io = ImGui::GetIO();
+        io.KeysDown[int(ev->GetKeyCode())] = true;
+        io.AddInputCharacter(int(ev->GetKeyCode()));
+    }
 
-//     void ImGuiLayer::OnWindowResized(Event *e)
-//     {
-//         auto ev = (WindowRezisedEvent *)e;
-//         auto &io = ImGui::GetIO();
-//         io.DisplaySize = ImVec2(ev->GetWindowSize().x, ev->GetWindowSize().y);
-//     } */
+    void ImGuiLayer::OnKeyReleased(Event *e)
+    {
+        auto ev = (KeyReleasedEvent *)e;
+        auto &io = ImGui::GetIO();
+        io.KeysDown[int(ev->GetKeyCode())] = false;
+    }
 
-// }
+    void ImGuiLayer::OnWindowResized(Event *e)
+    {
+        auto ev = (WindowRezisedEvent *)e;
+        auto &io = ImGui::GetIO();
+        io.DisplaySize = ImVec2(ev->GetWindowSize().x, ev->GetWindowSize().y);
+    } */
+
+}

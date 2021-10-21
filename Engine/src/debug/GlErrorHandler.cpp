@@ -8,21 +8,21 @@ namespace ant
     void GlErrorHandler::GlErrorCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity,
                                                  GLsizei length, const GLchar *message, const void *userParam)
     {
-        static std::string formatStr = "OpenGl error: id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}";
+        // static std::string formatStr = "OpenGl error: id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}";
         std::string severityStr = GetSeverityStr(severity);
 
         if (severityStr == "HIGH")
         {
-            CORE_ERROR(formatStr, id, GetTypeStr(type), severityStr, GetSourceStr(source), message);
+            CORE_ERROR("OpenGl error: id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}", id, GetTypeStr(type), severityStr, GetSourceStr(source), message);
             CORE_BREAK();
         }
         else if (severityStr == "NOTIFICATION")
         {
-            CORE_INFO(formatStr, id, GetTypeStr(type), severityStr, GetSourceStr(source), message);
+            CORE_INFO("OpenGl error: id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}", id, GetTypeStr(type), severityStr, GetSourceStr(source), message);
         }
         else
         {
-            CORE_WARN(formatStr, id, GetTypeStr(type), severityStr, GetSourceStr(source), message);
+            CORE_WARN("OpenGl error: id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}", id, GetTypeStr(type), severityStr, GetSourceStr(source), message);
         }
     }
 

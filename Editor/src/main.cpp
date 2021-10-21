@@ -3,7 +3,9 @@
 int main()
 {
 
-    ant::Application *app = new Editor::EditorApp();
+    ant::Application::s_instance = new Editor::EditorApp();
+
+    auto app = ant::Application::GetInstance();
 
     app->Init();
     app->Run();

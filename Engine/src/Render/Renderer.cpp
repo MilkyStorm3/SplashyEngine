@@ -11,19 +11,6 @@ namespace ant
     Renderer2D::SceneData Renderer2D::s_sceneData;
     Renderer2D::RendererStats Renderer2D::s_stats;
 
-    void RendererCommands::SetClearColor(glm::vec4 color)
-    {
-        glClearColor(color.r, color.g, color.b, color.a);
-    }
-
-    void RendererCommands::Clear()
-    {
-        CORE_PROFILE_FUNC();
-        glClear(GL_COLOR_BUFFER_BIT);
-        glClear(GL_DEPTH_BUFFER_BIT);
-        glClear(GL_STENCIL_BUFFER_BIT);
-    }
-
     Renderer2DQueue::Renderer2DQueue()
     {
     }

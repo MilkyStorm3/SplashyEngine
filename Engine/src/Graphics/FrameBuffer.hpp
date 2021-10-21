@@ -13,7 +13,7 @@ namespace ant
         ~FrameBuffer();
 
         void Bind();
-        
+
         static void BindDefault();
 
         void Resize(uint32_t width, uint32_t height);
@@ -22,9 +22,6 @@ namespace ant
         uint32_t GetGlId() const { return m_colorBufferId; }
 
     private:
-        void CreateTextures();
-
-    private:    
         uint32_t m_width, m_height;
         uint32_t m_colorBufferId = 0, m_depthBufferId = 0, m_frameBufferGlId = 0;
     };

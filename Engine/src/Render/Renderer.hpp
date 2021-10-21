@@ -9,16 +9,6 @@
 #include "Scene/Components.hpp"
 namespace ant
 {
-    class RendererCommands
-    {
-    public:
-        
-        static void Clear();
-
-    private:
-        RendererCommands() {}
-        ~RendererCommands() {}
-    };
 
     class Renderer2DQueue
     {

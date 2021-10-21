@@ -1,6 +1,6 @@
 //! add Pch
 
 
-//! fix glew and glfw initialization
+//todo fix renderer initialization
 
-//todo refactor event system and event handling
+//todo rebuild buffers and renderer

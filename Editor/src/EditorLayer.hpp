@@ -1,7 +1,8 @@
 #pragma once
 #include <Input/Event.hpp>
 #include <Core/Layer.hpp>
-
+#include <Graphics/FrameBuffer.hpp>
+#include <Camera/Camera.hpp>
 namespace Editor
 {
 
@@ -18,8 +19,10 @@ namespace Editor
         virtual void OnEvent(ant::Event *event) override;
 
     private:
-
         void DockSpace();
+
+        // ant::Ref<ant::FrameBuffer> m_framebuffer;
+        // ant::Ref<ant::OrthographicCameraController> m_camera;
     };
 
 }

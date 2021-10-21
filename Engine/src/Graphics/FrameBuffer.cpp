@@ -27,7 +27,7 @@ namespace ant
     void FrameBuffer::Bind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferGlId);
-        glViewport(0,0, m_width, m_height);
+        glViewport(0, 0, m_width, m_height);
     }
 
     void FrameBuffer::BindDefault()
@@ -35,7 +35,7 @@ namespace ant
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void FrameBuffer::Resize(uint32_t width, uint32_t height) 
+    void FrameBuffer::Resize(uint32_t width, uint32_t height)
     {
         m_width = width;
         m_height = height;

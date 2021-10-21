@@ -3,7 +3,6 @@
 
 #include "Render/Renderer.hpp"
 #include "Graphics/FrameBuffer.hpp"
-
 #include <Gl.h>
 
 namespace ant
@@ -130,7 +129,6 @@ namespace ant
         if (drawTarget)
         {
             drawTarget->Bind();
-            RendererCommands::Clear();
         }
     }
 

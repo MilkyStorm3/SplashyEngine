@@ -1,3 +1,4 @@
+#ifdef PRIMITIVES
 #include "Pch.h"
 #include "Render/Primitive.hpp"
 
@@ -77,3 +78,4 @@ namespace ant
     }
 
 }
+#endif

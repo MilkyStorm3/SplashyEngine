@@ -1,4 +1,5 @@
 #pragma once
+#ifdef OLD_BUFFER
 #include <stdint.h>
 #include <array>
 #include "Graphics/VertexLayout.hpp"
@@ -143,3 +144,4 @@ namespace ant
 	};
 
 } // namespace ant
+#endif

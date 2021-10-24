@@ -13,6 +13,7 @@ namespace ant
         ~FrameBuffer();
 
         void Bind();
+        inline void UnBind() const { FrameBuffer::BindDefault(); }
 
         static void BindDefault();
 

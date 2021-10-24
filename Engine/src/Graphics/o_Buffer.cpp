@@ -1,3 +1,4 @@
+#ifdef OLD_BUFFER
 #include "Pch.h"
 #include "Graphics/Buffer.hpp"
 
@@ -93,7 +94,9 @@ namespace ant
     {
         CORE_PROFILE_FUNC();
         m_glVertexArray.Bind();
-        m_layout.SetAttribPtrs();
+        m_layout.Enable();
     }
 
 } // namespace ant
+
+#endif

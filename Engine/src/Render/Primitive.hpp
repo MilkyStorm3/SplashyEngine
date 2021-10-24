@@ -1,4 +1,7 @@
 #pragma once
+#ifdef PRIMITIVES
+
+
 #include "Graphics/Buffer.hpp"
 #include "Render/Transform.hpp"
 #include "Graphics/Texture.hpp"
@@ -66,3 +69,4 @@ namespace ant
     };
 
 }
+#endif

@@ -31,14 +31,16 @@ namespace ant
 
         VertexBufferLayout(std::initializer_list<AttributeType> args);
 
-        void SetAttribPtrs();
-        void DisablePtrs();
+        void Enable();
+        void Disable();
 
         inline void PushAttribute(AttributeType attribute)
         {
             m_layoutTypes.push_back(attribute);
             CalcVertexSize();
         }
+
+        inline uint32_t GetVertexSize() const { return m_vertexSize; }
 
     private:
         void CalcVertexSize();

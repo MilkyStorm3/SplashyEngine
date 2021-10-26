@@ -50,7 +50,7 @@ namespace ant
         CalcVertexSize();
     }
 
-    void VertexBufferLayout::SetAttribPtrs()
+    void VertexBufferLayout::Enable()
     {
         CORE_PROFILE_FUNC();
         uint32_t pointerVal = 0;
@@ -63,7 +63,7 @@ namespace ant
         }
     }
 
-    void VertexBufferLayout::DisablePtrs()
+    void VertexBufferLayout::Disable()
     {
         for (size_t i = 0; i < m_layoutTypes.size(); i++)
             glDisableVertexAttribArray(i);

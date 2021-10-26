@@ -1,4 +1,9 @@
 #pragma once
+
+#define VERTEX_BUFFER
+
+#ifdef VERTEX_BUFFER
+
 #include <stdint.h>
 #include <stddef.h>
 #include <array>
@@ -35,3 +40,5 @@ namespace ant
     };
 
 } // namespace ant
+
+#endif

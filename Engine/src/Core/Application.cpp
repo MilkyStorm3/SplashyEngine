@@ -6,6 +6,14 @@
 #include "Input/Event.hpp"
 #include "debug/ImGuiLayer.hpp"
 
+//! TEMP
+#include <Gl.h>
+// #include <Graphics/VertexBuffer.hpp>
+// #include <Graphics/IndexBuffer.hpp>
+#include <Graphics/o_Buffer.hpp>
+#include <Graphics/Shader.hpp>
+#include <filesystem>
+
 void test();
 namespace ant
 {
@@ -29,9 +37,12 @@ namespace ant
                        m_appdata.windowSettings.title,
                        true, false});
 
-        m_layerStack.PushOverlay(MakeRef<ImGuiLayer>());
+        RendererCommands::EnableGlDebugMessages();
 
-        RendererCommands::SetClearColor({1.f,0.f,1.f,1.f});
+        // m_layerStack.PushOverlay(MakeRef<ImGuiLayer>());
+
+        // RendererCommands::SetClearColor({1.f,0.f,1.f,1.f});
+        RendererCommands::SetClearColor({0.3f, 0.3f, 0.3f, 1.f});
 
         m_appInitFn();
     }
@@ -39,12 +50,47 @@ namespace ant
     void Application::Run()
     {
 
-        // test();
+        //todo load a shader and comfigure a filesystem root path
+
+        // auto shpath = Shader::EngineShaderDir().append("triangleShader.glsl");
+
+        // Shader shader = Shader(shpath.string());
+        // Shader shader = Shader("triangleShader.glsl");
+        // shader.CreateShader();
+
+        // CORE_INFO(shpath.string().c_str());
+
+        float vertices[] = {
+            -0.5f, -0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            0.0f, 0.5f, 0.0f};
+
+        unsigned int VBO;
+        glGenBuffers(1, &VBO);
+
+        unsigned int VAO;
+        glGenVertexArrays(1, &VAO);
+        glBindVertexArray(VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+        glEnableVertexAttribArray(0);
+
+        // shader.BindShader();
+
         while (m_appdata.running)
         {
-            m_layerStack.OnUpdate();
+            // m_layerStack.OnUpdate();
             RendererCommands::Clear();
-            m_layerStack.OnDraw();
+
+            // glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
+
+            //! test Ib and Vb here
+
+            // m_layerStack.OnDraw();
             m_window.Update();
         }
     }

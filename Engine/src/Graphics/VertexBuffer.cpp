@@ -1,4 +1,5 @@
 #include "VertexBuffer.hpp"
+#ifdef VERTEX_BUFFER
 #include <Core/Core.hpp>
 #include <Gl.h>
 #include <debug/Instrumentation.hpp>
@@ -48,8 +49,11 @@ namespace ant
     void VertexBuffer::UploadData(float *data, size_t size)
     {
         CORE_PROFILE_FUNC();
-        
+
+        Bind();        
         glBufferData(GL_ARRAY_BUFFER, m_layout.GetVertexSize() * size, data, GL_STATIC_DRAW);
+        UnBind();
     }
 
 }
+#endif

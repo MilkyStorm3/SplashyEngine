@@ -1,6 +1,6 @@
+#include "Graphics/o_Buffer.hpp"
 #ifdef OLD_BUFFER
 #include "Pch.h"
-#include "Graphics/Buffer.hpp"
 
 #include <Gl.h>
 

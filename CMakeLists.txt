@@ -3,6 +3,7 @@ project(SplashyEngine VERSION 0.1.0)
 
 add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 # add imgui
 

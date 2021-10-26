@@ -16,11 +16,11 @@ namespace ant
     void Window::Update()
     {
         CORE_PROFILE_FUNC();
-        glfwPollEvents();
         {
             CORE_PROFILE_SCOPE("glfwSwapBuffers");
             glfwSwapBuffers(m_nativeWindow);
         }
+        glfwPollEvents();
     }
 
     void Window::SetResizeability(bool resizeable)

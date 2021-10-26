@@ -16,7 +16,7 @@ namespace ant
     public:
         ~GlErrorHandler() {}
 
-        static void GlErrorCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity,
+        static void ErrorFunc(GLenum source, GLenum type, GLuint id, GLenum severity,
                                     GLsizei length, const GLchar *message, const void *userParam);
     private:
         GlErrorHandler() {}

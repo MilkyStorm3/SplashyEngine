@@ -1,4 +1,7 @@
 #pragma once
+
+#ifdef INDEX_BUFFER
+
 #include <stdint.h>
 #include <stddef.h>
 #include <array>
@@ -31,3 +34,4 @@ namespace ant
     };
 
 } // namespace ant
+#endif

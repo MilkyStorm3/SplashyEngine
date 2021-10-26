@@ -1,18 +1,21 @@
 #include "Editor.hpp"
 
+void test();
+
 int main()
 {
 
-    ant::Application::s_instance = new Editor::EditorApp();
+    // ant::Application::s_instance = new Editor::EditorApp();
 
-    auto app = ant::Application::GetInstance();
+    // auto app = ant::Application::GetInstance();
 
-    app->Init();
-    app->Run();
+    // app->Init();
+    // app->Run();
 
-    delete app;
+    // delete app;
 
-    // test();
+
+    test();
 
     // spdlog::info("Welcome to spdlog!");
     // spdlog::error("Some error message with arg: {}", 1);

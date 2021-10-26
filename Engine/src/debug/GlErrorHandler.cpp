@@ -5,7 +5,7 @@
 
 namespace ant
 {
-    void GlErrorHandler::GlErrorCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity,
+    void GlErrorHandler::ErrorFunc(GLenum source, GLenum type, GLuint id, GLenum severity,
                                                  GLsizei length, const GLchar *message, const void *userParam)
     {
         // static std::string formatStr = "OpenGl error: id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}";

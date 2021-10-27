@@ -8,6 +8,9 @@
 #include <Graphics/Shader.hpp>
 #include <Graphics/VertexBuffer.hpp>
 #include <Graphics/IndexBuffer.hpp>
+#include <Core/Logger.hpp>
+
+#include <fstream>
 
 void test()
 {
@@ -24,59 +27,22 @@ void test()
 
     });
 
-    window.Init({800,
+       window.Init({800,
                  600,
                  "title",
                  true, false});
 
-    // auto shpath = ant::Shader::EngineShaderDir().append("triangleShader.glsl");
-
-    // ant::Shader shader = ant::Shader(shpath.string());
-    // shader.CreateShader();
-
-    // CORE_INFO(shpath.string().c_str());
-
-    std::string vertexShaderSource = R"(
-#version 450 core
-		
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec3 color;
-
-
-void main()
-{
- 	gl_Position = vec4(position.x, position.y, position.z, 1.0);
-}
-
-        )";
-
-    std::string fragmentShaderSource = R"(
-#version 450 core
-out vec4 color;
-
-void main(){
-
-	color = vec4(0.8, 0.2,0.2,1.0);
-}
-        )";
-
     ant::Shader shader;
-    shader.Init(vertexShaderSource, fragmentShaderSource);
-    // shader.LoadFromFile(shpath.string());
-    // shader.Init();
+    shader.LoadFromFile("shaders/triangleShader.glsl");
+    shader.Init();
 
-    // std::cout << std::filesystem::current_path().parent_path().append("Engine/shader").string();
-    std::cout<<"stest\n";
-    // std::cout << std::filesystem::current_path().string();
-    auto a = std::filesystem::current_path();
-    // std::cout<<shader.GetSource().vertex;
-    // std::cout<<shader.GetSource().fragment;
-    
+    // shader.Init(vertexSource, fragmentSource);
+
     float vertices[] = {
         -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0,
         0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0,
-        0.0f, 0.5f, 0.0f, 0.0, 0.0, 1.0
-
+        -0.5f, 0.5f, 0.0f, 0.0, 0.0, 1.0,
+        0.5f, 0.5f, 0.0f, 1.0, 1.0, 1.0
     };
 
     ant::VertexBuffer vb;
@@ -87,6 +53,15 @@ void main(){
     vb.Bind();
 
     shader.Bind();
+
+    ant::IndexBuffer ib; //! checkout IndexBuffer STH DOSENT WORK with it
+    uint32_t indicies[] ={
+        0,1,2,2,1,3
+    };
+    ib.Bind();
+    ib.UploadData(&indicies[0], sizeof(ib));
+    ib.Bind();
+
 
     while (!glfwWindowShouldClose(window.GetNativeWindow()))
     {

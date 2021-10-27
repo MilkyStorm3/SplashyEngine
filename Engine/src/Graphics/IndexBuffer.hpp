@@ -1,5 +1,8 @@
 #pragma once
 
+
+#define INDEX_BUFFER
+
 #ifdef INDEX_BUFFER
 
 #include <stdint.h>

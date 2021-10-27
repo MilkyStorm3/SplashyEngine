@@ -25,8 +25,8 @@ namespace ant
 	{
 		CORE_PROFILE_FUNC();
 
-		CORE_ASSERT(
-			std::filesystem::exists(filePath), "Cannot find shader file! " + filePath);
+		CORE_ASSERT(filePath.length() != 0, "Shader path not provided!");
+		CORE_ASSERT(std::filesystem::exists(filePath), "Cannot find shader file! " + filePath);
 
 		std::ifstream file(filePath);
 		std::string line;
@@ -65,8 +65,8 @@ namespace ant
 
 	void Shader::Init()
 	{
-		CORE_ASSERT(m_source.vertex.length(), "There has to be a vertex shader source!");
-		CORE_ASSERT(m_source.fragment.length(), "There has to be a fragment shader source!");
+		CORE_ASSERT(m_source.vertex.length() != 0, "There has to be a vertex shader source!");
+		CORE_ASSERT(m_source.fragment.length() != 0, "There has to be a fragment shader source!");
 
 		unsigned int vertexShader = CompileShader(m_source.vertex, GL_VERTEX_SHADER);
 		unsigned int fragmentShader = CompileShader(m_source.fragment, GL_FRAGMENT_SHADER);
@@ -124,12 +124,6 @@ namespace ant
 		}
 
 		return id;
-	}
-
-	std::filesystem::path Shader::EngineShaderDir()
-	{
-		static auto value = std::filesystem::current_path().parent_path().append("Engine/shader");
-		return value;
 	}
 
 }

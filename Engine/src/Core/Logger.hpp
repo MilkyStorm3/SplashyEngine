@@ -20,6 +20,7 @@ namespace ant
     public:
         static logPtr s_coreLogger;
         static logPtr s_clientLogger;
+        static bool s_initialized;
     };
 
     #define CORE_TRACE(...)   ant::Logger::GetCoreLogger()->trace(__VA_ARGS__);

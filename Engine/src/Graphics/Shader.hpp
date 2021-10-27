@@ -33,8 +33,6 @@ namespace ant
 
         const ShaderSource &GetSource() const { return m_source; }
 
-        static std::filesystem::path EngineShaderDir();
-
     private:
         static int CompileShader(const std::string &source, uint32_t type);
 

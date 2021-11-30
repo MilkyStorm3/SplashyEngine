@@ -24,7 +24,7 @@ namespace ant
         };
 
     public:
-        Window() {}
+        Window(){}
         ~Window();
 
         void Init(const Properties &props);

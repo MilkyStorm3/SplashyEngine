@@ -11,7 +11,6 @@
 
 // #include <GlTypes.h>
 
-
 namespace ant
 {
 
@@ -23,6 +22,15 @@ namespace ant
 
         void Bind();
         void UnBind();
+
+        /*! @brief Uploads vertex data.
+        *
+        *  This is a wrapper function for setting vertex buffer data.
+        *  Layout needs to be set first
+        *
+        *  @param[in] data Pointer to data.
+        *  @param[in] size Size of data (RAW BYTES)
+        */
         void UploadData(float *data, size_t size);
         inline VertexBufferLayout &GetLayout() { return m_layout; }
 
@@ -30,7 +38,7 @@ namespace ant
         template <size_t _size>
         void UploadData(std::array<float, _size> &array)
         {
-            UploadData(array.data(), array.size());
+            UploadData(array.data(), array.size() * sizeof(float));
         }
 
     private:

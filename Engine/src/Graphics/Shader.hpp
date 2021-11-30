@@ -31,6 +31,9 @@ namespace ant
         void Bind();
         void UnBind();
 
+        /**
+         * @retval Struct with vertex and fragment shader source strings
+         */
         const ShaderSource &GetSource() const { return m_source; }
 
     private:

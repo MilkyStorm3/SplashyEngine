@@ -3,6 +3,8 @@
 #include <Core/Layer.hpp>
 #include <Graphics/FrameBuffer.hpp>
 #include <Camera/Camera.hpp>
+
+#include <Graphics/Shader.hpp>
 namespace Editor
 {
 
@@ -21,7 +23,8 @@ namespace Editor
     private:
         void DockSpace();
 
-        // ant::Ref<ant::FrameBuffer> m_framebuffer;
+        ant::Ref<ant::FrameBuffer> m_framebuffer;
+        ant::Ref<ant::Shader> m_shader;
         // ant::Ref<ant::OrthographicCameraController> m_camera;
     };
 

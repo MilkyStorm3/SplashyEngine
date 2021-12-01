@@ -1,6 +1,7 @@
 #pragma once
 #include <filesystem>
 #include <string>
+#include "Core/Core.hpp"
 
 namespace ant
 {
@@ -17,6 +18,19 @@ namespace ant
     public:
         Shader();
         ~Shader();
+
+        /**
+         * @param  filePath: path to a shader file in a custom hash separated format #vertexShader ... #fragmentShader ...
+         * @retval Ref to initialized, linked, ready to use shader.
+         */
+        static Ref<Shader> Create(const std::string &filePath);
+
+        /**
+         * @param  vertexsrc: vertex shader raw source string
+         * @param  fragmentsrc: fragment shader raw source string
+         * @retval Ref to initialized, linked, ready to use shader.
+         */
+        static Ref<Shader> Create(const std::string &vertexsrc, const std::string &fragmentsrc);
 
         /* Parses a shader file and splits to vertex and fragment source */
         void LoadFromFile(const std::string &filePath);

@@ -41,24 +41,16 @@ namespace ant
 
         m_layerStack.PushOverlay(MakeRef<ImGuiLayer>());
 
-        // RendererCommands::SetClearColor({1.f,0.f,1.f,1.f});
-        RendererCommands::SetClearColor({0.3f, 0.3f, 0.3f, 1.f});
-
         m_appInitFn();
     }
 
     void Application::Run()
     {
 
-        
-
-        // shader.BindShader();
-
         while (m_appdata.running)
         {
             m_layerStack.OnUpdate();
             RendererCommands::Clear();
-
 
 
             m_layerStack.OnDraw();

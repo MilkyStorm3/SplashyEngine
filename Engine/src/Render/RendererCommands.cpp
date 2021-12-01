@@ -27,7 +27,7 @@ namespace ant
         glfwTerminate();
     }
 
-    void RendererCommands::SetClearColor(glm::vec4 color)
+    void RendererCommands::SetClearColor(const glm::vec4 &color)
     {
         glClearColor(color.r, color.g, color.b, color.a);
     }
@@ -38,6 +38,12 @@ namespace ant
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_DEPTH_BUFFER_BIT);
         glClear(GL_STENCIL_BUFFER_BIT);
+    }
+
+    void RendererCommands::Clear(const glm::vec4 &color)
+    {
+        glClearColor(color.r, color.g, color.b, color.a);
+        Clear();
     }
 
     bool RendererCommands::InitGlew()

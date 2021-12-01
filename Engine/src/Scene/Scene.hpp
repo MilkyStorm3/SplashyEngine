@@ -52,7 +52,7 @@ namespace ant
         inline entt::registry &GetRegistry() { return m_registry; }
 
     private:
-        entt::registry m_registry; //! TEMP
+        entt::registry m_registry;
         std::string m_label = "Scene";
     };
 

@@ -21,6 +21,21 @@ namespace ant
 		glDeleteProgram(m_glProgram);
 	}
 
+	Ref<Shader> Shader::Create(const std::string &filePath)
+	{
+		auto shader = ant::MakeRef<Shader>();
+		shader->LoadFromFile(filePath);
+		shader->Init();
+		return shader;
+	}
+
+	Ref<Shader> Shader::Create(const std::string &vertexsrc, const std::string &fragmentsrc)
+	{
+		auto shader = ant::MakeRef<Shader>();
+		shader->Init(vertexsrc, fragmentsrc);
+		return shader;
+	}
+
 	void Shader::LoadFromFile(const std::string &filePath)
 	{
 		CORE_PROFILE_FUNC();

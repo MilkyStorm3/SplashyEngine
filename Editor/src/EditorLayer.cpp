@@ -3,6 +3,7 @@
 #include "Core/Application.hpp"
 #include "Render/Primitive.hpp"
 #include "Render/Renderer.hpp"
+
 namespace Editor
 {
     void EditorLayer::OnAttach() 
@@ -51,6 +52,7 @@ namespace Editor
         ImGui::Text("welcome back babe!");
 
         ImGui::End();
+
     }
     
     void EditorLayer::OnDraw() 
@@ -65,6 +67,7 @@ namespace Editor
         // ant::Renderer2D::EndScene();
 
         // ant::FrameBuffer::BindDefault();
+
 
 
         

@@ -1,3 +1,5 @@
+// #define OLD_BUFFER
+
 #pragma once
 #ifdef OLD_BUFFER
 #include <stdint.h>

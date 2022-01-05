@@ -31,15 +31,31 @@ namespace ant
 
         VertexBufferLayout(std::initializer_list<AttributeType> args);
 
+        /**
+         * @brief  Enables given vertex layout in opengl calls glVertexAttribPointer(idx) and glEnableVertexAttribArray(idx)
+         * @retval None
+         */
         void Enable();
+
+        /**
+         * @brief  Disables every single attribute by calling glDisableVertexAttribArray(idx);
+         * @retval None
+         */
         void Disable();
 
+        /**
+         * @brief Add new vertex attribute to the list
+         * @param  attribute: Type of attribute
+         */
         inline void PushAttribute(AttributeType attribute)
         {
             m_layoutTypes.push_back(attribute);
             CalcVertexSize();
         }
 
+        /**
+         * @return Size of single vertex for given layout (RAW BYTES)
+         */
         inline uint32_t GetVertexSize() const { return m_vertexSize; }
 
     private:

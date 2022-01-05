@@ -18,9 +18,11 @@ namespace ant
         static void BindDefault();
 
         void Resize(uint32_t width, uint32_t height);
-        void Invalidate();
 
-        uint32_t GetGlId() const { return m_colorBufferId; }
+        uint32_t GetColorBufferId() const { return m_colorBufferId; }
+
+    private:
+        void Invalidate();
 
     private:
         uint32_t m_width, m_height;

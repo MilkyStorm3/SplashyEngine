@@ -14,8 +14,9 @@ namespace ant
         static bool InitGlew();
         static bool ShutdownGlfw();
 
-        static void SetClearColor(glm::vec4 color);
+        static void SetClearColor(const glm::vec4& color);
         static void Clear();
+        static void Clear(const glm::vec4& color);
 
         static bool EnableGlDebugMessages();
 

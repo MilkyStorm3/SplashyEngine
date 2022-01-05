@@ -10,17 +10,16 @@ namespace ant
     Window::~Window()
     {
         glfwDestroyWindow(m_nativeWindow);
-        RendererCommands::ShutdownGlfw();
     }
 
     void Window::Update()
     {
         CORE_PROFILE_FUNC();
-        glfwPollEvents();
         {
             CORE_PROFILE_SCOPE("glfwSwapBuffers");
             glfwSwapBuffers(m_nativeWindow);
         }
+        glfwPollEvents();
     }
 
     void Window::SetResizeability(bool resizeable)
@@ -47,7 +46,6 @@ namespace ant
 
     void Window::Init(const Properties &props)
     {
-
         RendererCommands::InitGlfw();
 
         m_nativeWindow = glfwCreateWindow(props.width, props.height, props.title.c_str(), NULL, NULL);
@@ -65,6 +63,9 @@ namespace ant
         SetResizeability(props.resizeable);
 
         m_properties = props;
+
+        CORE_ASSERT(m_eventCallback, "Window callback function is not set!");
+
         // set callbacks
         {
             glfwSetWindowUserPointer(m_nativeWindow, this);

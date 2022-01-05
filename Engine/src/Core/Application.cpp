@@ -6,6 +6,14 @@
 #include "Input/Event.hpp"
 #include "debug/ImGuiLayer.hpp"
 
+//! TEMP
+#include <Gl.h>
+// #include <Graphics/VertexBuffer.hpp>
+// #include <Graphics/IndexBuffer.hpp>
+#include <Graphics/o_Buffer.hpp>
+#include <Graphics/Shader.hpp>
+#include <filesystem>
+
 void test();
 namespace ant
 {
@@ -13,7 +21,7 @@ namespace ant
 
     Application::~Application()
     {
-        //todo shutdown glew
+        RendererCommands::ShutdownGlfw();
     }
 
     void Application::Init()
@@ -29,9 +37,9 @@ namespace ant
                        m_appdata.windowSettings.title,
                        true, false});
 
-        m_layerStack.PushOverlay(MakeRef<ImGuiLayer>());
+        RendererCommands::EnableGlDebugMessages();
 
-        RendererCommands::SetClearColor({1.f,0.f,1.f,1.f});
+        m_layerStack.PushOverlay(MakeRef<ImGuiLayer>());
 
         m_appInitFn();
     }
@@ -39,11 +47,12 @@ namespace ant
     void Application::Run()
     {
 
-        // test();
         while (m_appdata.running)
         {
             m_layerStack.OnUpdate();
             RendererCommands::Clear();
+
+
             m_layerStack.OnDraw();
             m_window.Update();
         }

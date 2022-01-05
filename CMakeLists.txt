@@ -3,6 +3,7 @@ project(SplashyEngine VERSION 0.1.0)
 
 add_definitions(-DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 # add imgui
 
@@ -98,6 +99,11 @@ target_include_directories(Editor PUBLIC ${PROJECT_SOURCE_DIR}/Engine/src)
 
 target_link_libraries(Editor Engine)
 target_include_directories(Editor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui/)
+
+# ADD_CUSTOM_COMMAND(TARGET main
+    #   POST_BUILD
+    #   COMMAND main
+    #   WORKING_DIRECTORY /var/tmp)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

@@ -1,6 +1,7 @@
 #pragma once
 #include "Graphics/Window.hpp"
 #include "Layer.hpp"
+
 namespace ant
 {
     class Event;
@@ -41,7 +42,6 @@ namespace ant
 
     private:
         AppSettings m_appdata;
-
         Window m_window;
 
     protected:

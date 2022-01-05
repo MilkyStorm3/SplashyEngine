@@ -14,7 +14,6 @@ namespace ant
         ~Renderer() {}
 
     };
-
  
 
 } // namespace ant

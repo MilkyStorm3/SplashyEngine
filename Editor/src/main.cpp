@@ -1,5 +1,7 @@
 #include "Editor.hpp"
 
+void test();
+
 int main()
 {
 

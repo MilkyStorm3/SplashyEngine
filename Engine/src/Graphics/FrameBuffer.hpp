@@ -1,8 +1,33 @@
 #pragma once
 #include "Core/Core.hpp"
+#include <vector>
 
 namespace ant
 {
+
+    enum class FramebufferAtachmentType
+    {
+        None = 0,
+
+        // Color
+        RGBA8,
+        RED_INTEGER,
+
+        // Depth/stencil
+        DEPTH24STENCIL8,
+
+        // Defaults
+        Depth = DEPTH24STENCIL8
+    };
+
+    class FramebufferAtachments
+    {
+    public:
+        FramebufferAtachments() = default;
+        FramebufferAtachments(std::initializer_list<FramebufferAtachmentType> attachments) : Attachments(attachments) {}
+
+        std::vector<FramebufferAtachmentType> Attachments;
+    };
 
     class FrameBuffer
     {
@@ -19,7 +44,7 @@ namespace ant
 
         void Resize(uint32_t width, uint32_t height);
 
-        uint32_t GetColorBufferId() const { return m_colorBufferId; }
+        // uint32_t GetColorBufferId() const { return m_colorBufferId; }
 
     private:
         void Invalidate();

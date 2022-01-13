@@ -3,8 +3,24 @@
 #include "Graphics/FrameBuffer.hpp"
 #include <Gl.h>
 
+#include "Core/Logger.hpp"
+
 namespace ant
 {
+
+    namespace utils
+    {
+
+        static bool IsColorAttachment(FramebufferAtachmentType type)
+        {
+            if (type == FramebufferAtachmentType::DEPTH24STENCIL8)  return true;
+            if (type == FramebufferAtachmentType::RED_INTEGER)      return true;
+
+            return false;
+        }
+
+    }
+
     Ref<FrameBuffer> FrameBuffer::Create(uint32_t width, uint32_t height)
     {
         return MakeRef<FrameBuffer>(width, height);

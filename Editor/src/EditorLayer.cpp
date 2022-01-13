@@ -11,104 +11,7 @@
 #include <Gl.h>
 namespace Editor
 {
-    void EditorLayer::OnAttach()
-    {
-        CORE_INFO("Editor Layer Attached");
-
-        auto size = ant::Application::GetInstance()->GetWindow().GetSize();
-        m_framebuffer = ant::FrameBuffer::Create(size.x, size.y);
-
-        m_shader = ant::Shader::Create("shaders/triangleShader.glsl");
-    }
-
-    void EditorLayer::OnUpdate()
-    {
-        DockSpace();
-
-        {
-            ImGui::Begin("Viewport");
-            // ant::ImGuiLayer::SetEventBlocking(!(ImGui::IsWindowFocused() && ImGui::IsWindowHovered())); //todo
-
-            static glm::vec2 viewportPanelSize = {0, 0};
-
-            auto currentViewportPanelSize = ImGui::GetContentRegionAvail();
-
-            if (viewportPanelSize != *(glm::vec2 *)&currentViewportPanelSize.x)
-            {
-                viewportPanelSize = *(glm::vec2 *)&currentViewportPanelSize.x;
-
-                CORE_WARN("PanelSize: x - {0}, y - {1}", viewportPanelSize.x, viewportPanelSize.y);
-                if (viewportPanelSize.x > 3 && viewportPanelSize.y > 3)
-                {
-                    m_framebuffer->Resize(viewportPanelSize.x, viewportPanelSize.y);
-                    // m_cameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
-                    //todo resize the camera and frame buffer
-                }
-            }
-            // move
-            ImGui::Image((void *)m_framebuffer->GetColorBufferId(), *(ImVec2 *)&viewportPanelSize.x, ImVec2{0, 1}, ImVec2{1, 0});
-
-            ImGui::End();
-        }
-
-        ImGui::Begin("test");
-
-        ImGui::Text("welcome back babe!");
-
-        ImGui::End();
-    }
-
-    void EditorLayer::OnDraw()
-    {
-        m_framebuffer->Bind();
-
-        ant::RendererCommands::Clear({1.f, 0.f, 1.f,1.f}); //magenta
-
-        
-        float vertices[] = {
-            -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0,
-            0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0,
-            -0.5f, 0.5f, 0.0f, 0.0, 0.0, 1.0,
-            0.5f, 0.5f, 0.0f, 1.0, 1.0, 1.0};
-
-        ant::VertexBuffer vb;
-        vb.GetLayout().PushAttribute(ant::AttributeType::vec3f);
-        vb.GetLayout().PushAttribute(ant::AttributeType::vec3f);
-        vb.UploadData(&vertices[0], sizeof(vertices));
-
-        vb.Bind();
-
-        m_shader->Bind();
-
-        ant::IndexBuffer ib;
-
-        uint32_t indices[] = {
-            0, 1, 2, 2, 1, 3};
-
-        ib.UploadData(&indices[0], sizeof(indices));
-        ib.Bind();
-
-        m_shader->Bind();
-
-        glDrawElements(
-            GL_TRIANGLES,
-            ib.GetCount(),
-            GL_UNSIGNED_INT,
-            (void *)0);
-
-
-        m_framebuffer->UnBind();
-    }
-
-    void EditorLayer::OnDetach()
-    {
-    }
-
-    void EditorLayer::OnEvent(ant::Event *event)
-    {
-    }
-
-    void EditorLayer::DockSpace()
+    static void DockSpace()
     {
         ImGuiIO &io = ImGui::GetIO();
         static bool p_open = true;
@@ -163,4 +66,100 @@ namespace Editor
 
         ImGui::End();
     }
+
+    void EditorLayer::OnAttach()
+    {
+        CORE_INFO("Editor Layer Attached");
+
+        auto size = ant::Application::GetInstance()->GetWindow().GetSize();
+        m_framebuffer = ant::FrameBuffer::Create(size.x, size.y);
+
+        m_shader = ant::Shader::Create("shaders/triangleShader.glsl");
+    }
+
+    void EditorLayer::OnUpdate()
+    {
+        DockSpace();
+
+        {
+            ImGui::Begin("Viewport");
+            // ant::ImGuiLayer::SetEventBlocking(!(ImGui::IsWindowFocused() && ImGui::IsWindowHovered())); //todo
+
+            static glm::vec2 viewportPanelSize = {0, 0};
+
+            auto currentViewportPanelSize = ImGui::GetContentRegionAvail();
+
+            if (viewportPanelSize != *(glm::vec2 *)&currentViewportPanelSize.x)
+            {
+                viewportPanelSize = *(glm::vec2 *)&currentViewportPanelSize.x;
+
+                // CORE_WARN("PanelSize: x - {0}, y - {1}", viewportPanelSize.x, viewportPanelSize.y);
+                if (viewportPanelSize.x > 3 && viewportPanelSize.y > 3)
+                {
+                    m_framebuffer->Resize(viewportPanelSize.x, viewportPanelSize.y);
+                    // m_cameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
+                    //todo resize the camera and frame buffer
+                }
+            }
+            // move
+            ImGui::Image((void *)m_framebuffer->GetColorBufferId(), *(ImVec2 *)&viewportPanelSize.x, ImVec2{0, 1}, ImVec2{1, 0});
+
+            ImGui::End();
+        }
+
+        ImGui::Begin("test");
+
+        ImGui::Text("welcome back babe!");
+
+        ImGui::End();
+    }
+
+    void EditorLayer::OnDraw()
+    {
+        m_framebuffer->Bind();
+
+        ant::RendererCommands::Clear({1.f, 0.f, 1.f, 1.f}); //magenta
+
+        float vertices[] = {
+            -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0,
+            0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0,
+            -0.5f, 0.5f, 0.0f, 0.0, 0.0, 1.0,
+            0.5f, 0.5f, 0.0f, 1.0, 1.0, 1.0};
+
+        ant::VertexBuffer vb;
+        vb.GetLayout().PushAttribute(ant::AttributeType::vec3f);
+        vb.GetLayout().PushAttribute(ant::AttributeType::vec3f);
+        vb.UploadData(&vertices[0], sizeof(vertices));
+
+        vb.Bind();
+
+        m_shader->Bind();
+
+        ant::IndexBuffer ib;
+
+        uint32_t indices[] = {
+            0, 1, 2, 2, 1, 3};
+
+        ib.UploadData(&indices[0], sizeof(indices));
+        ib.Bind();
+
+        m_shader->Bind();
+
+        glDrawElements(
+            GL_TRIANGLES,
+            ib.GetCount(),
+            GL_UNSIGNED_INT,
+            (void *)0);
+
+        m_framebuffer->UnBind();
+    }
+
+    void EditorLayer::OnDetach()
+    {
+    }
+
+    void EditorLayer::OnEvent(ant::Event *event)
+    {
+    }
+
 }

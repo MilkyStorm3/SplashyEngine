@@ -4,14 +4,10 @@
 #include "Core/Core.hpp"
 #include "Render/RendererCommands.hpp"
 #include "Input/Event.hpp"
-#include "debug/ImGuiLayer.hpp"
+#include "Core/ImGuiLayer.hpp"
 
 //! TEMP
 #include <Gl.h>
-// #include <Graphics/VertexBuffer.hpp>
-// #include <Graphics/IndexBuffer.hpp>
-#include <Graphics/o_Buffer.hpp>
-#include <Graphics/Shader.hpp>
 #include <filesystem>
 
 void test();
@@ -51,7 +47,6 @@ namespace ant
         {
             m_layerStack.OnUpdate();
             RendererCommands::Clear();
-
 
             m_layerStack.OnDraw();
             m_window.Update();

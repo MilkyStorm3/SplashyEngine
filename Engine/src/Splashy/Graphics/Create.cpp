@@ -10,11 +10,11 @@
 
 namespace ant
 {
-    Ref<FrameBuffer> FrameBuffer::Create(uint32_t width, uint32_t height)
+    Ref<FrameBuffer> FrameBuffer::Create(const FramebufferSpecification& specs)
     {
         auto api = RendererCommands::GetRenderApi();
 
-        if (api == RenderApi::OpenGl) return MakeRef<OpenGl::GlFrameBuffer>(width, height);
+        if (api == RenderApi::OpenGl) return MakeRef<OpenGl::GlFrameBuffer>(specs);
 
         CORE_ASSERT(false, "Picked RenderApi is not suported");
     }

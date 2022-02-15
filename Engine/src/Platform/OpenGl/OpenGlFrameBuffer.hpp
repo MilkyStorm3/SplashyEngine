@@ -4,28 +4,40 @@
 namespace ant::OpenGl
 {
 
+  struct GlAttachmentInfo
+  {
+    GlAttachmentInfo() {}
+
+    uint32_t GlId;
+    FramebufferTextureFormat Format;
+  };
+
   class GlFrameBuffer : public ant::FrameBuffer
   {
   public:
-    GlFrameBuffer(uint32_t width, uint32_t height);
+    GlFrameBuffer(const FramebufferSpecification &specs);
     ~GlFrameBuffer();
 
     virtual void Bind() override;
     virtual void UnBind() override;
 
     virtual void Resize(uint32_t width, uint32_t height) override;
-    virtual inline uint32_t GetSizeX() override { return m_width; }
-    virtual inline uint32_t GetSizeY() override { return m_height; }
-    // todo implement attachments
+    virtual inline uint32_t GetSizeX() override { return m_specs.width; }
+    virtual inline uint32_t GetSizeY() override { return m_specs.height; }
 
-    uint32_t GetColorBufferId() const { return m_colorBufferId; } //! TEMP
+    virtual uint32_t GetColorAttachmentRendererId(uint32_t index) override;
+    virtual void ClearAttachment(uint32_t index, int value) override;
+    virtual int ReadPixel(uint32_t index, int x, int y) override;
 
   private:
     void Invalidate();
 
   private:
-    uint32_t m_width, m_height;
-    uint32_t m_colorBufferId = 0, m_depthBufferId = 0, m_frameBufferGlId = 0;
+    uint32_t m_frameBufferGlId = 0;
+    FramebufferSpecification m_specs;
+
+    GlAttachmentInfo m_depthAttachment;
+    std::vector<GlAttachmentInfo> m_colorAttachments;
   };
 
 }

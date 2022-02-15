@@ -17,18 +17,13 @@
 
 //todo rebuild shader system
 
+//todo rewrite/abstract textures
 
 
 //-------- improvement
-//? rewrite textures
-
-
 
 
 //-------- urgent
-//!!!!!!!! rebuild camera system:  split to editor camera and scene camera component
-
-
 
 
 //-------- refactored

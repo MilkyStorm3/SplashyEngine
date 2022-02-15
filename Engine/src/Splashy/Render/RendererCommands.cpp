@@ -1,3 +1,4 @@
+#include "Core/Application.hpp"
 #include "RendererCommands.hpp"
 #include "debug/GlErrorHandler.hpp"
 #include <Gl.h>
@@ -13,9 +14,9 @@ namespace ant
         if (!initialized)
         {
             CORE_ASSERT(glfwInit(), "Failed to initialize GLFW ");
-            // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-            // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-            // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
             stbi_set_flip_vertically_on_load(true);
             initialized = true;
         }
@@ -75,5 +76,10 @@ namespace ant
             initialized = true;
         }
         return initialized;
+    }
+
+    RenderApi RendererCommands::GetRenderApi()
+    {
+        Application::GetInstance()->GetRenderApi();
     }
 }

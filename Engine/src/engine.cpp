@@ -12,6 +12,8 @@
 
 #include <fstream>
 
+#ifdef TEST_FN
+
 void test()
 {
     // auto j3 = nlohmann::json::parse(R"({"happy": true, "pi": 3.141})");
@@ -33,8 +35,7 @@ void test()
     ant::RendererCommands::SetClearColor({0.2, 0.2, 0.2, 1.f});
 
     ant::Shader shader;
-
-    shader.LoadFromFile("shaders/triangleShader.glsl");
+    shader.LoadFromFile("assets/shaders/triangleShader.glsl");
     shader.Init();
 
     float vertices[] = {
@@ -78,3 +79,5 @@ void test()
     ant::RendererCommands::ShutdownGlfw();
     exit(EXIT_SUCCESS);
 }
+
+#endif

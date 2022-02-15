@@ -47,3 +47,5 @@ namespace ant
 #define CORE_BIND_EVENT_FN(target,fn) std::bind(&fn, target, std::placeholders::_1)
 
 } // namespace ant
+
+

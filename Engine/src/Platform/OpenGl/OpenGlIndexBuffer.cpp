@@ -1,37 +1,32 @@
-#include "IndexBuffer.hpp"
-
-#ifdef INDEX_BUFFER
-
+#include "OpenGlIndexBuffer.hpp"
 #include <Core/Core.hpp>
-
 #include <Gl.h>
 
-namespace ant
+namespace ant::OpenGl
 {
-
-    IndexBuffer::IndexBuffer()
+    GlIndexBuffer::GlIndexBuffer()
     {
         m_glId = GL_INVALID_INDEX;
         glCreateBuffers(1, &m_glId);
         CORE_ASSERT(m_glId != GL_INVALID_INDEX, "Failed to create glIndexBuffer!");
     }
 
-    IndexBuffer::~IndexBuffer()
+    GlIndexBuffer::~GlIndexBuffer()
     {
         glDeleteBuffers(1, &m_glId);
     }
 
-    void IndexBuffer::Bind()
+    void GlIndexBuffer::Bind()
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_glId);
     }
 
-    void IndexBuffer::UnBind()
+    void GlIndexBuffer::UnBind()
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
-    void IndexBuffer::UploadData(uint32_t *data, size_t size)
+    void GlIndexBuffer::UploadData(uint32_t *data, size_t size)
     {
         Bind();
         CORE_ASSERT(size, "Size cannot be 0");
@@ -39,6 +34,4 @@ namespace ant
         m_count = size / sizeof(uint32_t);
         UnBind();
     }
-
 }
-#endif

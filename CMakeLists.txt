@@ -63,6 +63,7 @@ set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
 target_sources(Engine PUBLIC ${imgui_src})
 
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/src/)
+target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/src/Splashy)
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/src/Pch)
 set_property(TARGET Engine PROPERTY CXX_STANDARD 20)
 # libs

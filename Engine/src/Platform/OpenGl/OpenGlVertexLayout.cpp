@@ -1,11 +1,15 @@
-#include "Pch.h"
-#include "Graphics/VertexLayout.hpp"
-
+#include "OpenGlVertexLayout.hpp"
+#include <debug/Instrumentation.hpp>
 #include <Gl.h>
 
-namespace ant
+namespace ant::OpenGl
 {
-    inline uint32_t VertexBufferLayout::GetAttribGlType(AttributeType type) const
+    GlVertexLayout::GlVertexLayout()
+    {
+        m_layoutTypes.reserve(3);
+    }
+
+    inline uint32_t GlVertexLayout::GetAttribGlType(AttributeType type) const
     {
         if (uint32_t(type) <= 4)
             return GL_FLOAT;
@@ -16,7 +20,7 @@ namespace ant
         return -1;
     }
 
-    inline uint32_t VertexBufferLayout::GetAttribPrimitiveTypeSize(AttributeType type) const
+    inline uint32_t GlVertexLayout::GetAttribPrimitiveTypeSize(AttributeType type) const
     {
         if (uint32_t(type) <= 4)
             return sizeof(float);
@@ -27,12 +31,12 @@ namespace ant
         return -1;
     }
 
-    uint32_t VertexBufferLayout::GetAttribTypeSize(AttributeType type) const
+    uint32_t GlVertexLayout::GetAttribTypeSize(AttributeType type) const
     {
         return GetAttribTypeComponentCount(type) * GetAttribPrimitiveTypeSize(type);
     }
 
-    inline uint32_t VertexBufferLayout::GetAttribTypeComponentCount(AttributeType type) const
+    inline uint32_t GlVertexLayout::GetAttribTypeComponentCount(AttributeType type) const
     {
         uint32_t mod = uint32_t(type) % 5;
 
@@ -44,13 +48,18 @@ namespace ant
         return -1;
     }
 
-    VertexBufferLayout::VertexBufferLayout(std::initializer_list<AttributeType> args)
+    GlVertexLayout::~GlVertexLayout()
     {
+    }
+
+    void GlVertexLayout::Set(std::initializer_list<AttributeType> args)
+    {
+        m_layoutTypes.clear();
         m_layoutTypes = args;
         CalcVertexSize();
     }
 
-    void VertexBufferLayout::Enable()
+    void GlVertexLayout::Enable()
     {
         CORE_PROFILE_FUNC();
         uint32_t pointerVal = 0;
@@ -63,17 +72,22 @@ namespace ant
         }
     }
 
-    void VertexBufferLayout::Disable()
+    void GlVertexLayout::Disable()
     {
         for (size_t i = 0; i < m_layoutTypes.size(); i++)
             glDisableVertexAttribArray(i);
     }
 
-    void VertexBufferLayout::CalcVertexSize()
+    void GlVertexLayout::PushAttribute(AttributeType attribute)
+    {
+        m_layoutTypes.push_back(attribute);
+        CalcVertexSize();
+    }
+
+    void GlVertexLayout::CalcVertexSize()
     {
         m_vertexSize = 0;
         for (auto &it : m_layoutTypes)
             m_vertexSize += GetAttribTypeSize(it);
     }
-
-} // namespace ant
+}

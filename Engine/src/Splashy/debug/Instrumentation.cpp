@@ -1,5 +1,7 @@
 #include "Pch.h"
 #include "debug/Instrumentation.hpp"
+
+#ifdef SPL_INSTRUMENTATION
 #include <thread>
 #include <algorithm>
 #include "Core/Core.hpp"
@@ -86,3 +88,4 @@ namespace ant
     }
 
 }
+#endif

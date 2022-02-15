@@ -1,3 +1,4 @@
+#ifdef SPL_INSTRUMENTATION
 #pragma once
 #include <string>
 #include <fstream>
@@ -37,6 +38,7 @@ namespace ant
         void WriteFooter();
     };
 
+ 
     class InstrumentationTimer
     {
     public:
@@ -51,10 +53,18 @@ namespace ant
         ProfileData m_profileData;
         bool m_stopped = false;
     };
+
+    //! TODO build internal and external instrumentation tooling
+
+
 #ifdef __linux__ 
 
+// #define EDITOR_PROFILE_SCOPE(name) ant::InstrumentationTimer profile ## _ ## __LINE__(name)
+// #define EDITOR_PROFILE_FUNC() ant::InstrumentationTimer profile ## _ ## __LINE__ (__PRETTY_FUNCTION__)
+
+
 #define CORE_PROFILE_SCOPE(name) InstrumentationTimer profile ## _ ## __LINE__(name)
-#define CORE_PROFILE_FUNC() InstrumentationTimer profile ## _ ## __LINE__ (__PRETTY_FUNCTION__)
+#define CORE_PROFILE_FUNC() ant::InstrumentationTimer profile ## _ ## __LINE__ (__PRETTY_FUNCTION__)
 
 #endif
 
@@ -65,3 +75,10 @@ namespace ant
 
 #endif
 }
+
+#else
+
+#define CORE_PROFILE_SCOPE(name) ;
+#define CORE_PROFILE_FUNC() ;
+
+#endif

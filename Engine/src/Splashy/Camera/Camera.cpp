@@ -18,7 +18,6 @@ namespace ant
 
     void OrthographicCamera::CalculateViewProjectionMatrix()
     {
-        CORE_PROFILE_FUNC();
         glm::mat4 transformationMatrix = glm::translate(glm::mat4(1.f), m_translationVector) * glm::rotate(glm::mat4(1.f), m_rotation, glm::vec3(0.f, 0.f, 1.f));
         m_viewMatrix = glm::inverse(transformationMatrix);
         m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
@@ -31,7 +30,6 @@ namespace ant
 
     void OrthographicCamera::SetProjection(float left, float right, float bottom, float top)
     {
-        CORE_PROFILE_FUNC();
         m_projectionMatrix = glm::ortho(left, right, bottom, top, -1.f, 1.f);
         m_viewMatrix = glm::mat4(1.f);
         m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
@@ -44,7 +42,6 @@ namespace ant
 
     void OrthographicCamera::CalculateProjection()
     {
-        CORE_PROFILE_FUNC();
         m_projectionMatrix = glm::ortho(-m_aspectRatio * m_zoom, m_aspectRatio * m_zoom, -m_zoom, m_zoom, -1.f, 1.f);
         m_viewMatrix = glm::mat4(1.f);
         m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;

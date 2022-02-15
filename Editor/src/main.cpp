@@ -2,17 +2,30 @@
 
 void test();
 
+#include <iostream>
+#include <filesystem>
+
 int main()
 {
 
+    //std::cout<< "\n\n"<<std::filesystem::exists("assets/shaders/triangleShader.glsl")<<"\n\n";
+
+    // ant::Shader shader;
+
+    // shader.LoadFromFile("assets/shaders/triangleShader.glsl");
+
+    // std::cout<<shader.GetSource().vertex<<std::endl;
+
+
+    
+    
     ant::Application::s_instance = new Editor::EditorApp();
-
     auto app = ant::Application::GetInstance();
-
     app->Init();
     app->Run();
-
     delete app;
+
+     
 
     // test();
 

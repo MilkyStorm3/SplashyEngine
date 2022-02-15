@@ -2,6 +2,7 @@
 
 #include <Gl.h>
 #include <filesystem>
+#include <fstream>
 #include <Core/Core.hpp>
 
 #include "debug/Instrumentation.hpp"
@@ -41,7 +42,7 @@ namespace ant
 		CORE_PROFILE_FUNC();
 
 		CORE_ASSERT(filePath.length() != 0, "Shader path not provided!");
-		CORE_ASSERT(std::filesystem::exists(filePath), "Cannot find shader file! " + filePath);
+		CORE_ASSERT(std::filesystem::exists(filePath), "Cannot find shader file! " + filePath);		
 
 		std::ifstream file(filePath);
 		std::string line;

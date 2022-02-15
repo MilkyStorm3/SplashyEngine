@@ -4,15 +4,15 @@
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 
-// #include <Render/Renderer.hpp>
 #include "Application.hpp"
 
-#include "Gl.h"
+#include <Gl.h>
 
 #include <imgui/imgui.h>
 
 #include "Input/KeyCodes.hpp"
-#include "Core/Application.hpp"
+#include <Core/Application.hpp>
+
 
 namespace ant
 {
@@ -106,8 +106,8 @@ namespace ant
         if (s_blockEvents)
         {
             auto &io = ImGui::GetIO();
-            BlockEvent(event->IsInCategory(EventCategory::Mouse) & io.WantCaptureMouse);
-            BlockEvent(event->IsInCategory(EventCategory::Keyboard) & io.WantCaptureKeyboard);
+            SetEventBlocking(event->IsInCategory(EventCategory::Mouse) & io.WantCaptureMouse);
+            SetEventBlocking(event->IsInCategory(EventCategory::Keyboard) & io.WantCaptureKeyboard);
         }
     }
 

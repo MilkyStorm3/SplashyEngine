@@ -51,7 +51,6 @@ namespace ant
             m_layerStack.OnUpdate();
             RendererCommands::Clear();
 
-
             m_layerStack.OnDraw();
             m_window.Update();
         }

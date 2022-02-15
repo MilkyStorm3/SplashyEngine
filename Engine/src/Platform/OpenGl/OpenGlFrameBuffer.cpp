@@ -2,8 +2,11 @@
 #include "OpenGlFrameBuffer.hpp"
 #include <Gl.h>
 
+#include "Core/Logger.hpp"
+
 namespace ant::OpenGl
-{
+{   
+
 
     GlFrameBuffer::GlFrameBuffer(uint32_t width, uint32_t height)
         : m_width(width), m_height(height)

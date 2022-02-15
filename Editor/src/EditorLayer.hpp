@@ -5,6 +5,7 @@
 // #include <Camera/Camera.hpp>
 
 #include <Graphics/Shader.hpp>
+
 namespace Editor
 {
 
@@ -21,11 +22,8 @@ namespace Editor
         virtual void OnEvent(ant::Event *event) override;
 
     private:
-        void DockSpace();
-
         ant::Ref<ant::FrameBuffer> m_framebuffer;
         ant::Ref<ant::Shader> m_shader;
-        // ant::Ref<ant::OrthographicCameraController> m_camera;
     };
 
 }

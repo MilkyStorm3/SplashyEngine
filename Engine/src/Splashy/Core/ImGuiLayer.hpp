@@ -1,10 +1,10 @@
 #pragma once
+
 #include "Core/Layer.hpp"
 #include "Input/Event.hpp"
 
 namespace ant
 {
-
     class ImGuiLayer
         : public Layer
     {

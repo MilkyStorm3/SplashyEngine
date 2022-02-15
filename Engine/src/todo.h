@@ -1,5 +1,3 @@
-//! add Pch
-
 //-------- workflow
 
 //? write an editor documentation
@@ -11,7 +9,6 @@
 
 //? add a release version of runtume exception other than asserts, these are debug only
 
-//todo abstract framebuffer attachments
 
 //!!!!!!!! rebuild camera system,
 //? use camera as entity, and introduce editor camera
@@ -20,4 +17,20 @@
 
 //todo rebuild shader system
 
-//-------- feature
+
+
+//-------- improvement
+//? rewrite textures
+
+
+
+
+//-------- urgent
+//!!!!!!!! rebuild camera system:  split to editor camera and scene camera component
+
+
+
+
+//-------- refactored
+//? buffers
+//? buffer layouts

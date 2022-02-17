@@ -29,5 +29,3 @@
 //-------- refactored
 //? refactor window class
 //? abstract texture class
-
-

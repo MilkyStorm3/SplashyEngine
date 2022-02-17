@@ -20,3 +20,9 @@
 	path = vendor/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
+[submodule "Engine/vendor/shaderc"]
+	path = Engine/vendor/shaderc
+	url = https://github.com/google/shaderc.git
+[submodule "Engine/vendor/spirv_cross"]
+	path = Engine/vendor/spirv_cross
+	url = https://github.com/KhronosGroup/SPIRV-Cross.git

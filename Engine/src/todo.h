@@ -27,5 +27,7 @@
 
 
 //-------- refactored
-//? buffers
-//? buffer layouts
+//? refactor window class
+//? abstract texture class
+
+

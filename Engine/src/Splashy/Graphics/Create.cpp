@@ -7,6 +7,7 @@
 #include <Platform/OpenGl/OpenGlVertexBuffer.hpp>
 #include <Platform/OpenGl/OpenGlIndexBuffer.hpp>
 #include <Platform/OpenGl/OpenGlVertexLayout.hpp>
+#include <Platform/OpenGl/OpenGlShader.hpp>
 
 namespace ant
 {
@@ -45,5 +46,20 @@ namespace ant
 
         CORE_ASSERT(false, "Picked RenderApi is not suported");
     }
+
+    Ref<Shader> Shader::Create(const std::string &filePath)
+	{        
+        auto api = RendererCommands::GetRenderApi();
+
+		Ref<Shader> shader;
+
+        if (api == RenderApi::OpenGl) shader = MakeRef<OpenGl::GlShader>();
+
+        CORE_ASSERT(shader, "Shader object creation failed");
+        
+		shader->LoadFromFile(filePath);
+		shader->Init();
+		return shader;
+	}
 
 }

@@ -47,7 +47,7 @@ namespace ant
         CORE_ASSERT(false, "Picked RenderApi is not suported");
     }
 
-    Ref<Shader> Shader::Create(const std::string &filePath)
+    Ref<Shader> Shader::Create(const std::filesystem::path &filePath)
 	{        
         auto api = RendererCommands::GetRenderApi();
 

@@ -3,8 +3,6 @@
 void test();
 
 #include <iostream>
-#include <filesystem>
-
 int main()
 {
 
@@ -23,6 +21,7 @@ int main()
     auto app = ant::Application::GetInstance();
     app->Init();
     app->Run();
+    // auto shader = ant::Shader::Create("assets/shaders/testShader.glsl");
     delete app;
 
      

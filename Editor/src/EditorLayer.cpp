@@ -81,7 +81,7 @@ namespace Editor
         };
 
         m_framebuffer = ant::FrameBuffer::Create(spec);
-
+        
         m_shader = ant::Shader::Create("assets/shaders/triangleShader.glsl");
     }
 

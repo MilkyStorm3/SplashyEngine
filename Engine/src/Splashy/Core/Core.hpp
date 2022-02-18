@@ -7,11 +7,11 @@
 namespace ant
 {
 
-// #define CORE_BREAK() std::raise(SIGINT)
 
 #ifdef __linux__ 
 
-#define CORE_BREAK() std::abort();
+#define CORE_BREAK() std::raise(SIGTRAP)
+// #define CORE_BREAK() std::abort();
 
 #endif
 

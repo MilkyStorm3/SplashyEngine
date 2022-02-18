@@ -29,3 +29,6 @@
 //-------- refactored
 //? refactor window class
 //? abstract texture class
+
+
+//! fix assertions - va args

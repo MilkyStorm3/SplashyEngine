@@ -11,55 +11,64 @@
 
 namespace ant
 {
-    Ref<FrameBuffer> FrameBuffer::Create(const FramebufferSpecification& specs)
+    Ref<FrameBuffer> FrameBuffer::Create(const FramebufferSpecification &specs)
     {
         auto api = RendererCommands::GetRenderApi();
 
-        if (api == RenderApi::OpenGl) return MakeRef<OpenGl::GlFrameBuffer>(specs);
+        if (api == RenderApi::OpenGl)
+            return MakeRef<OpenGl::GlFrameBuffer>(specs);
 
         CORE_ASSERT(false, "Picked RenderApi is not suported");
+        return nullptr;
     }
 
     Ref<VertexBuffer> VertexBuffer::Create()
     {
         auto api = RendererCommands::GetRenderApi();
 
-        if (api == RenderApi::OpenGl) return MakeRef<OpenGl::GlVertexBuffer>();
+        if (api == RenderApi::OpenGl)
+            return MakeRef<OpenGl::GlVertexBuffer>();
 
         CORE_ASSERT(false, "Picked RenderApi is not suported");
+        return nullptr;
     }
 
     Ref<IndexBuffer> IndexBuffer::Create()
     {
         auto api = RendererCommands::GetRenderApi();
 
-        if (api == RenderApi::OpenGl) return MakeRef<OpenGl::GlIndexBuffer>();
+        if (api == RenderApi::OpenGl)
+            return MakeRef<OpenGl::GlIndexBuffer>();
 
         CORE_ASSERT(false, "Picked RenderApi is not suported");
+        return nullptr;
     }
 
     Ref<VertexLayout> VertexLayout::Create()
     {
         auto api = RendererCommands::GetRenderApi();
 
-        if (api == RenderApi::OpenGl) return MakeRef<OpenGl::GlVertexLayout>();
+        if (api == RenderApi::OpenGl)
+            return MakeRef<OpenGl::GlVertexLayout>();
 
         CORE_ASSERT(false, "Picked RenderApi is not suported");
+        return nullptr;
     }
 
     Ref<Shader> Shader::Create(const std::filesystem::path &filePath)
-	{        
+    {
         auto api = RendererCommands::GetRenderApi();
 
-		Ref<Shader> shader;
+        Ref<Shader> shader;
 
-        if (api == RenderApi::OpenGl) shader = MakeRef<OpenGl::GlShader>();
+        if (api == RenderApi::OpenGl)
+            shader = MakeRef<OpenGl::GlShader>();
 
         CORE_ASSERT(shader, "Shader object creation failed");
-        
-		shader->LoadFromFile(filePath);
-		shader->Init();
-		return shader;
-	}
+
+        shader->LoadFromFile(filePath);
+        shader->Init();
+        return shader;
+    }
 
 }

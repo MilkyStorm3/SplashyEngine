@@ -20,7 +20,7 @@ namespace ant
 
     Application::~Application()
     {
-        RendererCommands::ShutdownGlfw();
+        RendererCommands::Shutdown();
     }
 
     void Application::Init()
@@ -36,7 +36,7 @@ namespace ant
                        m_appdata.windowSettings.title,
                        true, false});
 
-        RendererCommands::EnableGlDebugMessages();
+        RendererCommands::Init();
 
         m_layerStack.PushOverlay(MakeRef<ImGuiLayer>());
 

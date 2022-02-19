@@ -5,81 +5,56 @@
 #include "Core/Core.hpp"
 #include <stb_image.h>
 #include "debug/Instrumentation.hpp"
+#include "Platform/OpenGl/OpenGlRendererCommands.hpp"
 
 namespace ant
 {
-    bool RendererCommands::InitGlfw()
+    std::unique_ptr<RendererCommands> RendererCommands::s_instance;
+
+    RenderApi RendererCommands::GetRenderApi()
     {
-        static bool initialized = false;
-        if (!initialized)
-        {
-            CORE_ASSERT(glfwInit(), "Failed to initialize GLFW ");
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-            stbi_set_flip_vertically_on_load(true);
-            initialized = true;
-        }
-        return initialized;
+        return Application::GetInstance()->GetRenderApi();
     }
 
-    bool RendererCommands::ShutdownGlfw()
+    void RendererCommands::Init()
     {
-        glfwTerminate();
+        if (s_instance)
+        {
+            s_instance->Init_IMPL();
+            return;
+        }
+
+        auto api = GetRenderApi();
+
+        if (api == RenderApi::OpenGl)
+            s_instance = std::move(std::make_unique<OpenGl::GlRendererCommands>());
+
+        CORE_ASSERT(s_instance, "Picked RenderApi is not suported");
+        s_instance->Init_IMPL();
+    }
+
+    void RendererCommands::InitGlewIfNeeded()
+    {
+        s_instance->InitGlewIfNeeded_IMPL();
+    }
+
+    void RendererCommands::Shutdown()
+    {
+        s_instance->Shutdown_IMPL();
     }
 
     void RendererCommands::SetClearColor(const glm::vec4 &color)
     {
-        glClearColor(color.r, color.g, color.b, color.a);
+        s_instance->SetClearColor_IMPL(color);
     }
 
     void RendererCommands::Clear()
     {
-        CORE_PROFILE_FUNC();
-        glClear(GL_COLOR_BUFFER_BIT);
-        glClear(GL_DEPTH_BUFFER_BIT);
-        glClear(GL_STENCIL_BUFFER_BIT);
+        s_instance->Clear_IMPL();
     }
 
     void RendererCommands::Clear(const glm::vec4 &color)
     {
-        glClearColor(color.r, color.g, color.b, color.a);
-        Clear();
-    }
-
-    bool RendererCommands::InitGlew()
-    {
-        static bool initialized = false;
-        if (!initialized)
-        {
-            GLenum glewInitState = glewInit();
-            CORE_ASSERT(glewInitState == GLEW_OK, "Failed to initialize glew");
-            initialized = true;
-        }
-        return initialized;
-    }
-
-    bool RendererCommands::EnableGlDebugMessages()
-    {
-        static bool initialized = false;
-        if (!initialized)
-        {
-            CORE_INFO("Started OpenGL {0}", glGetString(GL_VERSION));
-            // glEnable(GL_BLEND);
-            // glEnable(GL_DEPTH_TEST);
-            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            // glClearDepth(1.f);
-            // glDepthFunc(GL_LEQUAL);
-
-            glEnable(GL_DEBUG_OUTPUT);
-            glDebugMessageCallback(&ant::GlErrorHandler::ErrorFunc, NULL);
-            initialized = true;
-        }
-        return initialized;
-    }
-
-    RenderApi RendererCommands::GetRenderApi()
-    {
-        Application::GetInstance()->GetRenderApi();
+        s_instance->Clear_IMPL(color);
     }
 }

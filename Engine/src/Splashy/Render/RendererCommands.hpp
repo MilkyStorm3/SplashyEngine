@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/vec4.hpp>
+#include <memory>
 namespace ant
 {
 
@@ -11,22 +12,29 @@ namespace ant
 
     class RendererCommands
     {
-    private:
-        RendererCommands() {}
-        ~RendererCommands() {}
-
     public:
-        static bool InitGlfw();
-        static bool InitGlew();
-        static bool ShutdownGlfw();
+        RendererCommands() {}
+        virtual ~RendererCommands() {}
 
+        // exposed functions
+        static void Init();
+        static void InitGlewIfNeeded();
+        static void Shutdown();
         static void SetClearColor(const glm::vec4 &color);
         static void Clear();
         static void Clear(const glm::vec4 &color);
-
-        static bool EnableGlDebugMessages();
-
         static RenderApi GetRenderApi();
+
+    protected:
+        virtual void Init_IMPL() = 0;
+        virtual void InitGlewIfNeeded_IMPL() = 0;
+        virtual void Shutdown_IMPL() = 0;
+        virtual void SetClearColor_IMPL(const glm::vec4 &color) = 0;
+        virtual void Clear_IMPL() = 0;
+        virtual void Clear_IMPL(const glm::vec4 &color) = 0;
+
+    private:
+        static std::unique_ptr<RendererCommands> s_instance;
     };
 
 }

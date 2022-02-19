@@ -105,7 +105,6 @@ namespace Editor
                 if (viewportPanelSize.x > 3 && viewportPanelSize.y > 3)
                 {
                     m_framebuffer->Resize(viewportPanelSize.x, viewportPanelSize.y);
-                    // m_cameraController->OnResize(viewportPanelSize.x, viewportPanelSize.y);
                     // todo resize the camera and frame buffer
                 }
             }

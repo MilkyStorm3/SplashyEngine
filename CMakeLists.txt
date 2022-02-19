@@ -51,10 +51,10 @@ list(APPEND imgui_src ${imgui_src_add})
 
 
 # SPIRV-Cross ----------------------------------------------------------
-set(DSPIRV_CROSS_STATIC ON)
-set(DSPIRV_CROSS_SHARED OFF)
-set(DSPIRV_CROSS_CLI OFF)
-add_subdirectory(${PROJECT_SOURCE_DIR}/Engine/vendor/spirv_cross)
+# set(DSPIRV_CROSS_STATIC ON)
+# set(DSPIRV_CROSS_SHARED OFF)
+# set(DSPIRV_CROSS_CLI OFF)
+# add_subdirectory(${PROJECT_SOURCE_DIR}/Engine/vendor/spirv_cross)
 
 # ShaderC --------------------------------------------------------------
 set(SHADERC_SKIP_TESTS ON)
@@ -82,7 +82,7 @@ target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vend
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/glew/include/)
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/shaderc/libshaderc/include/)
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/shaderc/libshaderc_util/include/)
-target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/shaderc/third_party/spirv-tools/include/)
+# target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/shaderc/third_party/spirv-tools/include/)
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui/)
 
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/vendor/)
@@ -90,7 +90,7 @@ target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/src/
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/)
 # libs
 target_link_directories(Engine PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/Engine/vendor/glew/lib)
-target_link_directories(Engine PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/Engine/vendor/spirv_cross)
+# target_link_directories(Engine PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/Engine/vendor/spirv_cross)
 
 target_link_libraries(Engine nlohmann_json::nlohmann_json)
 target_link_libraries(Engine spdlog)
@@ -98,11 +98,11 @@ target_link_libraries(Engine glm)
 target_link_libraries(Engine glewd)
 target_link_libraries(Engine glfw)
 
-target_link_libraries(Engine spirv-cross-core)
-target_link_libraries(Engine spirv-cross-reflect)
-target_link_libraries(Engine spirv-cross-util)
-target_link_libraries(Engine spirv-cross-glsl)
-target_link_libraries(Engine spirv-cross-cpp)
+# target_link_libraries(Engine spirv-cross-core)
+# target_link_libraries(Engine spirv-cross-reflect)
+# target_link_libraries(Engine spirv-cross-util)
+# target_link_libraries(Engine spirv-cross-glsl)
+# target_link_libraries(Engine spirv-cross-cpp)
 
 target_link_libraries(Engine shaderc)
 

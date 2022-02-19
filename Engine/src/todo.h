@@ -1,23 +1,20 @@
 //-------- workflow
-
-//? write an editor documentation
+//? add a release version of runtume exception other than asserts, these are debug only
 
 
 
 //-------- safety
-//todo use std::path instead of strings
-
-//? add a release version of runtume exception other than asserts, these are debug only
 
 
-//!!!!!!!! rebuild camera system,
-//? use camera as entity, and introduce editor camera
-
-//todo rebuild instrumentation tools
-
+//-------- plan
 //todo rebuild shader system
 
 //todo rewrite/abstract textures
+
+//todo create camera system,
+
+//todo rebuild instrumentation tools
+
 
 
 //-------- improvement
@@ -26,9 +23,7 @@
 //-------- urgent
 
 
-//-------- refactored
-//? refactor window class
+//-------- refactor
+//? simplify window class
 //? abstract texture class
 
-
-//! fix assertions - va args

@@ -46,7 +46,7 @@ namespace ant
 
     void Window::Init(const Properties &props)
     {
-        RendererCommands::InitGlfw();
+        RendererCommands::Init();
 
         m_nativeWindow = glfwCreateWindow(props.width, props.height, props.title.c_str(), NULL, NULL);
 
@@ -57,7 +57,7 @@ namespace ant
         }
 
         glfwMakeContextCurrent(m_nativeWindow);
-        RendererCommands::InitGlew();
+        RendererCommands::InitGlewIfNeeded();
 
         SetVsync(props.vsync);
         SetResizeability(props.resizeable);

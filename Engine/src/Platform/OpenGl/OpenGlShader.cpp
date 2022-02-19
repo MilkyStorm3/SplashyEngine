@@ -8,7 +8,6 @@
 #include <Core/Core.hpp>
 
 #include <shaderc/shaderc.hpp>
-#include <spirv_cross/spirv_cross.hpp>
 
 namespace ant::OpenGl
 {
@@ -28,6 +27,7 @@ namespace ant::OpenGl
                 return ".pixelvshader";
 
             CORE_ASSERT(false, "Unsupported shader stage");
+            return "FAIL";
         }
 
         static const char *GetOpenGlCacheFileExtension(GLenum stage)
@@ -38,6 +38,7 @@ namespace ant::OpenGl
                 return ".pixelglshader";
 
             CORE_ASSERT(false, "Unsupported shader stage");
+            return "FAIL";
         }
 
         static void CreateCacheDirectoryIfNeeded()
@@ -143,10 +144,28 @@ namespace ant::OpenGl
         Parse(filePath);
     }
 
+    void GlShader::FromSource(const std::string &name, const std::string &vertexSrc, const std::string &fragmentSrc)
+    {
+        CORE_ASSERT(!name.empty(), "Name not provided!");
+        CORE_ASSERT(!vertexSrc.empty(), "Vertex shader source not provided!");
+        CORE_ASSERT(!fragmentSrc.empty(), "Fragment shader source not provided!");
+
+        m_name = name;
+        m_sources[GL_VERTEX_SHADER] = vertexSrc;
+        m_sources[GL_FRAGMENT_SHADER] = fragmentSrc;
+    }
+
     void GlShader::Init()
     {
-        CORE_ASSERT(m_sources[GL_VERTEX_SHADER].length() != 0, "There has to be a vertex GlShader source!"); // todo rewrite
-        CORE_ASSERT(m_sources[GL_FRAGMENT_SHADER].length() != 0, "There has to be a fragment GlShader source!");
+        for (auto &[stage, source] : m_sources)
+        {
+            if (source.length() == 0)
+            {
+                std::stringstream msg;
+                msg << "There has to be a " << Utils::GlEnumToStageString(stage) << " source!";
+                CORE_ASSERT(false, msg.str().c_str());
+            }
+        }
 
         // GetVulcanBinaries();
         GetOpenGlBinaries();
@@ -173,8 +192,9 @@ namespace ant::OpenGl
                 char *mes = (char *)alloca(len);
                 glGetShaderInfoLog(shaderId, len, &len, mes);
                 ss << Utils::GlEnumToStageString(stage) << " GlShader injection failed! " << mes;
+                for (auto id : componentIds)
+                    glDeleteShader(id);
                 CORE_ASSERT(false, ss.str());
-                glDeleteShader(shaderId);
             }
 
             glAttachShader(m_glProgram, shaderId);

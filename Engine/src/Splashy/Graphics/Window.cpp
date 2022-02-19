@@ -57,7 +57,7 @@ namespace ant
         }
 
         glfwMakeContextCurrent(m_nativeWindow);
-        RendererCommands::InitGlewIfNeeded();
+        RendererCommands::InitApiIfNeeded();
 
         SetVsync(props.vsync);
         SetResizeability(props.resizeable);

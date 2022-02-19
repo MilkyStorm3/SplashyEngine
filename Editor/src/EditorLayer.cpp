@@ -72,16 +72,15 @@ namespace Editor
 
     void EditorLayer::OnAttach()
     {
-        CORE_INFO("Editor Layer Attached");
+        CORE_TRACE("Editor Layer Attached");
 
         auto size = ant::Application::GetInstance()->GetWindow().GetSize();
 
         ant::FramebufferSpecification spec = {
-            size.x, size.y, {ant::FramebufferTextureFormat::RGBA8, ant::FramebufferTextureFormat::DEPTH24STENCIL8}
-        };
+            size.x, size.y, {ant::FramebufferTextureFormat::RGBA8, ant::FramebufferTextureFormat::DEPTH24STENCIL8}};
 
         m_framebuffer = ant::FrameBuffer::Create(spec);
-        
+
         m_shader = ant::Shader::Create("assets/shaders/triangleShader.glsl");
     }
 

@@ -4,13 +4,14 @@
 #include <stb_image.h>
 #include "debug/Instrumentation.hpp"
 
+#include "Core/Logger.hpp"
 namespace ant::OpenGl
 {
     namespace Error
     {
         void ErrorFunc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
     }
-
+  
     void GlRendererCommands::Init_IMPL()
     {
         static bool initialized = false;
@@ -20,16 +21,6 @@ namespace ant::OpenGl
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-            CORE_INFO("Started OpenGL {0}", glGetString(GL_VERSION));
-
-            // glEnable(GL_BLEND);
-            // glEnable(GL_DEPTH_TEST);
-            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            // glClearDepth(1.f);
-            // glDepthFunc(GL_LEQUAL);
-
-            glEnable(GL_DEBUG_OUTPUT);
-            glDebugMessageCallback(&Error::ErrorFunc, NULL);
 
             stbi_set_flip_vertically_on_load(true);
             initialized = true;
@@ -60,13 +51,24 @@ namespace ant::OpenGl
         Clear();
     }
 
-    void GlRendererCommands::InitGlewIfNeeded_IMPL()
+    void GlRendererCommands::InitApiIfNeeded_IMPL()
     {
         static bool initialized = false;
         if (!initialized)
         {
             GLenum glewInitState = glewInit();
             CORE_ASSERT(glewInitState == GLEW_OK, "Failed to initialize glew");
+
+            CORE_INFO("Started OpenGL {0}", glGetString(GL_VERSION));
+            glEnable(GL_DEBUG_OUTPUT);
+            glDebugMessageCallback(&ant::OpenGl::Error::ErrorFunc, NULL);
+
+            // glEnable(GL_BLEND);
+            // glEnable(GL_DEPTH_TEST);
+            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            // glClearDepth(1.f);
+            // glDepthFunc(GL_LEQUAL);
+
             initialized = true;
         }
     }

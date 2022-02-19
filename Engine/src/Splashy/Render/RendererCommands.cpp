@@ -1,6 +1,5 @@
 #include "Core/Application.hpp"
 #include "RendererCommands.hpp"
-#include "debug/GlErrorHandler.hpp"
 #include <Gl.h>
 #include "Core/Core.hpp"
 #include <stb_image.h>
@@ -33,28 +32,33 @@ namespace ant
         s_instance->Init_IMPL();
     }
 
-    void RendererCommands::InitGlewIfNeeded()
+    void RendererCommands::InitApiIfNeeded()
     {
-        s_instance->InitGlewIfNeeded_IMPL();
+        CORE_ASSERT(s_instance, "Renderer commands not initialized");
+        s_instance->InitApiIfNeeded_IMPL();
     }
 
     void RendererCommands::Shutdown()
     {
-        s_instance->Shutdown_IMPL();
+        if (s_instance)
+            s_instance->Shutdown_IMPL();
     }
 
     void RendererCommands::SetClearColor(const glm::vec4 &color)
     {
+        CORE_ASSERT(s_instance, "Renderer commands not initialized");
         s_instance->SetClearColor_IMPL(color);
     }
 
     void RendererCommands::Clear()
     {
+        CORE_ASSERT(s_instance, "Renderer commands not initialized");
         s_instance->Clear_IMPL();
     }
 
     void RendererCommands::Clear(const glm::vec4 &color)
     {
+        CORE_ASSERT(s_instance, "Renderer commands not initialized");
         s_instance->Clear_IMPL(color);
     }
 }

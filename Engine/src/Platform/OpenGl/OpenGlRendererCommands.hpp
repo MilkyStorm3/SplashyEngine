@@ -12,7 +12,7 @@ namespace ant::OpenGl
 
     private:
         virtual void Init_IMPL() override;
-        virtual void InitGlewIfNeeded_IMPL() override;
+        virtual void InitApiIfNeeded_IMPL() override;
         virtual void Shutdown_IMPL() override;
         virtual void SetClearColor_IMPL(const glm::vec4 &color) override;
         virtual void Clear_IMPL() override;

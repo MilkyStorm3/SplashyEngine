@@ -1,19 +1,12 @@
 #include "Application.hpp"
 #include "Logger.hpp"
-#include <Gl.h>
 #include "Core/Core.hpp"
 #include "Render/RendererCommands.hpp"
 #include "Input/Event.hpp"
 #include "ImGuiLayer.hpp"
 
-//! TEMP
-#include <Gl.h>
-// #include <Graphics/VertexBuffer.hpp>
-// #include <Graphics/IndexBuffer.hpp>
-#include <Graphics/Shader.hpp>
-#include <filesystem>
-
 void test();
+
 namespace ant
 {
     Application *Application::s_instance;
@@ -27,7 +20,7 @@ namespace ant
     {
         ant::Logger::Init();
 
-        CORE_INFO("Hello!");
+        CORE_TRACE("Hello!");
 
         m_window.SetEventCallback(CORE_BIND_EVENT_FN(this, Application::OnEvent));
 
@@ -35,8 +28,6 @@ namespace ant
                        m_appdata.windowSettings.height,
                        m_appdata.windowSettings.title,
                        true, false});
-
-        RendererCommands::Init();
 
         m_layerStack.PushOverlay(MakeRef<ImGuiLayer>());
 
@@ -58,7 +49,7 @@ namespace ant
 
     void Application::OnEvent(Event &e)
     {
-        CORE_INFO("Event triggered {0}", e.GetStringLog());
+        // CORE_INFO("Event triggered {0}", e.GetStringLog());
 
         m_layerStack.OnEvent(&e);
 

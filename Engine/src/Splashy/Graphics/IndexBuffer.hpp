@@ -1,13 +1,6 @@
 #pragma once
-
-#define INDEX_BUFFER
-
-#ifdef INDEX_BUFFER
-
-#include <stdint.h>
-#include <stddef.h>
+#include "Core/Core.hpp"
 #include <array>
-#include <Core/Core.hpp>
 
 namespace ant
 {
@@ -47,4 +40,3 @@ namespace ant
     };
 
 } // namespace ant
-#endif

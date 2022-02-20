@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdint.h>
-#include <stddef.h>
 #include <array>
 #include "VertexLayout.hpp"
 #include <Core/Core.hpp>

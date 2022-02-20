@@ -7,7 +7,8 @@ namespace ant
     enum class RenderApi
     {
         None = 0,
-        OpenGl
+        OpenGl,
+        Vulcan
     };
 
     class RendererCommands

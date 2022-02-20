@@ -8,6 +8,9 @@
 #include <Core/Core.hpp>
 
 #include <shaderc/shaderc.hpp>
+#include <spirv_cross/spirv_cross.hpp>
+#include <spirv_cross/spirv_glsl.hpp>
+#include <spirv_cross/spirv_reflect.hpp>
 
 namespace ant::OpenGl
 {
@@ -41,6 +44,17 @@ namespace ant::OpenGl
             return "FAIL";
         }
 
+        static const char *GetDescriptiorFileExtension(GLenum stage)
+        {
+            if (stage == GL_VERTEX_SHADER)
+                return ".vertdesc.json";
+            if (stage == GL_FRAGMENT_SHADER)
+                return ".pixeldesc.json";
+
+            CORE_ASSERT(false, "Unsupported shader stage");
+            return "FAIL";
+        }
+
         static void CreateCacheDirectoryIfNeeded()
         {
             auto dir = GetCacheDirectory();
@@ -62,7 +76,7 @@ namespace ant::OpenGl
             return path;
         }
 
-        static bool HasCachedBinary(const std::filesystem::path &path)
+        static bool HasCacheFile(const std::filesystem::path &path)
         {
             return std::filesystem::exists(path) && std::filesystem::file_size(path);
         }
@@ -111,6 +125,20 @@ namespace ant::OpenGl
                 outputCache.write((char *)data->data(), data->size() * sizeof(uint32_t));
                 outputCache.flush();
                 outputCache.close();
+            }
+        }
+
+        static shaderc_target_env RenderApiEnumToShaderc(RenderApi api)
+        {
+            {
+
+                if (api == RenderApi::OpenGl)
+                    return shaderc_target_env_opengl;
+                if (api == RenderApi::Vulcan)
+                    return shaderc_target_env_vulkan;
+
+                CORE_ASSERT(false, "unsupported target/api");
+                return shaderc_target_env_default;
             }
         }
 
@@ -166,12 +194,119 @@ namespace ant::OpenGl
                 CORE_ASSERT(false, msg.str().c_str());
             }
         }
-
-        // GetVulcanBinaries();
+        Utils::CreateCacheDirectoryIfNeeded();
+        GetVulcanBinaries();
         GetOpenGlBinaries();
 
-        m_sources.clear();
+        ComposeGlProgram();
 
+        CreateDesctiptorIfNeeded();
+
+        m_sources.clear();
+    }
+
+    void GlShader::Bind()
+    {
+        glUseProgram(m_glProgram);
+    }
+
+    void GlShader::UnBind()
+    {
+        glUseProgram(0);
+    }
+
+    void GlShader::CompileSpirv(std::vector<uint32_t> &target, const std::string &source, GLenum stage, RenderApi targetEnv, bool optimize)
+    {
+        shaderc::Compiler compiler;
+        shaderc::CompileOptions options;
+
+        CORE_ASSERT(targetEnv == RenderApi::Vulcan || targetEnv == RenderApi::OpenGl, "Unsuported target environment");
+
+        uint32_t version = targetEnv == RenderApi::Vulcan ? shaderc_env_version_vulkan_1_2 : shaderc_env_version_opengl_4_5;
+        options.SetTargetEnvironment(Utils::RenderApiEnumToShaderc(targetEnv), version);
+
+        shaderc_optimization_level optimization = optimize ? shaderc_optimization_level_performance : shaderc_optimization_level_zero;
+        options.SetOptimizationLevel(optimization);
+
+        shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(source, Utils::GlEnumToShadercKind(stage), m_filePath.c_str(), options);
+        CORE_ASSERT(result.GetCompilationStatus() == shaderc_compilation_status_success, "Shader {" + m_name + "} failed to compile: " + result.GetErrorMessage());
+
+        target = std::vector<uint32_t>(result.begin(), result.end());
+    }
+
+    void GlShader::GetVulcanBinaries()
+    {
+        m_vulcanSPIRV.clear();
+
+        for (auto &[stage, source] : m_sources)
+        {
+            const std::filesystem::path &path = Utils::GetVulcanCachePath(m_name, stage);
+
+            if (Utils::HasCacheFile(path))
+            {
+                Utils::LoadBinary(path, &m_vulcanSPIRV[stage]);
+            }
+            else
+            {
+                CompileSpirv(m_vulcanSPIRV[stage], source, stage, RenderApi::Vulcan, true);
+                Utils::SaveBinary(path, &m_vulcanSPIRV[stage]);
+            }
+        }
+    }
+
+    void GlShader::GetOpenGlBinaries()
+    {
+        Utils::CreateCacheDirectoryIfNeeded();
+        m_openglSPIRV.clear();
+
+        for (auto &[stage, source] : m_sources)
+        {
+            const std::filesystem::path &path = Utils::GetOpenGlCachePath(m_name, stage);
+
+            if (Utils::HasCacheFile(path))
+            {
+                Utils::LoadBinary(path, &m_openglSPIRV[stage]);
+            }
+            else
+            {
+                CompileSpirv(m_openglSPIRV[stage], source, stage, RenderApi::OpenGl, true);
+                Utils::SaveBinary(path, &m_openglSPIRV[stage]);
+            }
+        }
+    }
+
+    void GlShader::Parse(const std::filesystem::path &filePath)
+    {
+
+        std::ifstream file(filePath);
+        GLenum type = GL_INVALID_ENUM;
+        std::string line;
+
+        while (std::getline(file, line))
+        {
+            if (!line.compare("#vertexShader"))
+            {
+                type = GL_VERTEX_SHADER;
+                continue;
+            }
+
+            if (!line.compare("#fragmentShader"))
+            {
+                type = GL_FRAGMENT_SHADER;
+                continue;
+            }
+
+            line.push_back('\n');
+            CORE_ASSERT(type != GL_INVALID_ENUM, "Check shader definitions");
+            m_sources[type].append(line);
+            line.clear();
+        }
+
+        file.close();
+    }
+
+    void GlShader::ComposeGlProgram()
+    {
         std::vector<GLenum> componentIds;
         for (auto &[stage, binary] : m_openglSPIRV)
         {
@@ -207,100 +342,41 @@ namespace ant::OpenGl
             glDeleteShader(id);
     }
 
-    void GlShader::Bind()
+    void GlShader::CreateDesctiptorIfNeeded()
     {
-        glUseProgram(m_glProgram);
-    }
-
-    void GlShader::UnBind()
-    {
-        glUseProgram(0);
-    }
-
-    void GlShader::GetVulcanBinaries()
-    {
-        Utils::CreateCacheDirectoryIfNeeded();
-        m_vulcanSPIRV.clear();
 
         for (auto &[stage, source] : m_sources)
         {
-            const std::filesystem::path &path = Utils::GetVulcanCachePath(m_name, stage);
+            std::filesystem::path path = Utils::GetCacheDirectory();
+            path.append(m_name + Utils::GetDescriptiorFileExtension(stage));
 
-            if (Utils::HasCachedBinary(path))
+            std::string json;
+
+            if (Utils::HasCacheFile(path))
             {
-                Utils::LoadBinary(path, &m_vulcanSPIRV[stage]);
+                std::ifstream file(path);
+                CORE_ASSERT(file.is_open(), "cannot open file");
+                size_t size = std::filesystem::file_size(path);
+                json.resize(size);
+                file.read(json.data(), size);
+                file.close();
             }
             else
             {
-                shaderc::Compiler compiler;
-                shaderc::CompileOptions options;
-                options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_2);
-                options.SetOptimizationLevel(shaderc_optimization_level_performance);
-                shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(source, Utils::GlEnumToShadercKind(stage), m_filePath.c_str(), options);
-                CORE_ASSERT(result.GetCompilationStatus() == shaderc_compilation_status_success, "Shader {" + m_name + "} failed to compile: " + result.GetErrorMessage());
+                std::vector<uint32_t> binary;
+                CompileSpirv(binary, source, stage, RenderApi::Vulcan, false);
 
-                m_vulcanSPIRV[stage] = std::vector<uint32_t>(result.begin(), result.end());
-                Utils::SaveBinary(path, &m_vulcanSPIRV[stage]);
+                spirv_cross::CompilerReflection reflectionCompiler(binary);
+                reflectionCompiler.set_format("json");
+                json = reflectionCompiler.compile();
+
+                std::ofstream file(path);
+                CORE_ASSERT(file.is_open(), "cannot create file");
+
+                file.write(json.data(), json.size());
             }
+            CORE_TRACE("Shader::Reflect {0}", json.c_str());
         }
-    }
-
-    void GlShader::GetOpenGlBinaries()
-    {
-        Utils::CreateCacheDirectoryIfNeeded();
-        m_openglSPIRV.clear();
-
-        for (auto &[stage, source] : m_sources)
-        {
-            const std::filesystem::path &path = Utils::GetOpenGlCachePath(m_name, stage);
-
-            if (Utils::HasCachedBinary(path))
-            {
-                Utils::LoadBinary(path, &m_openglSPIRV[stage]);
-            }
-            else
-            {
-                shaderc::Compiler compiler;
-                shaderc::CompileOptions options;
-                options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
-                options.SetOptimizationLevel(shaderc_optimization_level_performance);
-                shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(source, Utils::GlEnumToShadercKind(stage), m_filePath.c_str(), options);
-                CORE_ASSERT(result.GetCompilationStatus() == shaderc_compilation_status_success, "Shader {" + m_name + "} failed to compile: " + result.GetErrorMessage());
-
-                m_openglSPIRV[stage] = std::vector<uint32_t>(result.begin(), result.end());
-                Utils::SaveBinary(path, &m_openglSPIRV[stage]);
-            }
-        }
-    }
-
-    void GlShader::Parse(const std::filesystem::path &filePath)
-    {
-
-        std::ifstream file(filePath);
-        GLenum type = GL_INVALID_ENUM;
-        std::string line;
-
-        while (std::getline(file, line))
-        {
-            if (!line.compare("#vertexShader"))
-            {
-                type = GL_VERTEX_SHADER;
-                continue;
-            }
-
-            if (!line.compare("#fragmentShader"))
-            {
-                type = GL_FRAGMENT_SHADER;
-                continue;
-            }
-
-            line.push_back('\n');
-            CORE_ASSERT(type != GL_INVALID_ENUM, "Check shader definitions");
-            m_sources[type].append(line);
-            line.clear();
-        }
-
-        file.close();
     }
 
 }

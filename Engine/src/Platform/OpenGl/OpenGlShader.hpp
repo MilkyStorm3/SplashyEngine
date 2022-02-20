@@ -2,6 +2,8 @@
 #include <Graphics/Shader.hpp>
 #include <unordered_map>
 #include <GlTypes.h>
+#include <Render/RendererCommands.hpp>
+
 namespace ant::OpenGl
 {
 
@@ -21,10 +23,13 @@ namespace ant::OpenGl
         virtual const std::string &GetName() override { return m_name; }
 
     private:
+        void Parse(const std::filesystem::path &filePath);
+        void ComposeGlProgram();
+
         void GetVulcanBinaries(); // unused
         void GetOpenGlBinaries();
-
-        void Parse(const std::filesystem::path &filePath);
+        void CompileSpirv( std::vector<uint32_t>& target, const std::string& source, GLenum stage, RenderApi targetEnv, bool optimize); 
+	    void CreateDesctiptorIfNeeded();
 
     private:
         uint32_t m_glProgram;

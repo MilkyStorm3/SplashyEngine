@@ -90,7 +90,7 @@ target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine/src/
 target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/vendor/)
 # libs
 target_link_directories(Engine PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/Engine/vendor/glew/lib)
-# target_link_directories(Engine PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/Engine/vendor/spirv_cross)
+target_link_directories(Engine PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/Engine/vendor/spirv_cross)
 
 target_link_libraries(Engine nlohmann_json::nlohmann_json)
 target_link_libraries(Engine spdlog)
@@ -98,10 +98,10 @@ target_link_libraries(Engine glm)
 target_link_libraries(Engine glewd)
 target_link_libraries(Engine glfw)
 
-# target_link_libraries(Engine spirv-cross-core)
-# target_link_libraries(Engine spirv-cross-reflect)
+target_link_libraries(Engine spirv-cross-core)
+target_link_libraries(Engine spirv-cross-reflect)
 # target_link_libraries(Engine spirv-cross-util)
-# target_link_libraries(Engine spirv-cross-glsl)
+target_link_libraries(Engine spirv-cross-glsl)
 # target_link_libraries(Engine spirv-cross-cpp)
 
 target_link_libraries(Engine shaderc)

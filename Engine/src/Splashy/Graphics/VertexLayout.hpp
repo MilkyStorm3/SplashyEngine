@@ -1,6 +1,5 @@
 #pragma once
-#include <vector>
-#include <stdint.h>
+#include <initializer_list>
 #include <Core/Core.hpp>
 namespace ant
 {

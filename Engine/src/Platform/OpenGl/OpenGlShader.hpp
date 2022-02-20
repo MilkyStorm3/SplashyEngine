@@ -27,8 +27,8 @@ namespace ant::OpenGl
         void Parse(const std::filesystem::path &filePath);
         void ComposeGlProgram();
 
-        void GetVulcanBinary(const std::string &source, GLenum stage, bool forceRecompilation); //! not needed for now
-        void GetOpenGlBinary(const std::string &source, GLenum stage, bool forceRecompilation);
+        void GetVulcanBinary(const std::string &source, GLenum stage, bool forceRecompilation);
+        void GetOpenGlBinary(GLenum stage, bool forceRecompilation);
         void CompileSpirv(std::vector<uint32_t> &target, const std::string &source, GLenum stage, RenderApi targetEnv, bool optimize);
 
         /* returns true if specification is loaded, false if there is no specs file */

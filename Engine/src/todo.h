@@ -7,7 +7,7 @@
 
 
 //-------- plan
-//todo uniform buffers
+//todo uniform buffers from shader specifications
 
 //todo rewrite/abstract textures
 

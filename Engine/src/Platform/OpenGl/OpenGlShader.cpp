@@ -217,8 +217,8 @@ namespace ant::OpenGl
                 if (forceRecompilation)
                     CreateSpecification(source, stage);
 
-                // GetVulcanBinary(source, stage, forceRecompilation); //! not needed for now
-                GetOpenGlBinary(source, stage, forceRecompilation);
+                GetVulcanBinary(source, stage, forceRecompilation);
+                GetOpenGlBinary(stage, forceRecompilation);
                 // binary gets recompiled if there is no specification
             }
             else
@@ -227,8 +227,8 @@ namespace ant::OpenGl
                 {
                     CreateSpecification(source, stage);
                 }
-                GetOpenGlBinary(source, stage, false);
-                // GetVulcanBinary(source, stage, false); //! not needed for now
+                GetVulcanBinary(source, stage, false);
+                GetOpenGlBinary(stage, false);
             }
         }
 
@@ -306,7 +306,7 @@ namespace ant::OpenGl
         }
     }
 
-    void GlShader::GetOpenGlBinary(const std::string &source, GLenum stage, bool forceRecompilation)
+    void GlShader::GetOpenGlBinary(GLenum stage, bool forceRecompilation)
     {
         m_openglSPIRV[stage].clear();
 
@@ -318,7 +318,8 @@ namespace ant::OpenGl
         }
         else
         {
-            CompileSpirv(m_openglSPIRV[stage], source, stage, RenderApi::OpenGl, true);
+            spirv_cross::CompilerGLSL glslCompiler(m_vulcanSPIRV[stage]);
+            CompileSpirv(m_openglSPIRV[stage], glslCompiler.compile(), stage, RenderApi::OpenGl, true);
             Utils::SaveBinary(path, &m_openglSPIRV[stage]);
         }
     }

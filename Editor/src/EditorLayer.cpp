@@ -83,6 +83,14 @@ namespace Editor
 
         // m_shader = ant::Shader::Create("assets/shaders/triangleShader.glsl");
         m_shader = ant::Shader::Create("assets/shaders/testShader.glsl", true);
+
+        // struct Example
+        // {
+        //     glm::vec4 vec;
+        // }myExample;
+        
+
+        // m_shader->SetUniformBuffer<Example>("Name",myExample);
     }
 
     void EditorLayer::OnUpdate()

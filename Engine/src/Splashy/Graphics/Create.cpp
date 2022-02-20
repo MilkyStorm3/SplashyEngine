@@ -7,6 +7,7 @@
 #include <Platform/OpenGl/OpenGlIndexBuffer.hpp>
 #include <Platform/OpenGl/OpenGlVertexLayout.hpp>
 #include <Platform/OpenGl/OpenGlShader.hpp>
+#include <Platform/OpenGl/OpenGlUniformBuffer.hpp>
 
 namespace ant
 {
@@ -68,6 +69,17 @@ namespace ant
         shader->LoadFromFile(filePath);
         shader->Init();
         return shader;
+    }
+
+    Ref<UniformBuffer> UniformBuffer::Create(uint32_t size, uint32_t binding)
+    {
+        auto api = RendererCommands::GetRenderApi();
+
+        if (api == RenderApi::OpenGl)
+            return MakeRef<OpenGl::GlUniformBuffer>(size, binding);
+
+        CORE_ASSERT(false, "Picked RenderApi is not suported");
+        return nullptr;
     }
 
 }

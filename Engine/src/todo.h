@@ -7,11 +7,11 @@
 
 
 //-------- plan
-//todo rebuild shader system -> uniform buffers
+//todo uniform buffers
 
 //todo rewrite/abstract textures
 
-//todo rebuild instrumentation tools
+//todo rebuild instrumentation tools -> shader compilation timming
 
 //todo create camera system
 

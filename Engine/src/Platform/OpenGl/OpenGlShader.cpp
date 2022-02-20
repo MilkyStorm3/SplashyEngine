@@ -5,8 +5,10 @@
 #include <Gl.h>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <Core/Core.hpp>
 
+#include <nlohmann/json.hpp>
 #include <shaderc/shaderc.hpp>
 #include <spirv_cross/spirv_cross.hpp>
 #include <spirv_cross/spirv_glsl.hpp>
@@ -144,7 +146,8 @@ namespace ant::OpenGl
 
     } // namespace Utils
 
-    GlShader::GlShader()
+    GlShader::GlShader(bool trackSource)
+        : m_trackingSource(trackSource)
     {
         m_glProgram = GL_INVALID_INDEX;
         m_glProgram = glCreateProgram();
@@ -185,6 +188,10 @@ namespace ant::OpenGl
 
     void GlShader::Init()
     {
+        Utils::CreateCacheDirectoryIfNeeded();
+
+        std::hash<std::string> hasher;
+
         for (auto &[stage, source] : m_sources)
         {
             if (source.length() == 0)
@@ -193,15 +200,41 @@ namespace ant::OpenGl
                 msg << "There has to be a " << Utils::GlEnumToStageString(stage) << " source!";
                 CORE_ASSERT(false, msg.str().c_str());
             }
+
+            if (m_trackingSource)
+            {
+                bool forceRecompilation = true;
+                if (LoadSpecification(stage))
+                {
+                    size_t sourceHash = hasher(source);
+                    size_t previousHash = 0;
+                    if (m_specifications[stage].contains("hash"))
+                        previousHash = m_specifications[stage]["hash"];
+
+                    forceRecompilation = sourceHash != previousHash;
+                }
+
+                if (forceRecompilation)
+                    CreateSpecification(source, stage);
+
+                // GetVulcanBinary(source, stage, forceRecompilation); //! not needed for now
+                GetOpenGlBinary(source, stage, forceRecompilation);
+                // binary gets recompiled if there is no specification
+            }
+            else
+            {
+                if (!LoadSpecification(stage))
+                {
+                    CreateSpecification(source, stage);
+                }
+                GetOpenGlBinary(source, stage, false);
+                // GetVulcanBinary(source, stage, false); //! not needed for now
+            }
         }
-        Utils::CreateCacheDirectoryIfNeeded();
-        GetVulcanBinaries();
-        GetOpenGlBinaries();
 
         ComposeGlProgram();
-
-        CreateDesctiptorIfNeeded();
-
+        m_vulcanSPIRV.clear();
+        m_openglSPIRV.clear();
         m_sources.clear();
     }
 
@@ -234,50 +267,64 @@ namespace ant::OpenGl
         target = std::vector<uint32_t>(result.begin(), result.end());
     }
 
-    void GlShader::GetVulcanBinaries()
+    bool GlShader::LoadSpecification(GLenum stage)
     {
-        m_vulcanSPIRV.clear();
+        std::filesystem::path path = Utils::GetCacheDirectory();
+        path.append(m_name + Utils::GetDescriptiorFileExtension(stage));
 
-        for (auto &[stage, source] : m_sources)
+        if (Utils::HasCacheFile(path))
         {
-            const std::filesystem::path &path = Utils::GetVulcanCachePath(m_name, stage);
+            std::ifstream file(path);
+            CORE_ASSERT(file.is_open(), "cannot open file");
+            size_t size = std::filesystem::file_size(path);
 
-            if (Utils::HasCacheFile(path))
-            {
-                Utils::LoadBinary(path, &m_vulcanSPIRV[stage]);
-            }
-            else
-            {
-                CompileSpirv(m_vulcanSPIRV[stage], source, stage, RenderApi::Vulcan, true);
-                Utils::SaveBinary(path, &m_vulcanSPIRV[stage]);
-            }
+            std::string text;
+            text.resize(size);
+            file.read(text.data(), size);
+            file.close();
+
+            m_specifications[stage] = nlohmann::json::parse(text);
+            return true;
+        }
+        return false;
+    }
+
+    void GlShader::GetVulcanBinary(const std::string &source, GLenum stage, bool forceRecompilation)
+    {
+        m_vulcanSPIRV[stage].clear();
+
+        const std::filesystem::path &path = Utils::GetVulcanCachePath(m_name, stage);
+
+        if (Utils::HasCacheFile(path) && !forceRecompilation)
+        {
+            Utils::LoadBinary(path, &m_vulcanSPIRV[stage]);
+        }
+        else
+        {
+            CompileSpirv(m_vulcanSPIRV[stage], source, stage, RenderApi::Vulcan, true);
+            Utils::SaveBinary(path, &m_vulcanSPIRV[stage]);
         }
     }
 
-    void GlShader::GetOpenGlBinaries()
+    void GlShader::GetOpenGlBinary(const std::string &source, GLenum stage, bool forceRecompilation)
     {
-        Utils::CreateCacheDirectoryIfNeeded();
-        m_openglSPIRV.clear();
+        m_openglSPIRV[stage].clear();
 
-        for (auto &[stage, source] : m_sources)
+        const std::filesystem::path &path = Utils::GetOpenGlCachePath(m_name, stage);
+
+        if (Utils::HasCacheFile(path) && !forceRecompilation)
         {
-            const std::filesystem::path &path = Utils::GetOpenGlCachePath(m_name, stage);
-
-            if (Utils::HasCacheFile(path))
-            {
-                Utils::LoadBinary(path, &m_openglSPIRV[stage]);
-            }
-            else
-            {
-                CompileSpirv(m_openglSPIRV[stage], source, stage, RenderApi::OpenGl, true);
-                Utils::SaveBinary(path, &m_openglSPIRV[stage]);
-            }
+            Utils::LoadBinary(path, &m_openglSPIRV[stage]);
+        }
+        else
+        {
+            CompileSpirv(m_openglSPIRV[stage], source, stage, RenderApi::OpenGl, true);
+            Utils::SaveBinary(path, &m_openglSPIRV[stage]);
         }
     }
 
     void GlShader::Parse(const std::filesystem::path &filePath)
     {
-
         std::ifstream file(filePath);
         GLenum type = GL_INVALID_ENUM;
         std::string line;
@@ -342,41 +389,28 @@ namespace ant::OpenGl
             glDeleteShader(id);
     }
 
-    void GlShader::CreateDesctiptorIfNeeded()
+    void GlShader::CreateSpecification(const std::string &source, GLenum stage)
     {
+        std::filesystem::path path = Utils::GetCacheDirectory();
+        path.append(m_name + Utils::GetDescriptiorFileExtension(stage));
 
-        for (auto &[stage, source] : m_sources)
+        std::vector<uint32_t> binary;
+        CompileSpirv(binary, source, stage, RenderApi::Vulcan, false);
+
+        spirv_cross::CompilerReflection reflectionCompiler(binary);
+        reflectionCompiler.set_format("json");
+        m_specifications[stage] = nlohmann::json::parse(reflectionCompiler.compile());
+
+        if (m_trackingSource)
         {
-            std::filesystem::path path = Utils::GetCacheDirectory();
-            path.append(m_name + Utils::GetDescriptiorFileExtension(stage));
-
-            std::string json;
-
-            if (Utils::HasCacheFile(path))
-            {
-                std::ifstream file(path);
-                CORE_ASSERT(file.is_open(), "cannot open file");
-                size_t size = std::filesystem::file_size(path);
-                json.resize(size);
-                file.read(json.data(), size);
-                file.close();
-            }
-            else
-            {
-                std::vector<uint32_t> binary;
-                CompileSpirv(binary, source, stage, RenderApi::Vulcan, false);
-
-                spirv_cross::CompilerReflection reflectionCompiler(binary);
-                reflectionCompiler.set_format("json");
-                json = reflectionCompiler.compile();
-
-                std::ofstream file(path);
-                CORE_ASSERT(file.is_open(), "cannot create file");
-
-                file.write(json.data(), json.size());
-            }
-            CORE_TRACE("Shader::Reflect {0}", json.c_str());
+            std::hash<std::string> hasher;
+            m_specifications[stage]["hash"] = hasher(source);
         }
+
+        std::string text = m_specifications[stage].dump(4);
+        std::ofstream file(path);
+        CORE_ASSERT(file.is_open(), "cannot create file");
+        file.write(text.data(), text.size());
     }
 
 }

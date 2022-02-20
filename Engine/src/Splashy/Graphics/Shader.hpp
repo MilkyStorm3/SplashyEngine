@@ -16,7 +16,7 @@ namespace ant
          * @param  filePath: path to a shader file in a custom hash separated format #vertexShader ... #fragmentShader ...
          * @retval Ref to initialized, linked, ready to use shader.
          */
-        static Ref<Shader> Create(const std::filesystem::path &filePath);
+        static Ref<Shader> Create(const std::filesystem::path &filePath, bool trackSource);
 
         /* Parses a shader file and splits to vertex and fragment source */
         virtual void LoadFromFile(const std::filesystem::path &filePath) = 0;

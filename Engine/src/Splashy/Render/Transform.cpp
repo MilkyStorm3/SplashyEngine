@@ -1,4 +1,4 @@
-#include "Pch.h"
+/* #include "Pch.h"
 #include "Render/Transform.hpp"
 
 #include <glm/glm.hpp>
@@ -14,4 +14,4 @@ namespace ant
                 glm::scale(glm::mat4(1.f), glm::vec3(m_scale.x, m_scale.y, 1.f));
     }
   
-} // namespace ant
+} // namespace ant */

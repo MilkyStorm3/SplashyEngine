@@ -41,7 +41,7 @@ namespace ant
     using UniqueRef = std::unique_ptr<_Type>;
 
     template <class _Type, class ..._Args>
-    inline Ref<_Type> MakeUniqueRef(_Args... args){
+    inline UniqueRef<_Type> MakeUniqueRef(_Args... args){
         return std::make_unique<_Type>(args...);
     }
 #define CORE_BIND_EVENT_FN(target,fn) std::bind(&fn, target, std::placeholders::_1)

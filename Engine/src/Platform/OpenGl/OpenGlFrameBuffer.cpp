@@ -1,7 +1,7 @@
 #include "Pch.h"
 #include "OpenGlFrameBuffer.hpp"
 #include <Gl.h>
-
+#include <Utilities/InstrumentationMacros.hpp>
 #include "Core/Logger.hpp"
 
 namespace ant::OpenGl
@@ -33,7 +33,7 @@ namespace ant::OpenGl
     GlFrameBuffer::GlFrameBuffer(const FramebufferSpecification &specs)
         : m_specs(specs)
     {
-        CORE_PROFILE_FUNC();
+        CORE_DETAILED_PROFILE_FUNC();
         glGenFramebuffers(1, &m_frameBufferGlId);
 
         bool hasDepth = false;
@@ -62,7 +62,7 @@ namespace ant::OpenGl
 
     GlFrameBuffer::~GlFrameBuffer()
     {
-        CORE_PROFILE_FUNC();
+        CORE_DETAILED_PROFILE_FUNC();
         glDeleteFramebuffers(1, &m_frameBufferGlId);
 
         for (auto &att : m_colorAttachments)
@@ -73,19 +73,20 @@ namespace ant::OpenGl
 
     void GlFrameBuffer::Bind()
     {
-        CORE_PROFILE_FUNC();
+        CORE_DETAILED_PROFILE_FUNC();
         glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferGlId);
         glViewport(0, 0, m_specs.width, m_specs.height);
     }
 
     void GlFrameBuffer::UnBind()
     {
+        CORE_DETAILED_PROFILE_FUNC();
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     void GlFrameBuffer::Resize(uint32_t width, uint32_t height)
     {
-        CORE_PROFILE_FUNC();
+        CORE_DETAILED_PROFILE_FUNC();
         m_specs.width = width;
         m_specs.height = height;
 
@@ -118,7 +119,7 @@ namespace ant::OpenGl
 
     void GlFrameBuffer::Invalidate()
     {
-        CORE_PROFILE_FUNC();
+        CORE_DETAILED_PROFILE_FUNC();
 
         if (m_depthAttachment.GlId)
             glDeleteTextures(1, &m_depthAttachment.GlId);

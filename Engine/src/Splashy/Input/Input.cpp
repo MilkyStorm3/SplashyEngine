@@ -2,7 +2,7 @@
 #include "Input/Input.hpp"
 #include <Gl.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include "debug/Instrumentation.hpp"
+#include "Utilities/InstrumentationMacros.hpp"
 namespace ant
 {
 
@@ -22,7 +22,6 @@ namespace ant
 
     glm::vec2 Input::MouseWorldPos(const OrthographicCamera &camera)
     {
-        CORE_PROFILE_FUNC();
         auto mpos = MousePos();
         auto x = mpos.x, y = mpos.y;
 

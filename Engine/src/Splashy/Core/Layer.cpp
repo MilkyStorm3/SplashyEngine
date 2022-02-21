@@ -1,11 +1,12 @@
 #include "Pch.h"
 #include "Core/Layer.hpp"
 #include "Input/Event.hpp"
-#include "debug/Instrumentation.hpp"
+#include "Utilities/InstrumentationMacros.hpp"
 namespace ant
 {
     LayerStack::~LayerStack()
     {
+        CORE_GENERAL_PROFILE_FUNC();
         for (auto &it : *this)
         {
             it->OnDetach();
@@ -14,7 +15,7 @@ namespace ant
 
     void LayerStack::OnUpdate()
     {
-        CORE_PROFILE_FUNC();
+        CORE_GENERAL_PROFILE_FUNC();
         for (auto &it : *this)
         {
             it->OnUpdate();
@@ -23,7 +24,7 @@ namespace ant
 
     void LayerStack::OnDraw()
     {
-        CORE_PROFILE_FUNC();
+        CORE_GENERAL_PROFILE_FUNC();
         for (auto it = rbegin(); it != rend(); it++)
         {
             if (it->get()->m_active)
@@ -51,12 +52,14 @@ namespace ant
 
     void LayerStack::PushLayer(const Ref<Layer> &layer)
     {
+        CORE_GENERAL_PROFILE_FUNC();
         layer->OnAttach();
         push_back(layer);
     }
 
     void LayerStack::PushOverlay(const Ref<Layer> &overlay)
     {
+        CORE_GENERAL_PROFILE_FUNC();
         auto it = begin() + m_overlayIndex;
         overlay->OnAttach();
         emplace(it, overlay);
@@ -65,6 +68,7 @@ namespace ant
 
     void LayerStack::PopLayer(Layer *layer)
     {
+        CORE_GENERAL_PROFILE_FUNC();
         auto target = Find(layer);
         target->get()->OnDetach();
         erase(target);
@@ -72,6 +76,7 @@ namespace ant
 
     void LayerStack::PopOverlay(Layer *layer)
     {
+        CORE_GENERAL_PROFILE_FUNC();
         auto target = Find(layer);
         target->get()->OnDetach();
         erase(target);

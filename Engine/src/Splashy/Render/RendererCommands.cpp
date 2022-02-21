@@ -3,7 +3,7 @@
 #include <Gl.h>
 #include "Core/Core.hpp"
 #include <stb_image.h>
-#include "debug/Instrumentation.hpp"
+#include "Utilities/Instrumentation.hpp"
 #include "Platform/OpenGl/OpenGlRendererCommands.hpp"
 
 namespace ant

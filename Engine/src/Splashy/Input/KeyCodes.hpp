@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 namespace ant
 {
     enum class MouseButtonCode

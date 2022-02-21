@@ -33,7 +33,7 @@ namespace ant
 
         virtual const std::string& GetName() = 0;
 
-        //todo uniforms, uniform buffers
+        //todo material interface
     };
 
 }

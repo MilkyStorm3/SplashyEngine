@@ -1,6 +1,6 @@
 #include "OpenGlShader.hpp"
 
-#include "debug/Instrumentation.hpp"
+#include <Utilities/InstrumentationMacros.hpp>
 
 #include <Gl.h>
 #include <filesystem>
@@ -149,6 +149,7 @@ namespace ant::OpenGl
     GlShader::GlShader(bool trackSource)
         : m_trackingSource(trackSource)
     {
+        CORE_DETAILED_PROFILE_FUNC();
         m_glProgram = GL_INVALID_INDEX;
         m_glProgram = glCreateProgram();
 
@@ -157,12 +158,13 @@ namespace ant::OpenGl
 
     GlShader::~GlShader()
     {
+        CORE_DETAILED_PROFILE_FUNC();
         glDeleteProgram(m_glProgram);
     }
 
     void GlShader::LoadFromFile(const std::filesystem::path &filePath)
     {
-        CORE_PROFILE_FUNC();
+        CORE_INTERMEDIATE_PROFILE_FUNC();
 
         CORE_ASSERT(!filePath.empty(), "GlShader path not provided!");
         CORE_ASSERT(std::filesystem::exists(filePath), "Cannot find GlShader file! " + filePath.string());
@@ -177,6 +179,7 @@ namespace ant::OpenGl
 
     void GlShader::FromSource(const std::string &name, const std::string &vertexSrc, const std::string &fragmentSrc)
     {
+        CORE_INTERMEDIATE_PROFILE_FUNC();
         CORE_ASSERT(!name.empty(), "Name not provided!");
         CORE_ASSERT(!vertexSrc.empty(), "Vertex shader source not provided!");
         CORE_ASSERT(!fragmentSrc.empty(), "Fragment shader source not provided!");
@@ -188,6 +191,7 @@ namespace ant::OpenGl
 
     void GlShader::Init()
     {
+        CORE_INTERMEDIATE_PROFILE_FUNC();
         Utils::CreateCacheDirectoryIfNeeded();
 
         std::hash<std::string> hasher;
@@ -240,16 +244,19 @@ namespace ant::OpenGl
 
     void GlShader::Bind()
     {
+        CORE_DETAILED_PROFILE_FUNC();
         glUseProgram(m_glProgram);
     }
 
     void GlShader::UnBind()
     {
+        CORE_DETAILED_PROFILE_FUNC();
         glUseProgram(0);
     }
 
     void GlShader::CompileSpirv(std::vector<uint32_t> &target, const std::string &source, GLenum stage, RenderApi targetEnv, bool optimize)
     {
+        CORE_DETAILED_PROFILE_FUNC();
         shaderc::Compiler compiler;
         shaderc::CompileOptions options;
 
@@ -269,6 +276,7 @@ namespace ant::OpenGl
 
     bool GlShader::LoadSpecification(GLenum stage)
     {
+        CORE_DETAILED_PROFILE_FUNC();
         std::filesystem::path path = Utils::GetCacheDirectory();
         path.append(m_name + Utils::GetDescriptiorFileExtension(stage));
 
@@ -291,6 +299,7 @@ namespace ant::OpenGl
 
     void GlShader::GetVulcanBinary(const std::string &source, GLenum stage, bool forceRecompilation)
     {
+        CORE_DETAILED_PROFILE_FUNC();
         m_vulcanSPIRV[stage].clear();
 
         const std::filesystem::path &path = Utils::GetVulcanCachePath(m_name, stage);
@@ -308,6 +317,7 @@ namespace ant::OpenGl
 
     void GlShader::GetOpenGlBinary(GLenum stage, bool forceRecompilation)
     {
+        CORE_DETAILED_PROFILE_FUNC();
         m_openglSPIRV[stage].clear();
 
         const std::filesystem::path &path = Utils::GetOpenGlCachePath(m_name, stage);
@@ -326,6 +336,7 @@ namespace ant::OpenGl
 
     void GlShader::Parse(const std::filesystem::path &filePath)
     {
+        CORE_DETAILED_PROFILE_FUNC();
         std::ifstream file(filePath);
         GLenum type = GL_INVALID_ENUM;
         std::string line;
@@ -355,6 +366,7 @@ namespace ant::OpenGl
 
     void GlShader::ComposeGlProgram()
     {
+        CORE_DETAILED_PROFILE_FUNC();
         std::vector<GLenum> componentIds;
         for (auto &[stage, binary] : m_openglSPIRV)
         {
@@ -392,6 +404,7 @@ namespace ant::OpenGl
 
     void GlShader::CreateSpecification(const std::string &source, GLenum stage)
     {
+        CORE_DETAILED_PROFILE_FUNC();
         std::filesystem::path path = Utils::GetCacheDirectory();
         path.append(m_name + Utils::GetDescriptiorFileExtension(stage));
 

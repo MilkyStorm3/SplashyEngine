@@ -1,4 +1,4 @@
-#pragma once
+/* #pragma once
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
@@ -30,4 +30,4 @@ namespace ant
         glm::mat4 m_trs;
     };
 
-} // namespace ant
+} // namespace ant */

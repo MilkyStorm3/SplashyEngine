@@ -1,5 +1,5 @@
 #include "OpenGlVertexLayout.hpp"
-#include <debug/Instrumentation.hpp>
+#include <Utilities/InstrumentationMacros.hpp>
 #include <Gl.h>
 
 namespace ant::OpenGl
@@ -54,6 +54,7 @@ namespace ant::OpenGl
 
     void GlVertexLayout::Set(std::initializer_list<AttributeType> args)
     {
+        CORE_INTERMEDIATE_PROFILE_FUNC();
         m_layoutTypes.clear();
         m_layoutTypes = args;
         CalcVertexSize();
@@ -61,7 +62,7 @@ namespace ant::OpenGl
 
     void GlVertexLayout::Enable()
     {
-        CORE_PROFILE_FUNC();
+        CORE_INTERMEDIATE_PROFILE_FUNC();
         uint32_t pointerVal = 0;
         for (size_t i = 0; i < m_layoutTypes.size(); i++)
         {
@@ -74,12 +75,13 @@ namespace ant::OpenGl
 
     void GlVertexLayout::Disable()
     {
+        CORE_INTERMEDIATE_PROFILE_FUNC();
         for (size_t i = 0; i < m_layoutTypes.size(); i++)
             glDisableVertexAttribArray(i);
     }
 
     void GlVertexLayout::PushAttribute(AttributeType attribute)
-    {
+    {        
         m_layoutTypes.push_back(attribute);
         CalcVertexSize();
     }

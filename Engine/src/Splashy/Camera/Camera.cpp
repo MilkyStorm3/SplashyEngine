@@ -2,7 +2,7 @@
 #include "Camera/Camera.hpp"
 #include "Input/Event.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-#include "debug/Instrumentation.hpp"
+#include "Utilities/Instrumentation.hpp"
 
 namespace ant
 {

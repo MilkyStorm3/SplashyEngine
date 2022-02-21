@@ -7,11 +7,10 @@
 #include "Graphics/Shader.hpp"
 #include "Graphics/IndexBuffer.hpp"
 #include "Graphics/VertexBuffer.hpp"
-#include "debug/Instrumentation.hpp"
-
-#include <Platform/OpenGl/OpenGlFrameBuffer.hpp> //!TEMP
+#include "Utilities/Instrumentation.hpp"
 
 #include <Gl.h>
+
 namespace Editor
 {
     static void DockSpace()
@@ -81,16 +80,7 @@ namespace Editor
 
         m_framebuffer = ant::FrameBuffer::Create(spec);
 
-        // m_shader = ant::Shader::Create("assets/shaders/triangleShader.glsl");
         m_shader = ant::Shader::Create("assets/shaders/testShader.glsl", true);
-
-        // struct Example
-        // {
-        //     glm::vec4 vec;
-        // }myExample;
-        
-
-        // m_shader->SetUniformBuffer<Example>("Name",myExample);
     }
 
     void EditorLayer::OnUpdate()
@@ -131,16 +121,16 @@ namespace Editor
 
     void EditorLayer::OnDraw()
     {
-        CORE_PROFILE_FUNC();
         m_framebuffer->Bind();
 
-        ant::RendererCommands::Clear({1.f, 0.f, 1.f, 1.f}); // magenta
+        // ant::RendererCommands::Clear({1.f, 0.f, 1.f, 1.f}); // magenta
+        ant::RendererCommands::Clear({0.145f, 0.156f, 0.419f, 1.f});
 
         float vertices[] = {
-            -0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0,
-            0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0,
-            -0.5f, 0.5f, 0.0f, 0.0, 0.0, 1.0,
-            0.5f, 0.5f, 0.0f, 1.0, 1.0, 1.0};
+            -0.5f, -0.5f, 0.0f, 0.8, 0.1, 0.1,
+            0.5f, -0.5f, 0.0f, 0.1, 0.8, 0.1,
+            0.5f, 0.5f, 0.0f, 0.1, 0.1, 0.8,
+            -0.5f, 0.5f, 0.0f, 0.7, 0.7, 0.1};
 
         auto vb = ant::VertexBuffer::Create();
         vb->GetLayout()->PushAttribute(ant::AttributeType::vec3f);
@@ -154,7 +144,7 @@ namespace Editor
         auto ib = ant::IndexBuffer::Create();
 
         uint32_t indices[] = {
-            0, 1, 2, 2, 1, 3};
+            0, 1, 2, 2, 3, 0};
 
         ib->UploadData(&indices[0], sizeof(indices));
         ib->Bind();

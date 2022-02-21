@@ -1,5 +1,5 @@
 #include "OpenGlVertexBuffer.hpp"
-#include <debug/Instrumentation.hpp>
+#include <Utilities/InstrumentationMacros.hpp>
 #include <Core/Core.hpp>
 #include <Gl.h>
 
@@ -9,7 +9,7 @@ namespace ant::OpenGl
     {   
         m_layout = MakeRef<GlVertexLayout>();
 
-        CORE_PROFILE_FUNC();
+        CORE_DETAILED_PROFILE_FUNC();
 
         m_glId = GL_INVALID_INDEX;
         m_vertexArrayGlId = GL_INVALID_INDEX;
@@ -23,7 +23,7 @@ namespace ant::OpenGl
 
     GlVertexBuffer::~GlVertexBuffer()
     {
-        CORE_PROFILE_FUNC();
+        CORE_DETAILED_PROFILE_FUNC();
 
         glDeleteBuffers(1, &m_glId);
         glDeleteVertexArrays(1, &m_vertexArrayGlId);
@@ -31,7 +31,7 @@ namespace ant::OpenGl
 
     void GlVertexBuffer::Bind()
     {
-        CORE_PROFILE_FUNC();
+        CORE_DETAILED_PROFILE_FUNC();
 
         glBindVertexArray(m_vertexArrayGlId);
         glBindBuffer(GL_ARRAY_BUFFER, m_glId);
@@ -40,7 +40,7 @@ namespace ant::OpenGl
 
     void GlVertexBuffer::UnBind()
     {
-        CORE_PROFILE_FUNC();
+        CORE_DETAILED_PROFILE_FUNC();
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
@@ -49,7 +49,7 @@ namespace ant::OpenGl
 
     void GlVertexBuffer::UploadData(float *data, size_t size)
     {
-        CORE_PROFILE_FUNC();
+        CORE_INTERMEDIATE_PROFILE_FUNC();
 
         Bind();
         glBufferData(GL_ARRAY_BUFFER, m_layout->GetVertexSize() * size, data, GL_STATIC_DRAW);

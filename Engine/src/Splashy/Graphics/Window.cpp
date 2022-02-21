@@ -1,24 +1,25 @@
 #include "Pch.h"
 #include "Graphics/Window.hpp"
 #include <Gl.h>
-#include "debug/Instrumentation.hpp"
+#include "Utilities/Instrumentation.hpp"
 #include "Render/RendererCommands.hpp"
+#include "Utilities/InstrumentationMacros.hpp"
+#include "Input/Event.hpp"
+#include "Core/Core.hpp"
 
 namespace ant
 {
 
     Window::~Window()
     {
+        CORE_GENERAL_PROFILE_FUNC();
         glfwDestroyWindow(m_nativeWindow);
     }
 
     void Window::Update()
     {
-        CORE_PROFILE_FUNC();
-        {
-            CORE_PROFILE_SCOPE("glfwSwapBuffers");
-            glfwSwapBuffers(m_nativeWindow);
-        }
+        CORE_GENERAL_PROFILE_FUNC();
+        glfwSwapBuffers(m_nativeWindow);
         glfwPollEvents();
     }
 
@@ -46,7 +47,8 @@ namespace ant
 
     void Window::Init(const Properties &props)
     {
-        RendererCommands::Init();
+        CORE_GENERAL_PROFILE_FUNC();
+        RendererCommands::Init();        
 
         m_nativeWindow = glfwCreateWindow(props.width, props.height, props.title.c_str(), NULL, NULL);
 

@@ -4,6 +4,7 @@
 #include "Render/RendererCommands.hpp"
 #include "Input/Event.hpp"
 #include "ImGuiLayer.hpp"
+#include "Utilities/InstrumentationMacros.hpp"
 
 void test();
 
@@ -18,6 +19,8 @@ namespace ant
 
     void Application::Init()
     {
+        Instrumentor::InitSession("CORE", InstrumentationLevel::General);
+
         ant::Logger::Init();
 
         CORE_TRACE("Hello!");

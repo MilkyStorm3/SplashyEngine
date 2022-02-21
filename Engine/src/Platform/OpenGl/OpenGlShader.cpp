@@ -1,6 +1,7 @@
 #include "OpenGlShader.hpp"
 
 #include <Utilities/InstrumentationMacros.hpp>
+#include <Utilities/Timer.hpp>
 
 #include <Gl.h>
 #include <filesystem>
@@ -192,6 +193,7 @@ namespace ant::OpenGl
     void GlShader::Init()
     {
         CORE_INTERMEDIATE_PROFILE_FUNC();
+        Timer timer;
         Utils::CreateCacheDirectoryIfNeeded();
 
         std::hash<std::string> hasher;
@@ -240,6 +242,8 @@ namespace ant::OpenGl
         m_vulcanSPIRV.clear();
         m_openglSPIRV.clear();
         m_sources.clear();
+
+        CORE_INFO("Shader [{0}] created in {1} ms", m_name, timer.ElapsedMillis());
     }
 
     void GlShader::Bind()

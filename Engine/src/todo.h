@@ -15,6 +15,7 @@
 
 //todo create camera system
 
+//todo update timer
 
 //-------- improvement
 

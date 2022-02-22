@@ -1,67 +1,39 @@
 #include "Input/Input.hpp"
-
-#include "Pch.h"
-#include <Gl.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include "Utilities/InstrumentationMacros.hpp"
+#include "Render/RendererCommands.hpp"
+#include <Platform/Common/CommonInput.hpp>
 
 namespace ant
 {
-
-    Ref<Window> Input::s_activeWindow = nullptr;
-
-    void Input::UseWindow(Ref<Window> window)
+    Scope<Input> Input::s_instance;
+    
+    void Input::Init()
     {
-        s_activeWindow = window;
-    }
+        if (s_instance)
+            return;
 
-    glm::vec2 Input::MousePos()
-    {
-        double x, y;
-        glfwGetCursorPos((GLFWwindow *)s_activeWindow->GetNativeWindow(), &x, &y);
-        return {x, y};
+        auto api = RendererCommands::GetRenderApi();
+
+        if (api == RenderApi::OpenGl)
+            s_instance = std::move(MakeScope<Common::CommonInput>());
+
+        CORE_ASSERT(s_instance, "Picked RenderApi is not suported");
     }
 
     bool Input::IsKeyPressed(KeyCode key)
     {
-        auto state = glfwGetKey((GLFWwindow *)s_activeWindow->GetNativeWindow(), (int)key);
-
-        switch (state)
-        {
-        case GLFW_PRESS:
-            return true;
-
-        case GLFW_REPEAT:
-            return true;
-
-        case GLFW_RELEASE:
-            return false;
-
-        default:
-            break;
-        }
-        return false;
+        CORE_ASSERT(s_instance, "Input handler not initialized!");
+        return s_instance->IsKeyPressed_IMPL(key);
     }
 
     bool Input::IsMouseButtonPressed(MouseButtonCode buttonCode)
     {
-        auto state = glfwGetMouseButton((GLFWwindow *)s_activeWindow->GetNativeWindow(), (int)buttonCode);
-
-        switch (state)
-        {
-        case GLFW_PRESS:
-            return true;
-
-        case GLFW_REPEAT:
-            return true;
-
-        case GLFW_RELEASE:
-            return false;
-
-        default:
-            break;
-        }
-        return false;
+        CORE_ASSERT(s_instance, "Input handler not initialized!");
+        return s_instance->IsMouseButtonPressed_IMPL(buttonCode);
     }
 
+    glm::vec2 Input::MousePos()
+    {
+        CORE_ASSERT(s_instance, "Input handler not initialized!");
+        return s_instance->MousePos_IMPL();
+    }
 } // namespace ant

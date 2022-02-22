@@ -14,8 +14,6 @@ namespace ant::OpenGl
 
     void GlRendererCommands::Shutdown_IMPL()
     {
-        CORE_INTERMEDIATE_PROFILE_FUNC();
-        glfwTerminate();
     }
 
     void GlRendererCommands::SetClearColor_IMPL(const glm::vec4 &color)

@@ -8,6 +8,7 @@
 #include "Graphics/IndexBuffer.hpp"
 #include "Graphics/VertexBuffer.hpp"
 #include "Utilities/Instrumentation.hpp"
+#include "Input/Input.hpp"
 
 #include <Gl.h>
 
@@ -114,7 +115,21 @@ namespace Editor
 
         ImGui::Begin("test");
 
-        ImGui::Text("welcome back babe!");
+        auto mouse = ant::Input::MousePos();
+
+        ImGui::Text("Mouse x:%f y:%f", mouse.x, mouse.y);
+
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_W))
+            ImGui::Text("W pressed");
+
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_A))
+            ImGui::Text("A pressed");
+
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_S))
+            ImGui::Text("S pressed");
+
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_D))
+            ImGui::Text("D pressed");
 
         ImGui::End();
     }

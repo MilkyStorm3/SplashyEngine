@@ -3,6 +3,7 @@
 #include "Core/Core.hpp"
 #include "Render/RendererCommands.hpp"
 #include "Input/Event.hpp"
+#include "Input/Input.hpp"
 #include "ImGuiLayer.hpp"
 #include "Utilities/InstrumentationMacros.hpp"
 
@@ -20,11 +21,10 @@ namespace ant
     void Application::Init()
     {
         Instrumentor::InitSession("CORE", InstrumentationLevel::General);
-
-        ant::Logger::Init();
-
+        Logger::Init();
         RendererCommands::Init();
-
+        Input::Init();
+        
         CORE_TRACE("Hello!");
 
         m_window = Window::Create();

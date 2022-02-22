@@ -1,6 +1,7 @@
 #include "CommonWindow.hpp"
 #include <Gl.h>
 #include <Input/Event.hpp>
+#include "CommonInput.hpp"
 
 namespace ant::Common
 {
@@ -31,6 +32,9 @@ namespace ant::Common
         }
 
         m_window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
+
+        if (s_windowCount == 0)
+            CommonInput::s_activeNativeWindow = m_window;
 
         if (m_window == NULL)
         {
@@ -188,6 +192,7 @@ namespace ant::Common
                                            {
                                                WindowFocusedEvent e;
                                                EventCallback(e);
+                                               CommonInput::s_activeNativeWindow = window;
                                                break;
                                            }
                                            case GLFW_FALSE:

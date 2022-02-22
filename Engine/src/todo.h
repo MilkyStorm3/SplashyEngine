@@ -11,10 +11,8 @@
 
 //todo create camera system
 
-//todo update timestep
-
 //-------- improvement
-
+//? dynamic linking
 
 //-------- urgent
 

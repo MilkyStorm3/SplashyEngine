@@ -84,7 +84,7 @@ namespace Editor
         m_shader = ant::Shader::Create("assets/shaders/testShader.glsl", true);
     }
 
-    void EditorLayer::OnUpdate()
+    void EditorLayer::OnUpdate(ant::TimeStep ts)
     {
         DockSpace();
 
@@ -116,6 +116,8 @@ namespace Editor
         ImGui::Begin("test");
 
         auto mouse = ant::Input::MousePos();
+
+        ImGui::Text("Frametime: %fms", ts.MilliSeconds());
 
         ImGui::Text("Mouse x:%f y:%f", mouse.x, mouse.y);
 

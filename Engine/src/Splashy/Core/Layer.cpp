@@ -13,12 +13,12 @@ namespace ant
         }
     }
 
-    void LayerStack::OnUpdate()
+    void LayerStack::OnUpdate(TimeStep ts)
     {
         CORE_GENERAL_PROFILE_FUNC();
         for (auto &it : *this)
         {
-            it->OnUpdate();
+            it->OnUpdate(ts);
         }
     }
 

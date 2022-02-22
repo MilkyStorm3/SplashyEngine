@@ -13,7 +13,7 @@ namespace ant
         ~ImGuiLayer() {}
 
         virtual void OnAttach() override;
-        virtual void OnUpdate() override;
+        virtual void OnUpdate(TimeStep ts) override;
         virtual void OnDraw() override;
         virtual void OnDetach() override;
         virtual void OnEvent(Event *event) override;

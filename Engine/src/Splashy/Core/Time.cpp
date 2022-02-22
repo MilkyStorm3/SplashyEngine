@@ -3,38 +3,56 @@
 
 namespace ant
 {
-    TimeStep TimeStep::s_frameTime;
+    namespace cr = std::chrono;
 
-    TimeStep TimeStep::GetFrameTime()
+    double TimeStep::Seconds() const
     {
-        return s_frameTime;
+        return double(m_stepAsMicroSeconds) / 1000000.f;
     }
 
-    void TimeStep::UpdateFrameTime(TimeStep& lastFrameTime)
+    double TimeStep::MilliSeconds() const
     {
-        TimeStep time = glfwGetTime();
-        s_frameTime = time - lastFrameTime;
-        lastFrameTime = time;
+        return double(m_stepAsMicroSeconds) / 1000.f;
     }
-    
-    TimeStep::operator float() const 
+
+    int64_t TimeStep::MicroSeconds() const
     {
-        return m_time;
+        return m_stepAsMicroSeconds;
+    }
+
+    TimePoint Time::Now()
+    {
+        return cr::high_resolution_clock::now();
     }
 
     bool operator==(TimeStep l, TimeStep r)
     {
+        return l.m_stepAsMicroSeconds == r.m_stepAsMicroSeconds;
+    }
+
+    int64_t TimePoint::Seconds() const
+    {
+        return cr::time_point_cast<cr::seconds>(m_time).time_since_epoch().count();
+    }
+
+    int64_t TimePoint::MilliSeconds() const
+    {
+        return cr::time_point_cast<cr::milliseconds>(m_time).time_since_epoch().count();
+    }
+
+    int64_t TimePoint::MicroSeconds() const
+    {
+        return cr::time_point_cast<cr::microseconds>(m_time).time_since_epoch().count();
+    }
+
+    bool operator==(TimePoint l, TimePoint r)
+    {
         return (l.m_time == r.m_time);
     }
 
-    TimeStep operator+(TimeStep l, TimeStep r)
+    TimeStep operator-(TimePoint l, TimePoint r)
     {
-        return (l.m_time + r.m_time);
-    }
-
-    TimeStep operator-(TimeStep l, TimeStep r)
-    {
-        return (l.m_time - r.m_time);
+        return cr::duration_cast<cr::microseconds>(l.m_time - r.m_time).count();
     }
 
 } // namespace ant

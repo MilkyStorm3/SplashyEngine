@@ -1,29 +1,52 @@
 #pragma once
+#include <chrono>
 
 namespace ant
 {
+
     class TimeStep
     {
     public:
-        TimeStep(float time) : m_time(time) {}
-        TimeStep() {}
+        TimeStep(int64_t step) : m_stepAsMicroSeconds(step) {}
         ~TimeStep() {}
 
-        float Seconds() const { return m_time; }
-        float MiliSeconds() const { return m_time * 1000; }
+        double Seconds() const;
+        double MilliSeconds() const;
+        int64_t MicroSeconds() const;
 
-        static TimeStep GetFrameTime();
-        static void UpdateFrameTime(TimeStep& lastFrameTime);
-
-        friend TimeStep operator-(TimeStep l, TimeStep r);
-        friend TimeStep operator+(TimeStep l, TimeStep r);
         friend bool operator==(TimeStep l, TimeStep r);
 
-        operator float() const ;
+    private:
+        int64_t m_stepAsMicroSeconds;
+    };
+
+    class TimePoint
+    {
+        using Point = std::chrono::time_point<std::chrono::high_resolution_clock>;
+
+    public:
+        TimePoint(const Point &time) : m_time(time) {}
+        ~TimePoint() {}
+
+        int64_t Seconds() const;
+        int64_t MilliSeconds() const;
+        int64_t MicroSeconds() const;
+
+        friend TimeStep operator-(TimePoint l, TimePoint r);
+        friend bool operator==(TimePoint l, TimePoint r);
 
     private:
-        float m_time;
-        static TimeStep s_frameTime;
+        Point m_time;
+    };
+
+    class Time
+    {
+    public:
+        static TimePoint Now();
+
+    private:
+        Time() {}
+        ~Time() {}
     };
 
 } // namespace ant

@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Core/Core.hpp"
+#include "Core/Time.hpp"
 
 namespace ant
 {
@@ -14,7 +15,7 @@ namespace ant
         friend class LayerStack;
 
         virtual void OnAttach() = 0;
-        virtual void OnUpdate() = 0;
+        virtual void OnUpdate(TimeStep ts) = 0;
         virtual void OnDraw() = 0;
         virtual void OnDetach() = 0;
         virtual void OnEvent(Event *event) = 0;
@@ -40,7 +41,7 @@ namespace ant
         inline const_reverse_iterator crbegin() { return LayerStackStorageType::crbegin(); }
         inline const_reverse_iterator crend() { return LayerStackStorageType::crend(); }
 
-        void OnUpdate();
+        void OnUpdate(TimeStep ts);
         void OnDraw();
         void OnEvent(Event *event);
 

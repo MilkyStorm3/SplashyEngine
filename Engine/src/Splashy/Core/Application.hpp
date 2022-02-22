@@ -2,6 +2,7 @@
 #include "Graphics/Window.hpp"
 #include "Layer.hpp"
 #include "Render/RendererCommands.hpp"
+#include "Core/Time.hpp"
 
 namespace ant
 {

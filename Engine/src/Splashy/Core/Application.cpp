@@ -24,7 +24,7 @@ namespace ant
         Logger::Init();
         RendererCommands::Init();
         Input::Init();
-        
+
         CORE_TRACE("Hello!");
 
         m_window = Window::Create();
@@ -40,10 +40,19 @@ namespace ant
 
     void Application::Run()
     {
+        static TimePoint lastFrameTime = Time::Now();
 
         while (m_appdata.running)
-        {
-            m_layerStack.OnUpdate();
+        {            
+            TimePoint time = Time::Now();
+            TimeStep frameTime = time - lastFrameTime;
+            lastFrameTime = time;
+
+            // TimeStep time = glfwGetTime();
+            // s_frameTime = time - lastFrameTime;
+            // lastFrameTime = time;
+
+            m_layerStack.OnUpdate(frameTime);
             RendererCommands::Clear();
 
             m_layerStack.OnDraw();

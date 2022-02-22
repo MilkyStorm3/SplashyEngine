@@ -14,7 +14,7 @@ namespace Editor
         ~EditorLayer() {}
 
         virtual void OnAttach() override;
-        virtual void OnUpdate() override;
+        virtual void OnUpdate(ant::TimeStep ts) override;
         virtual void OnDraw() override;
         virtual void OnDetach() override;
         virtual void OnEvent(ant::Event *event) override;

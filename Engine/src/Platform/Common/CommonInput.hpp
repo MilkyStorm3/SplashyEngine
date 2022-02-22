@@ -3,7 +3,7 @@
 
 namespace ant::Common
 {
-
+ 
     class CommonInput : public ant::Input
     {
     public:

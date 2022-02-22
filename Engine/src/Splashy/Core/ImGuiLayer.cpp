@@ -60,7 +60,7 @@ namespace ant
         ImGui_ImplOpenGL3_Init("#version 450");
     }
 
-    void ImGuiLayer::OnUpdate()
+    void ImGuiLayer::OnUpdate(TimeStep ts)
     {
         ImGuiIO &io = ImGui::GetIO();
         auto size = Application::GetInstance()->GetWindow().GetSize();

@@ -9,11 +9,11 @@
 //-------- plan
 //? material system from shader specification
 
-//todo rewrite/abstract textures
-
 //todo create camera system
 
-//todo update timer
+//todo update timestep
+
+//? revisit input class
 
 
 //-------- improvement
@@ -23,8 +23,7 @@
 
 
 //-------- refactor
-//? simplify window class
-//? abstract texture class
+//? rewrite/abstract texture class
 
 //-------- editor
 //? memory ussage tracking panel

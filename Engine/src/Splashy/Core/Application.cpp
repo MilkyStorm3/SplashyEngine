@@ -23,14 +23,15 @@ namespace ant
 
         ant::Logger::Init();
 
+        RendererCommands::Init();
+
         CORE_TRACE("Hello!");
 
-        m_window.SetEventCallback(CORE_BIND_EVENT_FN(this, Application::OnEvent));
+        m_window = Window::Create();
 
-        m_window.Init({m_appdata.windowSettings.width,
-                       m_appdata.windowSettings.height,
-                       m_appdata.windowSettings.title,
-                       true, false});
+        m_window->SetEventCallback(CORE_BIND_EVENT_FN(this, Application::OnEvent));
+
+        m_window->Init(m_appdata.windowSettings.title, m_appdata.windowSettings.width, m_appdata.windowSettings.height, true);
 
         m_layerStack.PushOverlay(MakeRef<ImGuiLayer>());
 
@@ -46,7 +47,7 @@ namespace ant
             RendererCommands::Clear();
 
             m_layerStack.OnDraw();
-            m_window.Update();
+            m_window->Update();
         }
     }
 

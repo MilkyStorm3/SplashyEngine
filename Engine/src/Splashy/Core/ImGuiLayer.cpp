@@ -56,7 +56,7 @@ namespace ant
         io.KeyMap[ImGuiKey_Z] = int(KeyCode::KEY_Z);
 
         auto window = Application::GetInstance()->GetWindow().GetNativeWindow();
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)window, true);
         ImGui_ImplOpenGL3_Init("#version 450");
     }
 

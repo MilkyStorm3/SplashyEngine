@@ -36,7 +36,7 @@ namespace ant
 
         inline RenderApi GetRenderApi() { return m_appdata.renderApi; }
 
-        const Window &GetWindow() const { return m_window; }
+        const Window &GetWindow() const { return *m_window; }
 
         static Application *GetInstance() { return s_instance; }
 
@@ -47,7 +47,7 @@ namespace ant
 
     private:
         AppSettings m_appdata;
-        Window m_window;
+        Ref<Window> m_window;
 
     protected:
         LayerStack m_layerStack;

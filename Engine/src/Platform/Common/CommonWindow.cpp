@@ -1,82 +1,103 @@
-#include "Pch.h"
-#include "Graphics/Window.hpp"
+#include "CommonWindow.hpp"
 #include <Gl.h>
-#include "Utilities/Instrumentation.hpp"
-#include "Render/RendererCommands.hpp"
-#include "Utilities/InstrumentationMacros.hpp"
-#include "Input/Event.hpp"
-#include "Core/Core.hpp"
-#include "Graphics/GraphicsContext.hpp"
-namespace ant
+#include <Input/Event.hpp>
+
+namespace ant::Common
 {
+    static size_t s_windowCount = 0;
 
-    Window::~Window()
+    CommonWindow::CommonWindow()
     {
-        CORE_GENERAL_PROFILE_FUNC();
-        glfwDestroyWindow(m_nativeWindow);
     }
 
-    void Window::Update()
+    CommonWindow::~CommonWindow()
     {
-        CORE_GENERAL_PROFILE_FUNC();
-        glfwSwapBuffers(m_nativeWindow);
-        glfwPollEvents();
+        glfwDestroyWindow(m_window);
+        --s_windowCount;
+
+        if (s_windowCount == 0)
+            glfwTerminate();
     }
 
-    void Window::SetResizeability(bool resizeable)
+    void CommonWindow::Init(const std::string &title, uint32_t width, uint32_t height, bool resizeable)
     {
-        m_properties.resizeable = resizeable;
 
-        int gl_bool = resizeable ? GL_TRUE : GL_FALSE;
+        if (s_windowCount == 0)
+        {
+            CORE_ASSERT(glfwInit(), "Failed to initialize GLFW ");
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        }
 
-        glfwWindowHint(GLFW_RESIZABLE, gl_bool);
-    }
+        m_window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
 
-    void Window::SetVsync(bool vsync)
-    {
-        m_properties.vsync = vsync;
-
-        glfwSwapInterval(int(vsync));
-    }
-
-    void Window::SetWindowSize(int width, int height)
-    {
-        m_properties.width = width;
-        m_properties.height = height;
-    }
-
-    void Window::Init(const Properties &props)
-    {
-        CORE_GENERAL_PROFILE_FUNC();
-        RendererCommands::Init();        
-
-        m_nativeWindow = glfwCreateWindow(props.width, props.height, props.title.c_str(), NULL, NULL);
-
-        if (m_nativeWindow == NULL)
+        if (m_window == NULL)
         {
             CORE_ASSERT(false, "Failed to create GLFW window");
             glfwTerminate();
         }
+        ++s_windowCount;
 
-
-        m_context = GraphicsContext::Create(m_nativeWindow);
+        m_context = GraphicsContext::Create(m_window);
         m_context->Init();
+        SetVsync(true);
 
+        int res = resizeable ? GL_TRUE : GL_FALSE;
+        glfwWindowHint(GLFW_RESIZABLE, res);
 
-        SetVsync(props.vsync);
-        SetResizeability(props.resizeable);
+        CORE_ASSERT(m_callback, "Window callback function not set. It has to be initialized before Init() call!");
 
-        m_properties = props;
+        SetCallbacks();
+    }
 
-        CORE_ASSERT(m_eventCallback, "Window callback function is not set!");
+    void CommonWindow::Update()
+    {
+        glfwPollEvents();
+        m_context->SwapBuffers();
+    }
 
-        // set callbacks
-        {
-            glfwSetWindowUserPointer(m_nativeWindow, this);
+    void CommonWindow::SetEventCallback(const EventCallback &callback)
+    {
+        m_callback = callback;
+    }
 
-            glfwSetKeyCallback(m_nativeWindow, [](GLFWwindow *window, int key, int scancode, int action, int mods)
-                               {
-                                   auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+    void CommonWindow::SetVsync(bool vsync)
+    {
+        m_vSync = vsync;
+        glfwSwapInterval(int(m_vSync));
+    }
+
+    bool CommonWindow::IsVsync() const
+    {
+        return m_vSync;
+    }
+
+    void *CommonWindow::GetNativeWindow() const
+    {
+        return m_window;
+    }
+
+    const Window::EventCallback &CommonWindow::GetEventCallback() const
+    {
+        return m_callback;
+    }
+
+    glm::ivec2 CommonWindow::GetSize() const
+    {
+        glm::ivec2 size;
+        glfwGetWindowSize(m_window, &size.x, &size.y);
+        return size;
+    }
+
+    void CommonWindow::SetCallbacks()
+    {
+
+        glfwSetWindowUserPointer(m_window, this);
+
+        glfwSetKeyCallback(m_window, [](GLFWwindow *window, int key, int scancode, int action, int mods)
+                           {
+                                   auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
                                    auto EventCallback = windowPtr->GetEventCallback();
 
                                    KeyCode myKey = KeyCode(key);
@@ -104,12 +125,11 @@ namespace ant
                                    }
                                    default:
                                        break;
-                                   }
-                               });
+                                   } });
 
-            glfwSetMouseButtonCallback(m_nativeWindow, [](GLFWwindow *window, int button, int action, int mods)
-                                       {
-                                           auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+        glfwSetMouseButtonCallback(m_window, [](GLFWwindow *window, int button, int action, int mods)
+                                   {
+                                           auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
                                            auto EventCallback = windowPtr->GetEventCallback();
 
                                            auto myButton = MouseButtonCode(button);
@@ -131,39 +151,35 @@ namespace ant
 
                                            default:
                                                break;
-                                           }
-                                       });
+                                           } });
 
-            glfwSetScrollCallback(m_nativeWindow, [](GLFWwindow *window, double xoffset, double yoffset)
-                                  {
-                                      auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+        glfwSetScrollCallback(m_window, [](GLFWwindow *window, double xoffset, double yoffset)
+                              {
+                                      auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
                                       auto EventCallback = windowPtr->GetEventCallback();
 
                                       MouseScrolledEvent e({xoffset, yoffset});
-                                      EventCallback(e);
-                                  });
+                                      EventCallback(e); });
 
-            glfwSetCursorPosCallback(m_nativeWindow, [](GLFWwindow *window, double xpos, double ypos)
-                                     {
-                                         auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+        glfwSetCursorPosCallback(m_window, [](GLFWwindow *window, double xpos, double ypos)
+                                 {
+                                         auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
                                          auto EventCallback = windowPtr->GetEventCallback();
 
                                          MouseMovedEvent e({xpos, ypos});
-                                         EventCallback(e);
-                                     });
+                                         EventCallback(e); });
 
-            glfwSetWindowCloseCallback(m_nativeWindow, [](GLFWwindow *window)
-                                       {
-                                           auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+        glfwSetWindowCloseCallback(m_window, [](GLFWwindow *window)
+                                   {
+                                           auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
                                            auto EventCallback = windowPtr->GetEventCallback();
 
                                            WindowClosedEvent e;
-                                           EventCallback(e);
-                                       });
+                                           EventCallback(e); });
 
-            glfwSetWindowFocusCallback(m_nativeWindow, [](GLFWwindow *window, int iconified)
-                                       {
-                                           auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+        glfwSetWindowFocusCallback(m_window, [](GLFWwindow *window, int iconified)
+                                   {
+                                           auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
                                            auto EventCallback = windowPtr->GetEventCallback();
 
                                            switch (iconified)
@@ -182,20 +198,15 @@ namespace ant
                                            }
                                            default:
                                                break;
-                                           }
-                                       });
+                                           } });
 
-            glfwSetWindowSizeCallback(m_nativeWindow, [](GLFWwindow *window, int width, int height)
-                                      {
-                                          auto *windowPtr = (Window *)glfwGetWindowUserPointer(window);
+        glfwSetWindowSizeCallback(m_window, [](GLFWwindow *window, int width, int height)
+                                  {
+                                          auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
                                           auto EventCallback = windowPtr->GetEventCallback();
 
                                           WindowRezisedEvent e({width, height});
-                                          windowPtr->SetWindowSize(width, height);
                                           glViewport(0, 0, width, height);
-                                          EventCallback(e);
-                                      });
-        }
+                                          EventCallback(e); });
     }
-
-} // namespace ant
+}

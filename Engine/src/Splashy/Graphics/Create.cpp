@@ -10,6 +10,8 @@
 #include <Platform/OpenGl/OpenGlUniformBuffer.hpp>
 #include <Platform/OpenGl/OpenGlGraphicsContext.hpp>
 
+#include <Platform/Common/CommonWindow.hpp>
+
 namespace ant
 {
     Ref<FrameBuffer> FrameBuffer::Create(const FramebufferSpecification &specs)
@@ -89,6 +91,17 @@ namespace ant
 
         if (api == RenderApi::OpenGl)
             return MakeScope<OpenGl::GlGraphicsContext>(nativeWindow);
+
+        CORE_ASSERT(false, "Picked RenderApi is not suported");
+        return nullptr;
+    }
+
+    Ref<Window> Window::Create() // todo make it os dependent instead of api
+    {
+        auto api = RendererCommands::GetRenderApi();
+
+        if (api == RenderApi::OpenGl)
+            return MakeRef<Common::CommonWindow>();
 
         CORE_ASSERT(false, "Picked RenderApi is not suported");
         return nullptr;

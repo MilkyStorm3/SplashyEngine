@@ -1,59 +1,34 @@
 #pragma once
 #include <stdint.h>
-#include <array>
 #include <string>
 #include <functional>
-#include <glm/glm.hpp>
-#include "Graphics/GraphicsContext.hpp"
-class GLFWwindow;
+#include <glm/vec2.hpp>
+#include "Core/Core.hpp"
 
 namespace ant
 {
+
     class Event;
     class Window
     {
-    public:
+    protected:
         using EventCallback = std::function<void(Event &)>;
 
-        struct Properties
-        {
-            uint32_t width, height;
-            std::string title;
-            bool vsync = false;
-            bool resizeable = true;
-        };
-
     public:
-        Window(){}
-        ~Window();
+        static Ref<Window> Create();
 
-        void Init(const Properties &props);
-        void Update();
+        Window() {}
+        virtual ~Window() {}
 
-        void SetEventCallback(EventCallback callback) { m_eventCallback = callback; }
-        EventCallback GetEventCallback() const { return m_eventCallback; }
+        virtual void Init(const std::string &title, uint32_t width, uint32_t height, bool resizeable) = 0;
+        virtual void Update() = 0;
 
-        inline GLFWwindow *GetNativeWindow() const { return m_nativeWindow; }
-        inline glm::ivec2 GetSize() const { return {m_properties.width, m_properties.height}; }
+        virtual void SetEventCallback(const EventCallback &callback) = 0;
+        virtual void SetVsync(bool vsync) = 0;
+        virtual bool IsVsync() const = 0;
+        virtual void *GetNativeWindow() const = 0;
 
-        void SetResizeability(bool resizeable);
-        bool IsResizeable() const { return m_properties.resizeable; }
-
-        void SetVsync(bool vsync);
-        bool IsVsync() const { return m_properties.vsync; }
-
-    private: // private functions for updating window size
-        friend std::function<void(GLFWwindow *window, int width, int height)> f();
-        friend class Input;
-        void SetWindowSize(int width, int height);
-
-    private: //member varibles        
-        GLFWwindow *m_nativeWindow;
-        Properties m_properties;
-        EventCallback m_eventCallback;
-
-        Scope<GraphicsContext> m_context;
-        
+        virtual glm::ivec2 GetSize() const = 0;
     };
 
 } // namespace ant

@@ -4,7 +4,7 @@
 #include <string>
 #include <functional>
 #include <glm/glm.hpp>
-
+#include "Graphics/GraphicsContext.hpp"
 class GLFWwindow;
 
 namespace ant
@@ -47,10 +47,13 @@ namespace ant
         friend class Input;
         void SetWindowSize(int width, int height);
 
-    private: //member varibles
+    private: //member varibles        
         GLFWwindow *m_nativeWindow;
         Properties m_properties;
         EventCallback m_eventCallback;
+
+        Scope<GraphicsContext> m_context;
+        
     };
 
 } // namespace ant

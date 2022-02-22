@@ -6,7 +6,7 @@
 #include "Utilities/InstrumentationMacros.hpp"
 #include "Input/Event.hpp"
 #include "Core/Core.hpp"
-
+#include "Graphics/GraphicsContext.hpp"
 namespace ant
 {
 
@@ -58,8 +58,10 @@ namespace ant
             glfwTerminate();
         }
 
-        glfwMakeContextCurrent(m_nativeWindow);
-        RendererCommands::InitApiIfNeeded();
+
+        m_context = GraphicsContext::Create(m_nativeWindow);
+        m_context->Init();
+
 
         SetVsync(props.vsync);
         SetResizeability(props.resizeable);

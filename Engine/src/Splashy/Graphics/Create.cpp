@@ -8,6 +8,7 @@
 #include <Platform/OpenGl/OpenGlVertexLayout.hpp>
 #include <Platform/OpenGl/OpenGlShader.hpp>
 #include <Platform/OpenGl/OpenGlUniformBuffer.hpp>
+#include <Platform/OpenGl/OpenGlGraphicsContext.hpp>
 
 namespace ant
 {
@@ -77,6 +78,17 @@ namespace ant
 
         if (api == RenderApi::OpenGl)
             return MakeRef<OpenGl::GlUniformBuffer>(size, binding);
+
+        CORE_ASSERT(false, "Picked RenderApi is not suported");
+        return nullptr;
+    }
+
+    Scope<GraphicsContext> GraphicsContext::Create(void *nativeWindow)
+    {
+        auto api = RendererCommands::GetRenderApi();
+
+        if (api == RenderApi::OpenGl)
+            return MakeScope<OpenGl::GlGraphicsContext>(nativeWindow);
 
         CORE_ASSERT(false, "Picked RenderApi is not suported");
         return nullptr;

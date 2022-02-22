@@ -19,7 +19,6 @@ namespace ant
 
         // exposed functions
         static void Init();
-        static void InitApiIfNeeded();
         static void Shutdown();
         static void SetClearColor(const glm::vec4 &color);
         static void Clear();
@@ -28,7 +27,6 @@ namespace ant
 
     protected:
         virtual void Init_IMPL() = 0;
-        virtual void InitApiIfNeeded_IMPL() = 0;
         virtual void Shutdown_IMPL() = 0;
         virtual void SetClearColor_IMPL(const glm::vec4 &color) = 0;
         virtual void Clear_IMPL() = 0;

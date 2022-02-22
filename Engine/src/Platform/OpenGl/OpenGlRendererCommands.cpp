@@ -54,28 +54,4 @@ namespace ant::OpenGl
         Clear();
     }
 
-    void GlRendererCommands::InitApiIfNeeded_IMPL()
-    {
-        CORE_INTERMEDIATE_PROFILE_FUNC();
-
-        static bool initialized = false;
-        if (!initialized)
-        {
-            GLenum glewInitState = glewInit();
-            CORE_ASSERT(glewInitState == GLEW_OK, "Failed to initialize glew");
-
-            CORE_INFO("Started OpenGL {0}", glGetString(GL_VERSION));
-            glEnable(GL_DEBUG_OUTPUT);
-            glDebugMessageCallback(&ant::OpenGl::Error::ErrorFunc, NULL);
-
-            // glEnable(GL_BLEND);
-            // glEnable(GL_DEPTH_TEST);
-            // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            // glClearDepth(1.f);
-            // glDepthFunc(GL_LEQUAL);
-
-            initialized = true;
-        }
-    }
-
-}
+} 

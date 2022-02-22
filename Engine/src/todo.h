@@ -7,15 +7,14 @@
 
 
 //-------- plan
-//todo material system from shader specification
+//? material system from shader specification
 
 //todo rewrite/abstract textures
-
-//todo rebuild instrumentation tools -> shader compilation timming
 
 //todo create camera system
 
 //todo update timer
+
 
 //-------- improvement
 
@@ -26,4 +25,10 @@
 //-------- refactor
 //? simplify window class
 //? abstract texture class
+
+//-------- editor
+//? memory ussage tracking panel
+//? console panel to print logs
+
+
 

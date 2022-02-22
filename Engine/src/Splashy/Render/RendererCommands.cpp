@@ -32,12 +32,6 @@ namespace ant
         s_instance->Init_IMPL();
     }
 
-    void RendererCommands::InitApiIfNeeded()
-    {
-        CORE_ASSERT(s_instance, "Renderer commands not initialized");
-        s_instance->InitApiIfNeeded_IMPL();
-    }
-
     void RendererCommands::Shutdown()
     {
         if (s_instance)

@@ -38,10 +38,10 @@ namespace ant
     }
 
     template <class _Type>
-    using UniqueRef = std::unique_ptr<_Type>;
+    using Scope = std::unique_ptr<_Type>;
 
     template <class _Type, class ..._Args>
-    inline UniqueRef<_Type> MakeUniqueRef(_Args... args){
+    inline Scope<_Type> MakeScope(_Args... args){
         return std::make_unique<_Type>(args...);
     }
 #define CORE_BIND_EVENT_FN(target,fn) std::bind(&fn, target, std::placeholders::_1)

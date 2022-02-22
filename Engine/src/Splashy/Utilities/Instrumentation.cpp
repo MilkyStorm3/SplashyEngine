@@ -24,7 +24,7 @@ namespace ant
 
     void Instrumentor::InitSession(const std::string &name, InstrumentationLevel level)
     {
-        auto session = MakeUniqueRef<Session>(level);
+        auto session = MakeScope<Session>(level);
         session->Start(name);
 
         s_activeSessions[name] = std::move(session);

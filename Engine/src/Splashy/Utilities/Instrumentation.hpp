@@ -48,7 +48,7 @@ namespace ant
             size_t m_profileCount = 0;
         };
 
-        using map = std::unordered_map<std::string, UniqueRef<Session>>;
+        using map = std::unordered_map<std::string, Scope<Session>>;
 
     public:
         static void InitSession(const std::string &name, InstrumentationLevel level);

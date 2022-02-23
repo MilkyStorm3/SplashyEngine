@@ -12,8 +12,8 @@ namespace ant::OpenGl
 
         virtual void Set(std::initializer_list<AttributeType> args) override;
 
-        virtual void Enable() override;
-        virtual void Disable() override;
+        virtual void Enable() const override;
+        virtual void Disable() const override;
 
         virtual void PushAttribute(AttributeType attribute) override;
         virtual uint32_t GetVertexSize() const override { return m_vertexSize; }

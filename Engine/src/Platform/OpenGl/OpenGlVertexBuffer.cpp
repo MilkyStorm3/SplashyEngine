@@ -29,7 +29,7 @@ namespace ant::OpenGl
         glDeleteVertexArrays(1, &m_vertexArrayGlId);
     }
 
-    void GlVertexBuffer::Bind()
+    void GlVertexBuffer::Bind() const
     {
         CORE_DETAILED_PROFILE_FUNC();
 
@@ -38,7 +38,7 @@ namespace ant::OpenGl
         m_layout->Enable();
     }
 
-    void GlVertexBuffer::UnBind()
+    void GlVertexBuffer::UnBind() const
     {
         CORE_DETAILED_PROFILE_FUNC();
 

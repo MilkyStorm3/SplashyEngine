@@ -15,7 +15,16 @@
 //? dynamic linking
 
 //-------- urgent
-
+    //! BUILD SYSTEM OPTIMIZATIONS
+        //? glew        OK
+        //? glfw        OK
+        //? ImGui       OK
+        //? spirv_cross OK
+        //? shaderc  ???
+        //? entt     ???
+        //? json     ???
+        //? glm      ???
+        //? stblog   ???
 
 //-------- refactor
 //? rewrite/abstract texture class

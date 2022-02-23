@@ -1,14 +1,14 @@
 
 #include "ImGuiLayer.hpp"
 
-#include <imgui/backends/imgui_impl_opengl3.h>
-#include <imgui/backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
 
 #include "Application.hpp"
 
 #include <Gl.h>
 
-#include <imgui/imgui.h>
+#include <imgui.h>
 
 #include "Input/KeyCodes.hpp"
 #include <Core/Application.hpp>

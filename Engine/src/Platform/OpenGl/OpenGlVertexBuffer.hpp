@@ -9,8 +9,8 @@ namespace ant::OpenGl
     public:
         GlVertexBuffer();
         ~GlVertexBuffer();
-        virtual void Bind() override;
-        virtual void UnBind() override;
+        virtual void Bind() const override;
+        virtual void UnBind() const override;
         virtual void UploadData(float *data, size_t size) override;
         virtual Ref<VertexLayout> GetLayout() override { return m_layout; }
         virtual void SetLayout(Ref<VertexLayout> layout) override { m_layout = layout; }

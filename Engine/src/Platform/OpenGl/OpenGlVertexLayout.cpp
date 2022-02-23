@@ -60,7 +60,7 @@ namespace ant::OpenGl
         CalcVertexSize();
     }
 
-    void GlVertexLayout::Enable()
+    void GlVertexLayout::Enable() const
     {
         CORE_INTERMEDIATE_PROFILE_FUNC();
         uint32_t pointerVal = 0;
@@ -73,7 +73,7 @@ namespace ant::OpenGl
         }
     }
 
-    void GlVertexLayout::Disable()
+    void GlVertexLayout::Disable() const
     {
         CORE_INTERMEDIATE_PROFILE_FUNC();
         for (size_t i = 0; i < m_layoutTypes.size(); i++)
@@ -81,7 +81,7 @@ namespace ant::OpenGl
     }
 
     void GlVertexLayout::PushAttribute(AttributeType attribute)
-    {        
+    {
         m_layoutTypes.push_back(attribute);
         CalcVertexSize();
     }

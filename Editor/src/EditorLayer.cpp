@@ -1,5 +1,5 @@
 #include "EditorLayer.hpp"
-#include <imgui/imgui.h>
+#include <imgui.h>
 #include "Core/Application.hpp"
 #include "Render/Renderer.hpp"
 #include "Render/RendererCommands.hpp"
@@ -9,8 +9,6 @@
 #include "Graphics/VertexBuffer.hpp"
 #include "Utilities/Instrumentation.hpp"
 #include "Input/Input.hpp"
-
-#include <Gl.h>
 
 namespace Editor
 {
@@ -118,8 +116,9 @@ namespace Editor
         auto mouse = ant::Input::MousePos();
 
         ImGui::Text("Frametime: %fms", ts.MilliSeconds());
-
+        ImGui::NewLine();
         ImGui::Text("Mouse x:%f y:%f", mouse.x, mouse.y);
+        ImGui::NewLine();
 
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_W))
             ImGui::Text("W pressed");
@@ -154,25 +153,14 @@ namespace Editor
         vb->GetLayout()->PushAttribute(ant::AttributeType::vec3f);
         vb->UploadData(&vertices[0], sizeof(vertices));
 
-        vb->Bind();
-
-        m_shader->Bind();
-
         auto ib = ant::IndexBuffer::Create();
 
         uint32_t indices[] = {
             0, 1, 2, 2, 3, 0};
 
         ib->UploadData(&indices[0], sizeof(indices));
-        ib->Bind();
 
-        m_shader->Bind();
-
-        glDrawElements(
-            GL_TRIANGLES,
-            ib->GetCount(),
-            GL_UNSIGNED_INT,
-            (void *)0);
+        ant::RendererCommands::DrawIndexed(m_shader, vb, ib);
 
         m_framebuffer->UnBind();
     }

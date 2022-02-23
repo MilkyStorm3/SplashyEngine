@@ -16,12 +16,12 @@ namespace ant::OpenGl
         glDeleteBuffers(1, &m_glId);
     }
 
-    void GlIndexBuffer::Bind()
+    void GlIndexBuffer::Bind() const
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_glId);
     }
 
-    void GlIndexBuffer::UnBind()
+    void GlIndexBuffer::UnBind() const
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }

@@ -18,10 +18,10 @@ namespace ant::OpenGl
         virtual void FromSource(const std::string &name, const std::string &vertexSrc, const std::string &fragmentSrc) override;
         virtual void Init() override;
 
-        virtual void Bind() override;
-        virtual void UnBind() override;
+        virtual void Bind() const override;
+        virtual void UnBind() const override;
 
-        virtual const std::string &GetName() override { return m_name; }
+        virtual const std::string &GetName() const override { return m_name; }
 
     private:
         void Parse(const std::filesystem::path &filePath);

@@ -10,8 +10,8 @@ namespace ant::OpenGl
         GlIndexBuffer();
         ~GlIndexBuffer();
 
-        virtual void Bind() override;
-        virtual void UnBind() override;
+        virtual void Bind() const override;
+        virtual void UnBind() const override;
         virtual void UploadData(uint32_t *data, size_t size) override;
 
         virtual uint32_t GetCount() const override { return m_count; }

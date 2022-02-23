@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef SPL_PCH_CREATE
-
 #include <fstream>
 #include <sstream>
 #include <regex>
@@ -13,16 +11,12 @@
 #include <filesystem>
 
 #include <glm/glm.hpp>
+#include <nlohmann/json.hpp>
 
-#include "Input/KeyCodes.hpp"
 #include "Core/Logger.hpp"
 #include "Core/Core.hpp"
-#include "Core/Logger.hpp"
-#include "Utilities/Instrumentation.hpp"
 #include "Input/Event.hpp"
 #include "Core/Random.hpp"
 #include "Input/Input.hpp"
 #include "Core/Time.hpp"
-#include "Core/Types.hpp"
-
-#endif
+#include "Utilities/InstrumentationMacros.hpp"

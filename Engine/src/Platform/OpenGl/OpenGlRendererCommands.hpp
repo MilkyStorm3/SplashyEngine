@@ -16,6 +16,7 @@ namespace ant::OpenGl
         virtual void SetClearColor_IMPL(const glm::vec4 &color) override;
         virtual void Clear_IMPL() override;
         virtual void Clear_IMPL(const glm::vec4 &color) override;
+        virtual void DrawIndexed_IMPL(const Ref<Shader> &shader, const Ref<VertexBuffer> &vertices, const Ref<IndexBuffer> &indices) override;
     };
 
 } // namespace ant::OpenGl

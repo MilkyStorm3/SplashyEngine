@@ -11,9 +11,9 @@
 
 #include <nlohmann/json.hpp>
 #include <shaderc/shaderc.hpp>
-#include <spirv_cross/spirv_cross.hpp>
-#include <spirv_cross/spirv_glsl.hpp>
-#include <spirv_cross/spirv_reflect.hpp>
+#include <spirv_cross.hpp>
+#include <spirv_glsl.hpp>
+#include <spirv_reflect.hpp>
 
 namespace ant::OpenGl
 {
@@ -246,13 +246,13 @@ namespace ant::OpenGl
         CORE_INFO("Shader [{0}] created in {1} ms", m_name, timer.ElapsedMillis());
     }
 
-    void GlShader::Bind()
+    void GlShader::Bind() const
     {
         CORE_DETAILED_PROFILE_FUNC();
         glUseProgram(m_glProgram);
     }
 
-    void GlShader::UnBind()
+    void GlShader::UnBind() const
     {
         CORE_DETAILED_PROFILE_FUNC();
         glUseProgram(0);

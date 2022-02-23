@@ -36,4 +36,17 @@ namespace ant::OpenGl
         Clear();
     }
 
+    void GlRendererCommands::DrawIndexed_IMPL(const Ref<Shader> &shader, const Ref<VertexBuffer> &vertices, const Ref<IndexBuffer> &indices)
+    {
+        shader->Bind();
+        vertices->Bind();
+        indices->Bind();
+
+        glDrawElements(GL_TRIANGLES, indices->GetCount(), GL_UNSIGNED_INT, (void *)0);
+
+        indices->UnBind();
+        vertices->UnBind();
+        shader->UnBind();
+    }
+
 }

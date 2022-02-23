@@ -20,7 +20,6 @@ namespace ant
     class VertexLayout
     {
     public:
-        
         static Ref<VertexLayout> Create();
 
         VertexLayout(){};
@@ -35,13 +34,13 @@ namespace ant
          * @brief  Enables given vertex layout in opengl calls glVertexAttribPointer(idx) and glEnableVertexAttribArray(idx)
          * @retval None
          */
-        virtual void Enable() = 0;
+        virtual void Enable() const = 0;
 
         /**
          * @brief  Disables every single attribute by calling glDisableVertexAttribArray(idx);
          * @retval None
          */
-        virtual void Disable() = 0;
+        virtual void Disable() const = 0;
 
         /**
          * @brief Add new vertex attribute to the list

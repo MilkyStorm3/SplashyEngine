@@ -48,10 +48,6 @@ namespace ant
             TimeStep frameTime = time - lastFrameTime;
             lastFrameTime = time;
 
-            // TimeStep time = glfwGetTime();
-            // s_frameTime = time - lastFrameTime;
-            // lastFrameTime = time;
-
             m_layerStack.OnUpdate(frameTime);
             RendererCommands::Clear();
 

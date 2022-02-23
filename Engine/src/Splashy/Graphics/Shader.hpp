@@ -22,18 +22,18 @@ namespace ant
         virtual void LoadFromFile(const std::filesystem::path &filePath) = 0;
 
         /* Create from strings */
-        virtual void FromSource(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) = 0;
+        virtual void FromSource(const std::string &name, const std::string &vertexSrc, const std::string &fragmentSrc) = 0;
 
         /* Compiles and links shader */
         virtual void Init() = 0;
 
         /* Requires init call before */
-        virtual void Bind() = 0;
-        virtual void UnBind() = 0;
+        virtual void Bind() const = 0;
+        virtual void UnBind() const = 0;
 
-        virtual const std::string& GetName() = 0;
+        virtual const std::string &GetName() const = 0;
 
-        //todo material interface
+        // todo material interface
     };
 
 }

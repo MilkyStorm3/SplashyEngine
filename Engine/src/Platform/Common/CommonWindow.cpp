@@ -6,6 +6,7 @@
 namespace ant::Common
 {
     static size_t s_windowCount = 0;
+    void GlfwErrorCallback(int error_code, const char *description);
 
     CommonWindow::CommonWindow()
     {
@@ -29,6 +30,7 @@ namespace ant::Common
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+            glfwSetErrorCallback(&GlfwErrorCallback);
         }
 
         m_window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);

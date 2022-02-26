@@ -34,13 +34,14 @@ namespace ant::OpenGl
         CORE_INFO(" Version {0}", glGetString(GL_VERSION));
 
         glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(&ant::OpenGl::Error::ErrorFunc, NULL);
 
-        // glEnable(GL_BLEND);
-        // glEnable(GL_DEPTH_TEST);
-        // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        // glClearDepth(1.f);
-        // glDepthFunc(GL_LEQUAL);
+        glEnable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //TODO abstract
+        glClearDepth(1.f);
+        glDepthFunc(GL_LEQUAL);
     }
 
     void GlGraphicsContext::SwapBuffers()

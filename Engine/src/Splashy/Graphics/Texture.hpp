@@ -1,8 +1,6 @@
 #pragma once
 #include "Core/Core.hpp"
-#include <vector>
-#include <string>
-#include <glm/vec2.hpp>
+#include <filesystem>
 
 namespace ant
 {
@@ -10,65 +8,34 @@ namespace ant
     class Texture
     {
     public:
-        inline static Ref<Texture> Create() { return MakeRef<Texture>(); }
-        static Ref<Texture> Create(const std::string &filePath);
-        static Ref<Texture> Create(const glm::ivec2 &dimensions, uint32_t channelCount = 4);
+        Texture() {}
+        virtual ~Texture() {}
 
-        inline static Ref<Texture> Create(int width, int height, uint32_t channelCount = 4) { return Create({width, height}, channelCount); }
+        Texture(const Texture &other) = delete;
 
-        Texture(bool keepLocalBuffer = false);
-        ~Texture();
+        virtual uint32_t GetRendererId() const = 0;
+        virtual void Bind(uint32_t slot = 0) const = 0;
+        virtual void SetData(void *data, uint32_t size) = 0;
 
-        void LoadFromFile(const std::string &filePath);
-        void Upload(uint32_t slot);
-        void ClearLocalBuffer();
-        void SetKeepLocalBuffer(bool keep = true) { m_keepLocalBuffer = keep; }
-        void SetData(void *data, int32_t size);
-        inline const glm::ivec2 &GetSize() const { return m_dimensions; }
-        int32_t GetSlot() { return m_slot; }
-
-    private:
-        void SetFormat(uint32_t channelCount);
-
-    private:
-        static std::unordered_map<std::string,Ref<Texture>> s_loadedTextures;
-
-        uint32_t m_glId;
-        uchar *m_rawData = nullptr;
-        glm::ivec2 m_dimensions;
-        bool m_keepLocalBuffer;
-        bool m_uploaded = false;
-        int32_t m_slot = -1;
-        uint32_t m_internalFormat;
-        uint32_t m_subimageFormat;
+        virtual bool IsLoaded() const = 0;
     };
 
-    struct TextureRect
-    {
-        float left, bottom;
-        float width, height;
-    };
-
-    class SubTexture
+    class Texture2D : public Texture
     {
     public:
-        friend class OldQuad;
-        friend class Renderer2D;
+        /**
+         * @param path: Path to a texture image
+         * @retval Ref to uploaded ready to bind texture
+         */
+        static Ref<Texture2D> Create(const std::filesystem::path &path);
+        /**
+         * @param path: Dimensions of new texture
+         * @retval Ref to texture prepared to recieve data by @ref Texture::SetData(void *data, uint32_t size)
+         */
+        static Ref<Texture2D> Create(uint32_t width, uint32_t height);
 
-        static Ref<SubTexture> Create(Ref<Texture> tex, const glm::vec2& indecies, const glm::vec2& tileSize, const glm::vec2& cellSize = {1,1});
-
-        SubTexture(Ref<Texture> tex);
-        ~SubTexture(){}
-
-        void SetRegion(const TextureRect &region);        
-        Ref<Texture> GetTexture() const { return m_mainTexture; }
-
-    private:
-        std::array<glm::vec2, 4> GetCoordinateData() const { return m_coordinates; }
-
-    private:
-        Ref<Texture> m_mainTexture;
-        std::array<glm::vec2, 4> m_coordinates;
+        virtual uint32_t GetSizeX() const = 0;
+        virtual uint32_t GetSizeY() const = 0;
     };
 
 } // namespace ant

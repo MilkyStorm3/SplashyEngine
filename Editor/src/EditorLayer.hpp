@@ -3,6 +3,8 @@
 #include <Graphics/FrameBuffer.hpp>
 
 #include <Graphics/Shader.hpp>
+#include <Graphics/Texture.hpp>
+#include <Graphics/UniformBuffer.hpp>
 
 namespace Editor
 {
@@ -22,6 +24,7 @@ namespace Editor
     private:
         ant::Ref<ant::FrameBuffer> m_framebuffer;
         ant::Ref<ant::Shader> m_shader;
+        ant::Ref<ant::Texture2D> m_texture;
     };
 
 }

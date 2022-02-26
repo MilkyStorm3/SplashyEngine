@@ -4,6 +4,28 @@
 
 namespace ant::OpenGl
 {
+    namespace Utils
+    {
+        static uint32_t GetComponentCount(AttributeType type){
+            switch (type)
+            {
+            case AttributeType::vec1f : return 1; break;
+            case AttributeType::vec2f : return 2; break;
+            case AttributeType::vec3f : return 3; break;
+            case AttributeType::vec4f : return 4; break;
+            case AttributeType::vec1ui : return 1; break;
+            case AttributeType::vec2ui : return 2; break;
+            case AttributeType::vec3ui : return 3; break;
+            case AttributeType::vec4ui : return 4; break;
+            
+            default:
+                CORE_ASSERT(false, "invalid enum");
+                break;
+            }
+        }
+        
+    } // namespace Utils
+    
     GlVertexLayout::GlVertexLayout()
     {
         m_layoutTypes.reserve(3);
@@ -20,32 +42,25 @@ namespace ant::OpenGl
         return -1;
     }
 
-    inline uint32_t GlVertexLayout::GetAttribPrimitiveTypeSize(AttributeType type) const
-    {
-        if (uint32_t(type) <= 4)
-            return sizeof(float);
-
-        if (uint32_t(type) <= 8 && uint32_t(type) > 4)
-            return sizeof(uint32_t);
-
-        return -1;
-    }
-
     uint32_t GlVertexLayout::GetAttribTypeSize(AttributeType type) const
     {
-        return GetAttribTypeComponentCount(type) * GetAttribPrimitiveTypeSize(type);
-    }
+        switch (type)
+        {
+        case AttributeType::vec1f: return sizeof(float)*1;break;
+        case AttributeType::vec2f: return sizeof(float)*2;break;
+        case AttributeType::vec3f: return sizeof(float)*3;break;
+        case AttributeType::vec4f: return sizeof(float)*4;break;
 
-    inline uint32_t GlVertexLayout::GetAttribTypeComponentCount(AttributeType type) const
-    {
-        uint32_t mod = uint32_t(type) % 5;
-
-        if (mod)
-            return mod;
-        else
-            return mod + 1;
-
-        return -1;
+        case AttributeType::vec1ui: return sizeof(uint32_t)*1;break;
+        case AttributeType::vec2ui: return sizeof(uint32_t)*2;break;
+        case AttributeType::vec3ui: return sizeof(uint32_t)*3;break;
+        case AttributeType::vec4ui: return sizeof(uint32_t)*4;break;
+        
+        default:
+            CORE_ASSERT(false, "invalid enum");
+            return 0;
+            break;
+        }
     }
 
     GlVertexLayout::~GlVertexLayout()
@@ -67,7 +82,7 @@ namespace ant::OpenGl
         for (size_t i = 0; i < m_layoutTypes.size(); i++)
         {
             auto &ref = m_layoutTypes.at(i);
-            glVertexAttribPointer(i, GetAttribTypeComponentCount(ref), GetAttribGlType(ref), GL_FALSE, m_vertexSize, (void *)pointerVal);
+            glVertexAttribPointer(i, Utils::GetComponentCount(ref), GetAttribGlType(ref), GL_FALSE, m_vertexSize, (void *)pointerVal);
             glEnableVertexAttribArray(i);
             pointerVal += GetAttribTypeSize(ref);
         }

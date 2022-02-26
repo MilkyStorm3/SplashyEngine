@@ -1,33 +1,25 @@
 //-------- workflow
 //? add a release version of runtume exception other than asserts, these are debug only
 
+//-------- further
+//? material system from shader specification
 
 
 //-------- safety
 
 
 //-------- plan
-//? material system from shader specification
 
 //todo create camera system
 
 //-------- improvement
-//? dynamic linking
+//? texture mipmaps
 
 //-------- urgent
-    //! BUILD SYSTEM OPTIMIZATIONS
-        //? glew        OK
-        //? glfw        OK
-        //? ImGui       OK
-        //? spirv_cross OK
-        //? shaderc  ???
-        //? entt     ???
-        //? json     ???
-        //? glm      ???
-        //? stblog   ???
 
 //-------- refactor
 //? rewrite/abstract texture class
+//? add debug macro definitions from cmake
 
 //-------- editor
 //? memory ussage tracking panel

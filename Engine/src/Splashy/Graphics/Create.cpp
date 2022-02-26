@@ -9,6 +9,7 @@
 #include <Platform/OpenGl/OpenGlShader.hpp>
 #include <Platform/OpenGl/OpenGlUniformBuffer.hpp>
 #include <Platform/OpenGl/OpenGlGraphicsContext.hpp>
+#include <Platform/OpenGl/OpenGlTexture2D.hpp>
 
 #include <Platform/Common/CommonWindow.hpp>
 
@@ -102,6 +103,28 @@ namespace ant
 
         if (api == RenderApi::OpenGl)
             return MakeRef<Common::CommonWindow>();
+
+        CORE_ASSERT(false, "Picked RenderApi is not suported");
+        return nullptr;
+    }
+
+    Ref<Texture2D> Texture2D::Create(const std::filesystem::path &path)
+    {
+        auto api = RendererCommands::GetRenderApi();
+
+        if (api == RenderApi::OpenGl)
+            return MakeRef<OpenGl::GlTexture2D>(path);
+
+        CORE_ASSERT(false, "Picked RenderApi is not suported");
+        return nullptr;
+    }
+
+    Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height)
+    {
+        auto api = RendererCommands::GetRenderApi();
+
+        if (api == RenderApi::OpenGl)
+            return MakeRef<OpenGl::GlTexture2D>(width, height);
 
         CORE_ASSERT(false, "Picked RenderApi is not suported");
         return nullptr;

@@ -24,8 +24,8 @@ namespace ant::OpenGl
     private:
         uint32_t GetAttribTypeSize(AttributeType type) const;
         inline uint32_t GetAttribGlType(AttributeType type) const;
-        inline uint32_t GetAttribPrimitiveTypeSize(AttributeType type) const;
-        inline uint32_t GetAttribTypeComponentCount(AttributeType type) const;
+        // inline uint32_t GetAttribPrimitiveTypeSize(AttributeType type) const;
+        // inline uint32_t GetAttribTypeComponentCount(AttributeType type) const;
 
         std::vector<AttributeType> m_layoutTypes;
         uint32_t m_vertexSize = 0;

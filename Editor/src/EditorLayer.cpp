@@ -79,7 +79,10 @@ namespace Editor
 
         m_framebuffer = ant::FrameBuffer::Create(spec);
 
-        m_shader = ant::Shader::Create("assets/shaders/testShader.glsl", true);
+        m_shader = ant::Shader::Create("assets/shaders/textureShader.glsl", true);
+        m_texture = ant::Texture2D::Create("assets/textures/heart-emoticon.png");
+
+        m_texture->Bind(0);
     }
 
     void EditorLayer::OnUpdate(ant::TimeStep ts)
@@ -137,20 +140,29 @@ namespace Editor
 
     void EditorLayer::OnDraw()
     {
-        m_framebuffer->Bind();
+        m_framebuffer->Bind();        
+        m_texture->Bind(0);
+
 
         // ant::RendererCommands::Clear({1.f, 0.f, 1.f, 1.f}); // magenta
         ant::RendererCommands::Clear({0.145f, 0.156f, 0.419f, 1.f});
 
         float vertices[] = {
-            -0.5f, -0.5f, 0.0f, 0.8, 0.1, 0.1,
-            0.5f, -0.5f, 0.0f, 0.1, 0.8, 0.1,
-            0.5f, 0.5f, 0.0f, 0.1, 0.1, 0.8,
-            -0.5f, 0.5f, 0.0f, 0.7, 0.7, 0.1};
+            -0.5f, -0.5f, 0.0f,    /*  0.8, 0.1, 0.1,  */  0.0f, 0.0f,      0.0f,             
+            0.5f, -0.5f, 0.0f,     /*   0.1, 0.8, 0.1, */  1.0f, 0.0f,      0.0f,
+            0.5f, 0.5f, 0.0f,      /*  0.1, 0.1, 0.8,  */  1.0f, 1.0f,      0.0f,
+            -0.5f, 0.5f, 0.0f,     /*  0.7, 0.7, 0.1,  */  0.0f, 1.0f,      0.0f};
+
+        // float vertices[] = {
+        //     -0.5f, -0.5f, 0.0f, 0.8, 0.1, 0.1,
+        //     0.5f, -0.5f, 0.0f, 0.1, 0.8, 0.1,
+        //     0.5f, 0.5f, 0.0f, 0.1, 0.1, 0.8,
+        //     -0.5f, 0.5f, 0.0f, 0.7, 0.7, 0.1};
 
         auto vb = ant::VertexBuffer::Create();
         vb->GetLayout()->PushAttribute(ant::AttributeType::vec3f);
-        vb->GetLayout()->PushAttribute(ant::AttributeType::vec3f);
+        vb->GetLayout()->PushAttribute(ant::AttributeType::vec2f);
+        vb->GetLayout()->PushAttribute(ant::AttributeType::vec1f);
         vb->UploadData(&vertices[0], sizeof(vertices));
 
         auto ib = ant::IndexBuffer::Create();

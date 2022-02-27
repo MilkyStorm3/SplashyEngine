@@ -29,3 +29,12 @@ target_link_libraries(Engine PUBLIC spdlog)
 target_link_libraries(Engine PUBLIC nlohmann_json)
 target_link_libraries(Engine PUBLIC glm::glm)
 target_link_libraries(Engine PUBLIC ImGui) 
+
+
+if( ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    target_compile_definitions(Engine PRIVATE SPL_DEBUG=1)
+    
+    target_compile_definitions(Engine PRIVATE SPL_ENABLE_PROFILING=1)
+    target_compile_definitions(Engine PRIVATE SPL_ENABLE_ASSERTS=1)
+    target_compile_definitions(Engine PRIVATE SPL_ENABLE_RENDERER_STATS=1)
+endif()

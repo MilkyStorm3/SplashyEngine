@@ -1,6 +1,6 @@
 #include "Instrumentation.hpp"
 
-#ifdef SPL_INSTRUMENTATION
+#ifdef SPL_ENABLE_PROFILING
 #include "Core/Core.hpp"
 
 #include <thread>

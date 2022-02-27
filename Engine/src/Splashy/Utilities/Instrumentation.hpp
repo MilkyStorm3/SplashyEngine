@@ -1,7 +1,6 @@
 #pragma once
-#define SPL_INSTRUMENTATION //! temp define from cmake
 
-#ifdef SPL_INSTRUMENTATION
+#ifdef SPL_ENABLE_PROFILING
 
 #include <string>
 #include <fstream>

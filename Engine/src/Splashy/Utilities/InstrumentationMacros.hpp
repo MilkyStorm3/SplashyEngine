@@ -1,7 +1,7 @@
 #include "Instrumentation.hpp"
 
 
-#ifdef SPL_INSTRUMENTATION
+#ifdef SPL_ENABLE_PROFILING
 
     #ifdef __linux__
 
@@ -16,12 +16,21 @@
 
     #endif
 
-    #ifdef _WIN32 // todo adjust for mvsc compiler
-
-    #define CORE_PROFILE_SCOPE(name) InstrumentationTimer profile##_##__LINE__(name)
-    #define CORE_PROFILE_FUNC() InstrumentationTimer profile##_##__LINE__(__FUNCTION__)
+    #ifdef _WIN32 
+    
+        // todo macros for mvsc compiler
 
     #endif
+
+#else
+
+    #define CORE_GENERAL_PROFILE_SCOPE(name) ;
+    #define CORE_INTERMEDIATE_PROFILE_SCOPE(name) ;
+    #define CORE_DETAILED_PROFILE_SCOPE(name) ;
+
+    #define CORE_GENERAL_PROFILE_FUNC() ;
+    #define CORE_INTERMEDIATE_PROFILE_FUNC() ;
+    #define CORE_DETAILED_PROFILE_FUNC() ;
 
 #endif
 

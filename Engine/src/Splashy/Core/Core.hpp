@@ -3,49 +3,20 @@
 #include <stdint.h>
 #include "Core/Logger.hpp"
 #include "Core/Types.hpp"
+#include "Core/Memory.hpp"
+#include "Core/Macros.hpp"
 
-namespace ant
-{
+#ifdef SPL_ENABLE_ASSERTS
 
-
-#ifdef __linux__ 
-
-#define CORE_BREAK() std::raise(SIGTRAP)
-// #define CORE_BREAK() std::abort();
-
-#endif
-
-#ifdef _WIN32
-
-#define CORE_BREAK() __debugbreak();
-
-#endif
-
-
-#define CORE_ASSERT(x, ...)                                \
-    if (!(x))                                              \
-    {                                                      \
+#define CORE_ASSERT(x, ...)      \
+    if (!(x))                    \
+    {                            \
         CORE_ERROR(__VA_ARGS__); \
-        CORE_BREAK();                                      \
+        CORE_BREAK();            \
     }
 
-    template <class _Type>
-    using Ref = std::shared_ptr<_Type>;
+#else
 
-    template <class _Type, class ..._Args>
-    inline Ref<_Type> MakeRef(_Args... args){
-        return std::make_shared<_Type>(args...);
-    }
+#define CORE_ASSERT(x, ...) ;
 
-    template <class _Type>
-    using Scope = std::unique_ptr<_Type>;
-
-    template <class _Type, class ..._Args>
-    inline Scope<_Type> MakeScope(_Args... args){
-        return std::make_unique<_Type>(args...);
-    }
-#define CORE_BIND_EVENT_FN(target,fn) std::bind(&fn, target, std::placeholders::_1)
-
-} // namespace ant
-
-
+#endif

@@ -81,7 +81,9 @@ namespace Editor
 
         m_shader = ant::Shader::Create("assets/shaders/textureShader.glsl", true);
         m_texture = ant::Texture2D::Create("assets/textures/heart-emoticon.png");
-        m_texture->SetParameter(ant::TextureParam::MagnificationFilter, ant::TextureParamValue::Linear);
+        // m_texture->SetParameter(ant::TextureParam::MagnificationFilter, ant::TextureParamValue::Linear);
+
+        m_framebuffer->SetBlendingMode(ant::BlendingMode::SourceAlpha, ant::BlendingMode::OneMinusSourceAlpha);
 
         m_texture->Bind(0);
     }
@@ -141,18 +143,17 @@ namespace Editor
 
     void EditorLayer::OnDraw()
     {
-        m_framebuffer->Bind();        
+        m_framebuffer->Bind();
         m_texture->Bind(0);
-
 
         // ant::RendererCommands::Clear({1.f, 0.f, 1.f, 1.f}); // magenta
         ant::RendererCommands::Clear({0.145f, 0.156f, 0.419f, 1.f});
 
         float vertices[] = {
-            -0.5f, -0.5f, 0.0f,    /*  0.8, 0.1, 0.1,  */  0.0f, 0.0f,      0.0f,             
-            0.5f, -0.5f, 0.0f,     /*   0.1, 0.8, 0.1, */  1.0f, 0.0f,      0.0f,
-            0.5f, 0.5f, 0.0f,      /*  0.1, 0.1, 0.8,  */  1.0f, 1.0f,      0.0f,
-            -0.5f, 0.5f, 0.0f,     /*  0.7, 0.7, 0.1,  */  0.0f, 1.0f,      0.0f};
+            -0.5f, -0.5f, 0.0f, /*  0.8, 0.1, 0.1,  */ 0.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.0f, /*   0.1, 0.8, 0.1, */ 1.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.0f, /*  0.1, 0.1, 0.8,  */ 1.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.0f, /*  0.7, 0.7, 0.1,  */ 0.0f, 1.0f, 0.0f};
 
         // float vertices[] = {
         //     -0.5f, -0.5f, 0.0f, 0.8, 0.1, 0.1,

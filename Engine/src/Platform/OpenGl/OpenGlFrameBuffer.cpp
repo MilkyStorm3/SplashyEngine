@@ -28,6 +28,41 @@ namespace ant::OpenGl
             CORE_ASSERT(false, "Incorrect color attachment format");
             return 0;
         }
+
+        static GLenum BlendingModeToGL(BlendingMode mode)
+        {
+
+            switch (mode)
+            {
+            case BlendingMode::Zero:
+                return GL_ZERO;
+            case BlendingMode::One:
+                return GL_ONE;
+
+            case BlendingMode::Source:
+                return GL_SRC_COLOR;
+            case BlendingMode::Current:
+                return GL_DST_COLOR;
+
+            case BlendingMode::OneMinusSource:
+                return GL_ONE_MINUS_SRC_COLOR;
+            case BlendingMode::OneMinusCurrent:
+                return GL_ONE_MINUS_DST_COLOR;
+
+            case BlendingMode::SourceAlpha:
+                return GL_SRC_ALPHA;
+            case BlendingMode::CurrentAlpha:
+                return GL_DST_ALPHA;
+
+            case BlendingMode::OneMinusSourceAlpha:
+                return GL_ONE_MINUS_SRC_ALPHA;
+            case BlendingMode::OneMinusCurrentAlpha:
+                return GL_ONE_MINUS_DST_ALPHA;
+            }
+
+            CORE_ASSERT(false, "Unsupported blending mode");
+            return 0;
+        }
     }
 
     GlFrameBuffer::GlFrameBuffer(const FramebufferSpecification &specs)
@@ -105,6 +140,11 @@ namespace ant::OpenGl
 
         auto &att = m_colorAttachments.at(index);
         glClearTexImage(att.GlId, 0, Utils::FBTextureFormatToGL(att.Format), GL_INT, &value);
+    }
+
+    void GlFrameBuffer::SetBlendingMode(BlendingMode source, BlendingMode current)
+    {
+        glBlendFunc(Utils::BlendingModeToGL(source), Utils::BlendingModeToGL(current)); //todo make it targeted call
     }
 
     int GlFrameBuffer::ReadPixel(uint32_t index, int x, int y)

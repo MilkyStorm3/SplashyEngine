@@ -27,6 +27,7 @@ namespace ant::OpenGl
 
     virtual uint32_t GetColorAttachmentRendererId(uint32_t index) override;
     virtual void ClearAttachment(uint32_t index, int value) override;
+    virtual void SetBlendingMode(BlendingMode source, BlendingMode current) override;
     virtual int ReadPixel(uint32_t index, int x, int y) override;
 
   private:

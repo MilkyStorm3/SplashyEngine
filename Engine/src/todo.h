@@ -17,8 +17,8 @@
 //-------- urgent
 
 //-------- refactor
-//? add debug macro definitions from cmake
-//? abstract blend functions to renderer commands
+//? buffer targetting blending
+//? abstract depth testing
 
 //-------- editor
 //? memory ussage tracking panel

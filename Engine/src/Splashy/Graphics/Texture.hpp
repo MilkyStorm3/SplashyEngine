@@ -1,9 +1,39 @@
 #pragma once
 #include "Core/Core.hpp"
 #include <filesystem>
+#include <initializer_list>
+#include <glm/vec4.hpp>
 
 namespace ant
 {
+    enum class TextureParam
+    {
+        None = 0,
+        MagnificationFilter,
+        MinificationFilter,
+
+        XWrap,
+        YWrap,
+        ZWrap
+    };
+
+    enum class TextureParamValue
+    {
+        None = 0,
+
+        Nearest,
+        Linear,
+        NearestMipmapNearest,
+        LinearMipmapNearest,
+        NearestMipmapLinear,
+        LinearMipmapLinear,
+
+        ClampToEdge,
+        ClampToBorder,
+        MirroredRepeat,
+        Repeat,
+        MirrorClampToEdge
+    };
 
     class Texture
     {
@@ -13,11 +43,14 @@ namespace ant
 
         Texture(const Texture &other) = delete;
 
+        virtual bool IsLoaded() const = 0;
         virtual uint32_t GetRendererId() const = 0;
         virtual void Bind(uint32_t slot = 0) const = 0;
         virtual void SetData(void *data, uint32_t size) = 0;
 
-        virtual bool IsLoaded() const = 0;
+        virtual void SetBorderColor(const glm::vec4 &color) = 0;
+        virtual void SetLevelOfDetail(float min = -1000.f, float max = 1000.f) = 0;
+        virtual void SetParameter(TextureParam param, TextureParamValue value) = 0;
     };
 
     class Texture2D : public Texture

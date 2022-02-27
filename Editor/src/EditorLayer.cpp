@@ -81,6 +81,7 @@ namespace Editor
 
         m_shader = ant::Shader::Create("assets/shaders/textureShader.glsl", true);
         m_texture = ant::Texture2D::Create("assets/textures/heart-emoticon.png");
+        m_texture->SetParameter(ant::TextureParam::MagnificationFilter, ant::TextureParamValue::Linear);
 
         m_texture->Bind(0);
     }

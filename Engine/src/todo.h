@@ -13,13 +13,12 @@
 //todo create camera system
 
 //-------- improvement
-//? texture mipmaps
 
 //-------- urgent
 
 //-------- refactor
-//? rewrite/abstract texture class
 //? add debug macro definitions from cmake
+//? abstract blend functions to renderer commands
 
 //-------- editor
 //? memory ussage tracking panel

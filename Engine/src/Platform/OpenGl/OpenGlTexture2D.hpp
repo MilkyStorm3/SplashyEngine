@@ -18,6 +18,10 @@ namespace ant::OpenGl
         virtual void SetData(void *data, uint32_t size) override;
         virtual bool IsLoaded() const override;
 
+        virtual void SetBorderColor(const glm::vec4 &color) override;
+        virtual void SetLevelOfDetail(float min = -1000.f, float max = 1000.f) override;
+        virtual void SetParameter(TextureParam param, TextureParamValue value) override;
+
     private:
         uint32_t m_glID;
         uint16_t m_width;

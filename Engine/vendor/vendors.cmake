@@ -1,6 +1,4 @@
 #glfw ------------------------------------------------------------------
-find_package(OpenGL REQUIRED)
-
 set(GLFW_LIBRARY_TYPE STATIC)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)

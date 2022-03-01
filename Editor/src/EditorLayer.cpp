@@ -80,13 +80,14 @@ namespace Editor
         m_framebuffer = ant::FrameBuffer::Create(spec);
 
         m_shader = ant::Shader::Create("assets/shaders/textureShader.glsl", true);
-        m_texture = ant::Texture2D::Create("assets/textures/heart-emoticon.png");
+        m_texture = ant::Texture2D::Create("assets/textures/test.png");
         // m_texture->SetParameter(ant::TextureParam::MagnificationFilter, ant::TextureParamValue::Linear);
 
         m_framebuffer->SetBlendingMode(ant::BlendingMode::SourceAlpha, ant::BlendingMode::OneMinusSourceAlpha);
 
         m_texture->Bind(0);
     }
+
 
     void EditorLayer::OnUpdate(ant::TimeStep ts)
     {
@@ -113,7 +114,6 @@ namespace Editor
             }
             // move
             ImGui::Image((void *)(m_framebuffer->GetColorAttachmentRendererId(0)), *(ImVec2 *)&viewportPanelSize.x, ImVec2{0, 1}, ImVec2{1, 0});
-
             ImGui::End();
         }
 

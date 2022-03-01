@@ -14,3 +14,8 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/vendor) # ImguiCmake
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 add_subdirectory("${CMAKE_SOURCE_DIR}/Engine")
 add_subdirectory("${CMAKE_SOURCE_DIR}/Editor")
+
+file(COPY ${CMAKE_SOURCE_DIR}/assets
+    DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+

@@ -21,6 +21,12 @@ namespace ant
         s_instance->DrawIndexed_IMPL(shader, vertices, indices);
     }
 
+    void RendererCommands::SetBlendingMode(BlendingMode source, BlendingMode current)
+    {
+        CORE_ASSERT(s_instance, "Renderer commands not initialized");
+        s_instance->SetBlendingMode_IMPL(source, current);
+    }
+
     void RendererCommands::Init()
     {
         if (s_instance)

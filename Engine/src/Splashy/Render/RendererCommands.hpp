@@ -15,6 +15,21 @@ namespace ant
         Vulcan
     };
 
+    enum class BlendingMode
+    {
+        None = 0,
+        Zero,
+        One,
+        Source,
+        Current,
+        OneMinusSource,
+        OneMinusCurrent,
+        SourceAlpha,
+        OneMinusSourceAlpha,
+        CurrentAlpha,
+        OneMinusCurrentAlpha
+    };
+
     class RendererCommands
     {
     public:
@@ -29,6 +44,7 @@ namespace ant
         static void Clear(const glm::vec4 &color);
         static RenderApi GetRenderApi();
         static void DrawIndexed(Ref<Shader> shader, Ref<VertexBuffer> vertices, Ref<IndexBuffer> indices);
+        static void SetBlendingMode(BlendingMode source, BlendingMode current);
 
     protected:
         virtual void Init_IMPL() = 0;
@@ -37,6 +53,7 @@ namespace ant
         virtual void Clear_IMPL() = 0;
         virtual void Clear_IMPL(const glm::vec4 &color) = 0;
         virtual void DrawIndexed_IMPL(const Ref<Shader> &shader, const Ref<VertexBuffer> &vertices, const Ref<IndexBuffer> &indices) = 0;
+        virtual void SetBlendingMode_IMPL(BlendingMode source, BlendingMode current) = 0;
 
     private:
         static std::unique_ptr<RendererCommands> s_instance;

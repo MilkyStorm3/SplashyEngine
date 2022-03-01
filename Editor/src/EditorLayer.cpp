@@ -83,7 +83,7 @@ namespace Editor
         m_texture = ant::Texture2D::Create("assets/textures/test.png");
         // m_texture->SetParameter(ant::TextureParam::MagnificationFilter, ant::TextureParamValue::Linear);
 
-        m_framebuffer->SetBlendingMode(ant::BlendingMode::SourceAlpha, ant::BlendingMode::OneMinusSourceAlpha);
+        ant::RendererCommands::SetBlendingMode(ant::BlendingMode::SourceAlpha, ant::BlendingMode::OneMinusSourceAlpha);
 
         m_texture->Bind(0);
     }

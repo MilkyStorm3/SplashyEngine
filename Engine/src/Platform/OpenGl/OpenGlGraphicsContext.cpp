@@ -36,11 +36,6 @@ namespace ant::OpenGl
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(&ant::OpenGl::Error::ErrorFunc, NULL);
-
-        glEnable(GL_BLEND);
-        glEnable(GL_DEPTH_TEST);
-        glClearDepth(1.f);
-        glDepthFunc(GL_LEQUAL);
     }
 
     void GlGraphicsContext::SwapBuffers()

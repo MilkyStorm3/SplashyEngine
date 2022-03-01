@@ -7,9 +7,50 @@
 #include "Core/Logger.hpp"
 namespace ant::OpenGl
 {
+    namespace Utils
+    {
 
+        static GLenum BlendingModeToGL(BlendingMode mode)
+        {
+
+            switch (mode)
+            {
+            case BlendingMode::Zero:
+                return GL_ZERO;
+            case BlendingMode::One:
+                return GL_ONE;
+
+            case BlendingMode::Source:
+                return GL_SRC_COLOR;
+            case BlendingMode::Current:
+                return GL_DST_COLOR;
+
+            case BlendingMode::OneMinusSource:
+                return GL_ONE_MINUS_SRC_COLOR;
+            case BlendingMode::OneMinusCurrent:
+                return GL_ONE_MINUS_DST_COLOR;
+
+            case BlendingMode::SourceAlpha:
+                return GL_SRC_ALPHA;
+            case BlendingMode::CurrentAlpha:
+                return GL_DST_ALPHA;
+
+            case BlendingMode::OneMinusSourceAlpha:
+                return GL_ONE_MINUS_SRC_ALPHA;
+            case BlendingMode::OneMinusCurrentAlpha:
+                return GL_ONE_MINUS_DST_ALPHA;
+            }
+
+            CORE_ASSERT(false, "Unsupported blending mode");
+            return 0;
+        }
+    }
     void GlRendererCommands::Init_IMPL()
     {
+        glEnable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+        glClearDepth(1.f);
+        glDepthFunc(GL_LEQUAL);
     }
 
     void GlRendererCommands::Shutdown_IMPL()
@@ -47,6 +88,11 @@ namespace ant::OpenGl
         indices->UnBind();
         vertices->UnBind();
         shader->UnBind();
+    }
+
+    void GlRendererCommands::SetBlendingMode_IMPL(BlendingMode source, BlendingMode current)
+    {
+        glBlendFunc(Utils::BlendingModeToGL(source), Utils::BlendingModeToGL(current));
     }
 
 }

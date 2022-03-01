@@ -33,21 +33,6 @@ namespace ant
         FramebufferAtachmentSpecification AttachmentSpecification;
     };
 
-    enum class BlendingMode
-    {
-        None = 0,
-        Zero,
-        One,
-        Source,
-        Current,
-        OneMinusSource,
-        OneMinusCurrent,
-        SourceAlpha,
-        OneMinusSourceAlpha,
-        CurrentAlpha,
-        OneMinusCurrentAlpha
-    };
-
     class FrameBuffer
     {
     public:
@@ -66,8 +51,6 @@ namespace ant
 
         virtual uint32_t GetColorAttachmentRendererId(uint32_t index) = 0;
         virtual void ClearAttachment(uint32_t index, int value) = 0;
-        virtual void SetBlendingMode(BlendingMode source, BlendingMode current) = 0;
-
         virtual int ReadPixel(uint32_t index, int x, int y) = 0;
     };
 

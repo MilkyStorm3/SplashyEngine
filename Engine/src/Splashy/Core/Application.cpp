@@ -22,7 +22,6 @@ namespace ant
     {
         Instrumentor::InitSession("CORE", InstrumentationLevel::General);
         Logger::Init();
-        RendererCommands::Init();
         Input::Init();
 
         CORE_TRACE("Hello!");
@@ -32,6 +31,8 @@ namespace ant
         m_window->SetEventCallback(CORE_BIND_EVENT_FN(this, Application::OnEvent));
 
         m_window->Init(m_appdata.windowSettings.title, m_appdata.windowSettings.width, m_appdata.windowSettings.height, true);
+
+        RendererCommands::Init(); //?call when context is initialized
 
         m_layerStack.PushOverlay(MakeRef<ImGuiLayer>());
 

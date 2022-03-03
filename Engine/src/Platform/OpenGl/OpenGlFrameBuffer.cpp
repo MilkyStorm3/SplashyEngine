@@ -35,7 +35,7 @@ namespace ant::OpenGl
         : m_specs(specs)
     {
         CORE_DETAILED_PROFILE_FUNC();
-        glGenFramebuffers(1, &m_frameBufferGlId);
+        glCreateFramebuffers(1, &m_frameBufferGlId);
 
         bool hasDepth = false;
 
@@ -127,8 +127,6 @@ namespace ant::OpenGl
 
         CORE_ASSERT(m_colorAttachments.size() <= 16, "Framebuffer may have up to 16 color attachments");
 
-        glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferGlId);
-
         // color
         for (size_t i = 0; i < m_colorAttachments.size(); i++)
         {
@@ -138,15 +136,13 @@ namespace ant::OpenGl
 
             glCreateTextures(GL_TEXTURE_2D, 1, &attachment.GlId);
             glTextureStorage2D(attachment.GlId, 1, GL_RGBA8, m_specs.width, m_specs.height);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, attachment.GlId, 0);
+            glNamedFramebufferTexture(m_frameBufferGlId, GL_COLOR_ATTACHMENT0 + i, attachment.GlId, 0);
         }
 
         // depth
         glCreateTextures(GL_TEXTURE_2D, 1, &m_depthAttachment.GlId);
         glTextureStorage2D(m_depthAttachment.GlId, 1, GL_DEPTH24_STENCIL8, m_specs.width, m_specs.height);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_depthAttachment.GlId, 0);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glNamedFramebufferTexture(m_frameBufferGlId, GL_DEPTH_STENCIL_ATTACHMENT, m_depthAttachment.GlId, 0);
 
         CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "FrameBuffer is not complete!");
     }

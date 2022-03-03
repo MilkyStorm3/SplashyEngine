@@ -28,10 +28,8 @@ namespace ant::OpenGl
 
     void GlIndexBuffer::UploadData(uint32_t *data, size_t size)
     {
-        Bind();
         CORE_ASSERT(size, "Size cannot be 0");
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+        glNamedBufferData(m_glId, size, data, GL_STATIC_DRAW);
         m_count = size / sizeof(uint32_t);
-        UnBind();
     }
 }

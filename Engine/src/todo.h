@@ -20,6 +20,9 @@
 //? buffer targetting blending
 //? abstract depth testing
 
+//? change to dsa gl calls
+    //! vertex buffers, layouts -> vertex array
+
 //-------- editor
 //? memory ussage tracking panel
 //? console panel to print logs

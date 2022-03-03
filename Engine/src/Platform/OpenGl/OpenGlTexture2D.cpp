@@ -103,12 +103,6 @@ namespace ant::OpenGl
         glCreateTextures(GL_TEXTURE_2D, 1, &m_glID);
         glTextureStorage2D(m_glID, 1, internalFormat, m_width, m_height);
 
-        // todo PARAMETRIZE THAT
-        glTextureParameteri(m_glID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTextureParameteri(m_glID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTextureParameteri(m_glID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTextureParameteri(m_glID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
         glTextureSubImage2D(m_glID, 0, 0, 0, m_width, m_height, m_inputFormat, GL_UNSIGNED_BYTE, imageData);
         glGenerateTextureMipmap(m_glID);
 

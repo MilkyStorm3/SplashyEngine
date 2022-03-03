@@ -35,7 +35,7 @@ namespace ant::OpenGl
 
         glBindVertexArray(m_vertexArrayGlId);
         glBindBuffer(GL_ARRAY_BUFFER, m_glId);
-        m_layout->Enable();
+        m_layout->Enable(); //this has to be done only once
     }
 
     void GlVertexBuffer::UnBind() const

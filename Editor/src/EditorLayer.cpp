@@ -80,8 +80,8 @@ namespace Editor
         m_framebuffer = ant::FrameBuffer::Create(spec);
 
         m_shader = ant::Shader::Create("assets/shaders/textureShader.glsl", true);
-        m_texture = ant::Texture2D::Create("assets/textures/test.png");
-        // m_texture->SetParameter(ant::TextureParam::MagnificationFilter, ant::TextureParamValue::Linear);
+        m_texture = ant::Texture2D::Create("assets/textures/heart-emoticon.png");
+        m_texture->SetParameter(ant::TextureParam::MagnificationFilter, ant::TextureParamValue::Linear);
 
         ant::RendererCommands::SetBlendingMode(ant::BlendingMode::SourceAlpha, ant::BlendingMode::OneMinusSourceAlpha);
 

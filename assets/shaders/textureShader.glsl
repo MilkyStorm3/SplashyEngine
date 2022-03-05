@@ -7,10 +7,15 @@ layout(location=2) in float tex_id;
 layout(location=0) out vec2 v_texCoord;
 layout(location=1) out float v_texId;
 
+layout(std140, binding = 0) uniform Camera
+{
+	mat4 u_projection;
+};
+
 void main(){
     v_texCoord = tex_coord;
     v_texId = tex_id;
-    gl_Position = vec4(position, 1.0);
+    gl_Position = u_projection * vec4(position, 1.0);
 }
  
 

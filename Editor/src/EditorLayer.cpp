@@ -110,11 +110,15 @@ namespace Editor
         m_vertexArray->AddVertexBuffer(vb);
         m_vertexArray->SetIndexBuffer(ib);
 
+        m_camera = ant::MakeRef<ant::SceneCamera>();
+        m_projectionBuffer = ant::UniformBuffer::Create(sizeof(glm::mat4), 0);
     }
 
     void EditorLayer::OnUpdate(ant::TimeStep ts)
     {
         DockSpace();
+
+        glm::ivec2 viewportBounds[2];
 
         {
             ImGui::Begin("Viewport");
@@ -132,23 +136,57 @@ namespace Editor
                 if (viewportPanelSize.x > 3 && viewportPanelSize.y > 3)
                 {
                     m_framebuffer->Resize(viewportPanelSize.x, viewportPanelSize.y);
+                    m_camera->SetAspectRatio(viewportPanelSize.x / viewportPanelSize.y);
                     // todo resize the camera and frame buffer
                 }
             }
             // move
             ImGui::Image((void *)(m_framebuffer->GetColorAttachmentRendererId(0)), *(ImVec2 *)&viewportPanelSize.x, ImVec2{0, 1}, ImVec2{1, 0});
+
+            auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+            auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+            auto viewportOffset = ImGui::GetWindowPos();
+            viewportBounds[0] = {viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y};
+            viewportBounds[1] = {viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y};
+
             ImGui::End();
         }
 
         ImGui::Begin("test");
 
-        auto mouse = ant::Input::MousePos();
+        auto [mx, my] = ImGui::GetMousePos();
+        mx -= viewportBounds[0].x;
+        my -= viewportBounds[0].y;
+        glm::vec2 viewportSize = viewportBounds[1] - viewportBounds[0];
+        my = viewportSize.y - my;
+        int mouseX = (int)mx;
+        int mouseY = (int)my;
 
         ImGui::Text("Frametime: %fms", ts.MilliSeconds());
         ImGui::NewLine();
-        ImGui::Text("Mouse x:%f y:%f", mouse.x, mouse.y);
+        ImGui::Text("Mouse in viewport x:%i y:%i", mouseX, mouseY);
         ImGui::NewLine();
 
+        static float near = -1.f, far = 1.f, size = 10.f;
+        if (ImGui::DragFloat("near", &near, 1, -10, 10))
+        {
+            m_camera->SetOrtographicNearClip(near);
+        }
+        if (ImGui::DragFloat("far", &far, 1, -10, 10))
+        {
+            m_camera->SetOrtographicFarClip(far);
+        }
+        if (ImGui::DragFloat("size", &size, 1, -100, 100))
+        {
+            m_camera->SetOrtographicSize(size);
+        }
+
+        m_projectionBuffer->SetData(&m_camera->GetProjection(), sizeof(glm::mat4));
+
+        ImGui::Text("IsFocued: %s", ImGui::IsWindowFocused() ? "true" : "false");
+        ImGui::Text("IsHovered: %s", ImGui::IsWindowHovered() ? "true" : "false");
+
+        ImGui::NewLine();
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_W))
             ImGui::Text("W pressed");
 
@@ -160,7 +198,6 @@ namespace Editor
 
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_D))
             ImGui::Text("D pressed");
-
         ImGui::End();
     }
 

@@ -20,6 +20,12 @@ namespace ant
         CORE_ASSERT(s_instance, "Renderer commands not initialized");
         s_instance->DrawIndexed_IMPL(shader, vertices, indices);
     }
+    
+    void RendererCommands::DrawIndexed(Ref<Shader> shader, Ref<VertexArray> verticies)
+    {
+        CORE_ASSERT(s_instance, "Renderer commands not initialized");
+        s_instance->DrawIndexed_IMPL(shader, verticies);
+    }
 
     void RendererCommands::SetBlendingMode(BlendingMode source, BlendingMode current)
     {

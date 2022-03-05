@@ -1,8 +1,7 @@
 #pragma once
 #include <glm/vec4.hpp>
 #include <memory>
-#include "Graphics/VertexBuffer.hpp"
-#include "Graphics/IndexBuffer.hpp"
+#include "Graphics/VertexArray.hpp"
 #include "Graphics/Shader.hpp"
 
 namespace ant
@@ -44,6 +43,7 @@ namespace ant
         static void Clear(const glm::vec4 &color);
         static RenderApi GetRenderApi();
         static void DrawIndexed(Ref<Shader> shader, Ref<VertexBuffer> vertices, Ref<IndexBuffer> indices);
+        static void DrawIndexed(Ref<Shader> shader, Ref<VertexArray> verticies);
         static void SetBlendingMode(BlendingMode source, BlendingMode current);
 
     protected:
@@ -52,6 +52,7 @@ namespace ant
         virtual void SetClearColor_IMPL(const glm::vec4 &color) = 0;
         virtual void Clear_IMPL() = 0;
         virtual void Clear_IMPL(const glm::vec4 &color) = 0;
+        virtual void DrawIndexed_IMPL(Ref<Shader> shader, Ref<VertexArray> verticies) = 0;
         virtual void DrawIndexed_IMPL(const Ref<Shader> &shader, const Ref<VertexBuffer> &vertices, const Ref<IndexBuffer> &indices) = 0;
         virtual void SetBlendingMode_IMPL(BlendingMode source, BlendingMode current) = 0;
 

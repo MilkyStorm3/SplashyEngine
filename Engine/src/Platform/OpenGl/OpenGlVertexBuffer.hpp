@@ -15,9 +15,10 @@ namespace ant::OpenGl
         virtual Ref<VertexLayout> GetLayout() override { return m_layout; }
         virtual void SetLayout(Ref<VertexLayout> layout) override { m_layout = layout; }
 
+        virtual uint32_t GetRendererId() const override { return m_glId; }
+
     private:
         uint32_t m_glId;
-        uint32_t m_vertexArrayGlId;
         Ref<VertexLayout> m_layout;
     };
 } // namespace ant::OpenGl

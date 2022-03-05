@@ -86,8 +86,33 @@ namespace Editor
         ant::RendererCommands::SetBlendingMode(ant::BlendingMode::SourceAlpha, ant::BlendingMode::OneMinusSourceAlpha);
 
         m_texture->Bind(0);
-    }
 
+        float vertices[] = {
+            -0.5f, -0.5f, 0.0f, /*  0.8, 0.1, 0.1,  */ 0.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.0f, /*   0.1, 0.8, 0.1, */ 1.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.0f, /*  0.1, 0.1, 0.8,  */ 1.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.0f, /*  0.7, 0.7, 0.1,  */ 0.0f, 1.0f, 0.0f};
+
+        auto vb = ant::VertexBuffer::Create();
+        vb->GetLayout()->PushAttribute(ant::AttributeType::vec3f);
+        vb->GetLayout()->PushAttribute(ant::AttributeType::vec2f);
+        vb->GetLayout()->PushAttribute(ant::AttributeType::vec1f);
+        vb->UploadData(&vertices[0], sizeof(vertices));
+
+        auto ib = ant::IndexBuffer::Create();
+
+        uint32_t indices[] = {
+            0, 1, 2, 2, 3, 0};
+
+        ib->UploadData(&indices[0], sizeof(indices));
+
+        m_vertexArray = ant::VertexArray::Create();
+        m_vertexArray->AddVertexBuffer(vb);
+        m_vertexArray->SetIndexBuffer(ib);
+
+        uint32_t vertSize = m_vertexArray->GetVertexBuffers().at(0)->GetLayout()->GetVertexSize();
+
+    }
 
     void EditorLayer::OnUpdate(ant::TimeStep ts)
     {
@@ -144,37 +169,12 @@ namespace Editor
     void EditorLayer::OnDraw()
     {
         m_framebuffer->Bind();
-        m_texture->Bind(0);
+        // m_texture->Bind(0);
 
-        // ant::RendererCommands::Clear({1.f, 0.f, 1.f, 1.f}); // magenta
+        // // ant::RendererCommands::Clear({1.f, 0.f, 1.f, 1.f}); // magenta
         ant::RendererCommands::Clear({0.145f, 0.156f, 0.419f, 1.f});
 
-        float vertices[] = {
-            -0.5f, -0.5f, 0.0f, /*  0.8, 0.1, 0.1,  */ 0.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, 0.0f, /*   0.1, 0.8, 0.1, */ 1.0f, 0.0f, 0.0f,
-            0.5f, 0.5f, 0.0f, /*  0.1, 0.1, 0.8,  */ 1.0f, 1.0f, 0.0f,
-            -0.5f, 0.5f, 0.0f, /*  0.7, 0.7, 0.1,  */ 0.0f, 1.0f, 0.0f};
-
-        // float vertices[] = {
-        //     -0.5f, -0.5f, 0.0f, 0.8, 0.1, 0.1,
-        //     0.5f, -0.5f, 0.0f, 0.1, 0.8, 0.1,
-        //     0.5f, 0.5f, 0.0f, 0.1, 0.1, 0.8,
-        //     -0.5f, 0.5f, 0.0f, 0.7, 0.7, 0.1};
-
-        auto vb = ant::VertexBuffer::Create();
-        vb->GetLayout()->PushAttribute(ant::AttributeType::vec3f);
-        vb->GetLayout()->PushAttribute(ant::AttributeType::vec2f);
-        vb->GetLayout()->PushAttribute(ant::AttributeType::vec1f);
-        vb->UploadData(&vertices[0], sizeof(vertices));
-
-        auto ib = ant::IndexBuffer::Create();
-
-        uint32_t indices[] = {
-            0, 1, 2, 2, 3, 0};
-
-        ib->UploadData(&indices[0], sizeof(indices));
-
-        ant::RendererCommands::DrawIndexed(m_shader, vb, ib);
+        ant::RendererCommands::DrawIndexed(m_shader, m_vertexArray);
 
         m_framebuffer->UnBind();
     }

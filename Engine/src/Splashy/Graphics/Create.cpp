@@ -10,6 +10,7 @@
 #include <Platform/OpenGl/OpenGlUniformBuffer.hpp>
 #include <Platform/OpenGl/OpenGlGraphicsContext.hpp>
 #include <Platform/OpenGl/OpenGlTexture2D.hpp>
+#include <Platform/OpenGl/OpenGlVertexArray.hpp>
 
 #include <Platform/Common/CommonWindow.hpp>
 
@@ -125,6 +126,17 @@ namespace ant
 
         if (api == RenderApi::OpenGl)
             return MakeRef<OpenGl::GlTexture2D>(width, height);
+
+        CORE_ASSERT(false, "Picked RenderApi is not suported");
+        return nullptr;
+    }
+
+    Ref<VertexArray> VertexArray::Create()
+    {
+        auto api = RendererCommands::GetRenderApi();
+
+        if (api == RenderApi::OpenGl)
+            return MakeRef<OpenGl::GlVertexArray>();
 
         CORE_ASSERT(false, "Picked RenderApi is not suported");
         return nullptr;

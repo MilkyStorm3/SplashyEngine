@@ -52,6 +52,7 @@ namespace ant
          * @return Size of single vertex for given layout (RAW BYTES)
          */
         virtual uint32_t GetVertexSize() const = 0;
+
     };
 
 } // namespace ant

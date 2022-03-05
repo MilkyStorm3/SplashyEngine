@@ -30,6 +30,7 @@ namespace ant
         virtual void UploadData(float *data, size_t size) = 0;
         virtual Ref<VertexLayout> GetLayout() = 0;
         virtual void SetLayout(Ref<VertexLayout> layout) = 0;
+        virtual uint32_t GetRendererId() const = 0;
 
     public:
         template <size_t _size>

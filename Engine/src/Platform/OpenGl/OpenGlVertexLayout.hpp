@@ -18,13 +18,11 @@ namespace ant::OpenGl
         virtual void PushAttribute(AttributeType attribute) override;
         virtual uint32_t GetVertexSize() const override { return m_vertexSize; }
 
-    private:
-        void CalcVertexSize();
+        const std::vector<AttributeType> &GetRawAttribs() const { return m_layoutTypes; }
+
+        void SetVertexSize(uint32_t size){m_vertexSize = size;}
 
     private:
-        uint32_t GetAttribTypeSize(AttributeType type) const;
-        inline uint32_t GetAttribGlType(AttributeType type) const;
-
         std::vector<AttributeType> m_layoutTypes;
         uint32_t m_vertexSize = 0;
     };

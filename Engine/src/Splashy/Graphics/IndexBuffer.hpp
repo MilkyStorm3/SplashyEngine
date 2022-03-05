@@ -31,6 +31,8 @@ namespace ant
          */
         virtual uint32_t GetCount() const = 0;
 
+        virtual uint32_t GetRendererId() const = 0;
+
     public: // overloads
         template <size_t _size>
         inline void UploadData(std::array<uint32_t, _size> array)

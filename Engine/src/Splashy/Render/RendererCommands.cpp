@@ -1,9 +1,8 @@
 #include "Core/Application.hpp"
 #include "RendererCommands.hpp"
-#include <Gl.h>
 #include "Core/Core.hpp"
-#include <stb_image.h>
 #include "Utilities/Instrumentation.hpp"
+
 #include "Platform/OpenGl/OpenGlRendererCommands.hpp"
 
 namespace ant

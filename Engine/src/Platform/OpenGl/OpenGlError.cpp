@@ -1,4 +1,4 @@
-#include <Gl.h>
+#include <GL/glew.h> 
 #include <string>
 #include "Core/Logger.hpp"
 #include "Core/Core.hpp"

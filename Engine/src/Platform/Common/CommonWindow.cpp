@@ -1,5 +1,5 @@
 #include "CommonWindow.hpp"
-#include <Gl.h>
+#include <GLFW/glfw3.h> 
 #include <Input/Event.hpp>
 #include "CommonInput.hpp"
 

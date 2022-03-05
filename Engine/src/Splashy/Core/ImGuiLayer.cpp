@@ -6,7 +6,7 @@
 
 #include "Application.hpp"
 
-#include <Gl.h>
+#include <GLFW/glfw3.h>
 
 #include <imgui.h>
 

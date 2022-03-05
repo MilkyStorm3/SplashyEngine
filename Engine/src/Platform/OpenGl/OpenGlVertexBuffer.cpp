@@ -1,7 +1,7 @@
 #include "OpenGlVertexBuffer.hpp"
 #include <Utilities/InstrumentationMacros.hpp>
 #include <Core/Core.hpp>
-#include <Gl.h>
+#include <GL/glew.h> 
 
 namespace ant::OpenGl
 {

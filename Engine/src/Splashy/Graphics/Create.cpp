@@ -1,6 +1,5 @@
 #include "Pch.h"
 #include "Render/RendererCommands.hpp"
-#include <Gl.h>
 
 #include <Platform/OpenGl/OpenGlFrameBuffer.hpp>
 #include <Platform/OpenGl/OpenGlVertexBuffer.hpp>

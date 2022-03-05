@@ -110,8 +110,6 @@ namespace Editor
         m_vertexArray->AddVertexBuffer(vb);
         m_vertexArray->SetIndexBuffer(ib);
 
-        uint32_t vertSize = m_vertexArray->GetVertexBuffers().at(0)->GetLayout()->GetVertexSize();
-
     }
 
     void EditorLayer::OnUpdate(ant::TimeStep ts)
@@ -169,9 +167,8 @@ namespace Editor
     void EditorLayer::OnDraw()
     {
         m_framebuffer->Bind();
-        // m_texture->Bind(0);
 
-        // // ant::RendererCommands::Clear({1.f, 0.f, 1.f, 1.f}); // magenta
+        // ant::RendererCommands::Clear({1.f, 0.f, 1.f, 1.f}); // magenta
         ant::RendererCommands::Clear({0.145f, 0.156f, 0.419f, 1.f});
 
         ant::RendererCommands::DrawIndexed(m_shader, m_vertexArray);

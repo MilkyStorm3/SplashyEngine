@@ -1,6 +1,7 @@
 #include "OpenGlGraphicsContext.hpp"
 #include <Utilities/InstrumentationMacros.hpp>
-#include <Gl.h>
+#include <GL/glew.h> 
+#include <GLFW/glfw3.h>
 
 namespace ant::OpenGl
 {

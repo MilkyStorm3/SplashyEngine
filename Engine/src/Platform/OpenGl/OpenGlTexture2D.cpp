@@ -1,7 +1,8 @@
+#include <GL/glew.h>
+
 #include "OpenGlTexture2D.hpp"
 #include "stb_image.h"
 #include <numeric>
-#include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace ant::OpenGl

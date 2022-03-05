@@ -1,8 +1,5 @@
 #include "Editor.hpp"
 
-void test();
-
-#include <iostream>
 int main()
 {
     
@@ -11,8 +8,6 @@ int main()
     app->Init();
     app->Run();
     delete app;
-
-    // test();
 
     return 0;
 }

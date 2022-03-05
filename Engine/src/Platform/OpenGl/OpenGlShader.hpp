@@ -1,7 +1,7 @@
 #pragma once
 #include <Graphics/Shader.hpp>
 #include <unordered_map>
-#include <GlTypes.h>
+#include "GlTypes.h"
 #include <nlohmann/json.hpp>
 #include <Render/RendererCommands.hpp>
 

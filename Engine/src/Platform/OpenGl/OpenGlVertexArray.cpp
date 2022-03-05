@@ -1,6 +1,7 @@
 #include "OpenGlVertexArray.hpp"
-#include <Gl.h>
+#include <GL/glew.h> 
 #include "OpenGlVertexBuffer.hpp"
+#include <Utilities/InstrumentationMacros.hpp>
 
 namespace ant::OpenGl
 {
@@ -125,11 +126,13 @@ namespace ant::OpenGl
 
     GlVertexArray::GlVertexArray()
     {
+        CORE_DETAILED_PROFILE_FUNC();
         glCreateVertexArrays(1, &m_glId);
     }
 
     GlVertexArray::~GlVertexArray()
     {
+        CORE_DETAILED_PROFILE_FUNC();
         glDeleteVertexArrays(1, &m_glId);
     }
 
@@ -140,6 +143,7 @@ namespace ant::OpenGl
 
     void GlVertexArray::AddVertexBuffer(Ref<VertexBuffer> vertexBuffer)
     {
+        CORE_INTERMEDIATE_PROFILE_FUNC();
         //! if new layout attrib is added GlLayout is not updated
         Ref<GlVertexLayout> layout = std::static_pointer_cast<GlVertexLayout>(vertexBuffer->GetLayout());
 
@@ -169,6 +173,7 @@ namespace ant::OpenGl
 
     void GlVertexArray::SetIndexBuffer(Ref<IndexBuffer> indexBuffer)
     {
+        CORE_INTERMEDIATE_PROFILE_FUNC();
         m_indexBuffer = indexBuffer;
         uint32_t indexBufferId = m_indexBuffer->GetRendererId();
         glVertexArrayElementBuffer(m_glId, indexBufferId);

@@ -1,5 +1,5 @@
 #include "OpenGlRendererCommands.hpp"
-#include <Gl.h>
+#include <GL/glew.h> 
 #include "Core/Core.hpp"
 #include <stb_image.h>
 #include <Utilities/InstrumentationMacros.hpp>
@@ -49,7 +49,6 @@ namespace ant::OpenGl
     {
         glEnable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
-        glClearDepth(1.f);
         glDepthFunc(GL_LEQUAL);
     }
 

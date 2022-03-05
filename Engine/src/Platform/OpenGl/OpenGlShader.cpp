@@ -1,9 +1,9 @@
+#include <GL/glew.h> 
 #include "OpenGlShader.hpp"
 
 #include <Utilities/InstrumentationMacros.hpp>
 #include <Utilities/Timer.hpp>
 
-#include <Gl.h>
 #include <filesystem>
 #include <fstream>
 #include <functional>

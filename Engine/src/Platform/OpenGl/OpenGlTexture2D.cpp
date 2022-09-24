@@ -159,7 +159,7 @@ namespace ant::OpenGl
     {
         CORE_INTERMEDIATE_PROFILE_FUNC();
         uint16_t cpp = m_inputFormat == GL_RGBA ? 4 : 3;
-        CORE_ASSERT(cpp * m_width * m_glID == size, "Data size must cover entire texture");
+        CORE_ASSERT(cpp * m_width * m_height == size, "Data size must cover entire texture");
         glTextureSubImage2D(m_glID, 0, 0, 0, m_width, m_height, m_inputFormat, GL_UNSIGNED_BYTE, data);
     }
 

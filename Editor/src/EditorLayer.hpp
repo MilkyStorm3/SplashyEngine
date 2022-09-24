@@ -24,12 +24,10 @@ namespace Editor
         virtual void OnEvent(ant::Event *event) override;
 
     private:
-        ant::Ref<ant::FrameBuffer> m_framebuffer;
-        ant::Ref<ant::Shader> m_shader;
-        ant::Ref<ant::Texture2D> m_texture;
-        ant::Ref<ant::VertexArray> m_vertexArray;
-        ant::Ref<ant::UniformBuffer> m_projectionBuffer;
-        ant::Ref<ant::SceneCamera> m_camera;
+        uint32_t *m_imageData = nullptr;
+        ant::Ref<ant::Texture2D> m_imageTexture;
+
+        void PerPixel(uint32_t &pixel, float x, float y);
     };
 
 }

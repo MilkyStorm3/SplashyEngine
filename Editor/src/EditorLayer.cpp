@@ -74,44 +74,9 @@ namespace Editor
 
         auto size = ant::Application::GetInstance()->GetWindow().GetSize();
 
-        ant::FramebufferSpecification spec = {
-            size.x, size.y, {ant::FramebufferTextureFormat::RGBA8, ant::FramebufferTextureFormat::DEPTH24STENCIL8}};
-
-        m_framebuffer = ant::FrameBuffer::Create(spec);
-
-        m_shader = ant::Shader::Create("assets/shaders/textureShader.glsl", true);
-        m_texture = ant::Texture2D::Create("assets/textures/heart-emoticon.png");
-        m_texture->SetParameter(ant::TextureParam::MagnificationFilter, ant::TextureParamValue::Linear);
-
         ant::RendererCommands::SetBlendingMode(ant::BlendingMode::SourceAlpha, ant::BlendingMode::OneMinusSourceAlpha);
 
-        m_texture->Bind(0);
-
-        float vertices[] = {
-            -0.5f, -0.5f, 0.0f, /*  0.8, 0.1, 0.1,  */ 0.0f, 0.0f, 0.0f,
-            0.5f, -0.5f, 0.0f, /*   0.1, 0.8, 0.1, */ 1.0f, 0.0f, 0.0f,
-            0.5f, 0.5f, 0.0f, /*  0.1, 0.1, 0.8,  */ 1.0f, 1.0f, 0.0f,
-            -0.5f, 0.5f, 0.0f, /*  0.7, 0.7, 0.1,  */ 0.0f, 1.0f, 0.0f};
-
-        auto vb = ant::VertexBuffer::Create();
-        vb->GetLayout()->PushAttribute(ant::AttributeType::vec3f);
-        vb->GetLayout()->PushAttribute(ant::AttributeType::vec2f);
-        vb->GetLayout()->PushAttribute(ant::AttributeType::vec1f);
-        vb->UploadData(&vertices[0], sizeof(vertices));
-
-        auto ib = ant::IndexBuffer::Create();
-
-        uint32_t indices[] = {
-            0, 1, 2, 2, 3, 0};
-
-        ib->UploadData(&indices[0], sizeof(indices));
-
-        m_vertexArray = ant::VertexArray::Create();
-        m_vertexArray->AddVertexBuffer(vb);
-        m_vertexArray->SetIndexBuffer(ib);
-
-        m_camera = ant::MakeRef<ant::SceneCamera>();
-        m_projectionBuffer = ant::UniformBuffer::Create(sizeof(glm::mat4), 0);
+        m_imageData = new uint32_t[1000000]; // BIG buffer of pixels
     }
 
     void EditorLayer::OnUpdate(ant::TimeStep ts)
@@ -122,26 +87,42 @@ namespace Editor
 
         {
             ImGui::Begin("Viewport");
-            // ant::ImGuiLayer::SetEventBlocking(!(ImGui::IsWindowFocused() && ImGui::IsWindowHovered())); //todo
 
             static glm::vec2 viewportPanelSize = {0, 0};
 
             auto currentViewportPanelSize = ImGui::GetContentRegionAvail();
 
+            if (!m_imageTexture)
+            {
+                m_imageTexture = ant::Texture2D::Create(currentViewportPanelSize.x, currentViewportPanelSize.y);
+            }
+
+            for (size_t y = 0; y < currentViewportPanelSize.y; y++)
+            {
+                for (size_t x = 0; x < currentViewportPanelSize.x; x++)
+                {
+                    size_t i = x + y * currentViewportPanelSize.x;
+                    float uvx = ((float)x / (float)currentViewportPanelSize.x) * 2.f - 1.f;
+                    float uvy = ((float)y / (float)currentViewportPanelSize.y) * 2.f - 1.f;
+
+                    PerPixel(m_imageData[i], uvx, uvy);
+                }
+            }
+
             if (viewportPanelSize != *(glm::vec2 *)&currentViewportPanelSize.x)
             {
                 viewportPanelSize = *(glm::vec2 *)&currentViewportPanelSize.x;
 
-                // CORE_WARN("PanelSize: x - {0}, y - {1}", viewportPanelSize.x, viewportPanelSize.y);
                 if (viewportPanelSize.x > 3 && viewportPanelSize.y > 3)
                 {
-                    m_framebuffer->Resize(viewportPanelSize.x, viewportPanelSize.y);
-                    m_camera->SetAspectRatio(viewportPanelSize.x / viewportPanelSize.y);
-                    // todo resize the camera and frame buffer
+                    auto [x, y] = currentViewportPanelSize;
+                    m_imageTexture = ant::Texture2D::Create(x, y);
                 }
             }
-            // move
-            ImGui::Image((void *)(m_framebuffer->GetColorAttachmentRendererId(0)), *(ImVec2 *)&viewportPanelSize.x, ImVec2{0, 1}, ImVec2{1, 0});
+
+            auto [x, y] = currentViewportPanelSize;
+            m_imageTexture->SetData(m_imageData, x * y * 4);
+            ImGui::Image((void *)(m_imageTexture->GetRendererId()), *(ImVec2 *)&viewportPanelSize.x, ImVec2{0, 1}, ImVec2{1, 0});
 
             auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
             auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
@@ -167,58 +148,37 @@ namespace Editor
         ImGui::Text("Mouse in viewport x:%i y:%i", mouseX, mouseY);
         ImGui::NewLine();
 
-        static float near = -1.f, far = 1.f, size = 10.f;
-        if (ImGui::DragFloat("near", &near, 1, -10, 10))
-        {
-            m_camera->SetOrtographicNearClip(near);
-        }
-        if (ImGui::DragFloat("far", &far, 1, -10, 10))
-        {
-            m_camera->SetOrtographicFarClip(far);
-        }
-        if (ImGui::DragFloat("size", &size, 1, -100, 100))
-        {
-            m_camera->SetOrtographicSize(size);
-        }
-
-        m_projectionBuffer->SetData(&m_camera->GetProjection(), sizeof(glm::mat4));
-
-        ImGui::Text("IsFocued: %s", ImGui::IsWindowFocused() ? "true" : "false");
-        ImGui::Text("IsHovered: %s", ImGui::IsWindowHovered() ? "true" : "false");
-
-        ImGui::NewLine();
-        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_W))
-            ImGui::Text("W pressed");
-
-        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_A))
-            ImGui::Text("A pressed");
-
-        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_S))
-            ImGui::Text("S pressed");
-
-        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_D))
-            ImGui::Text("D pressed");
         ImGui::End();
     }
 
     void EditorLayer::OnDraw()
     {
-        m_framebuffer->Bind();
-
-        // ant::RendererCommands::Clear({1.f, 0.f, 1.f, 1.f}); // magenta
-        ant::RendererCommands::Clear({0.145f, 0.156f, 0.419f, 1.f});
-
-        ant::RendererCommands::DrawIndexed(m_shader, m_vertexArray);
-
-        m_framebuffer->UnBind();
     }
 
     void EditorLayer::OnDetach()
     {
+        delete[] m_imageData;
     }
 
     void EditorLayer::OnEvent(ant::Event *event)
     {
+    }
+
+    void EditorLayer::PerPixel(uint32_t &pixel, float x, float y)
+    {
+
+        if (x < 0)
+            x = -x;
+
+        if (y < 0)
+            y = -y;
+
+        // pixel = 0xff00ffff;
+        uint8_t r = (uint8_t)(x * 255.f);
+        uint8_t g = (uint8_t)(y * 255.f);
+        uint8_t b = 0x88;
+
+        pixel = 0xff000000 | (b << 16) | (g << 8) | r;
     }
 
 }

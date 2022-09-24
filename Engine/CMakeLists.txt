@@ -7,7 +7,7 @@ add_library(Engine SHARED ${ENGINE_SRC})
 
 target_precompile_headers(Engine PRIVATE ${PROJECT_SOURCE_DIR}/src/Pch/Pch.h)
 
-set_property(TARGET Engine PROPERTY CXX_STANDARD 20)
+set_property(TARGET Engine PROPERTY CXX_STANDARD 17)
 set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
 
 target_include_directories(Engine PRIVATE ${PROJECT_SOURCE_DIR}/src)
@@ -37,4 +37,5 @@ if( ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     target_compile_definitions(Engine PRIVATE SPL_ENABLE_PROFILING=1)
     target_compile_definitions(Engine PRIVATE SPL_ENABLE_ASSERTS=1)
     target_compile_definitions(Engine PRIVATE SPL_ENABLE_RENDERER_STATS=1)
+    target_compile_definitions(Engine PRIVATE SPL_ENABLE_LOGGING=1)
 endif()

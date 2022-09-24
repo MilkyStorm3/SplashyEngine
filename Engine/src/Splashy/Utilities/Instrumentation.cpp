@@ -32,7 +32,7 @@ namespace ant
 
     Instrumentor::Session *Instrumentor::GetSession(const std::string &name)
     {
-        CORE_ASSERT(s_activeSessions.contains(name), "Instrumentation session {0} has not been initialized!", name);
+        CORE_ASSERT(s_activeSessions.find(name) != s_activeSessions.end() , "Instrumentation session {0} has not been initialized!", name);
         return s_activeSessions[name].get();
     }
 

@@ -1,4 +1,6 @@
 #pragma once
+#ifdef SPL_ENABLE_LOGGING
+
 #include <spdlog/logger.h>
 #include <memory>
 
@@ -16,21 +18,31 @@ namespace ant
     private:
         Logger() {}
         ~Logger() {}        
-
-    public:
-        static logPtr s_coreLogger;
-        static logPtr s_clientLogger;
-        static bool s_initialized;
     };
+
 
     #define CORE_TRACE(...)   ant::Logger::GetCoreLogger()->trace(__VA_ARGS__);
     #define CORE_INFO(...)   ant::Logger::GetCoreLogger()->info(__VA_ARGS__);
     #define CORE_WARN(...)   ant::Logger::GetCoreLogger()->warn(__VA_ARGS__);
     #define CORE_ERROR(...)  ant::Logger::GetCoreLogger()->error(__VA_ARGS__);
-   
+
     #define APP_TRACE(...)   ant::Logger::GetClientLogger()->trace(__VA_ARGS__);
     #define APP_INFO(...)   ant::Logger::GetClientLogger()->info(__VA_ARGS__);
     #define APP_WARN(...)   ant::Logger::GetClientLogger()->warn(__VA_ARGS__);
     #define APP_ERROR(...)  ant::Logger::GetClientLogger()->error(__VA_ARGS__);
 
 } // namespace ant
+
+#else // SPL_ENABLE_LOGGING not defined
+
+    #define CORE_TRACE(...);
+    #define CORE_INFO(...);
+    #define CORE_WARN(...);
+    #define CORE_ERROR(...);
+
+    #define APP_TRACE(...);
+    #define APP_INFO(...);
+    #define APP_WARN(...);
+    #define APP_ERROR(...);
+
+#endif

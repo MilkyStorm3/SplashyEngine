@@ -7,6 +7,8 @@
 #include <Graphics/UniformBuffer.hpp>
 #include <Graphics/VertexArray.hpp>
 #include <Scene/SceneCamera.hpp>
+#include <glm/vec4.hpp>
+#include <glm/vec2.hpp>
 
 namespace Editor
 {
@@ -27,7 +29,7 @@ namespace Editor
         uint32_t *m_imageData = nullptr;
         ant::Ref<ant::Texture2D> m_imageTexture;
 
-        void PerPixel(uint32_t &pixel, float x, float y);
+        glm::vec4 PerPixel(const glm::vec2 &uv);
     };
 
 }

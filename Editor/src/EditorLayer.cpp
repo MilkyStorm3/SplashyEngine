@@ -9,6 +9,7 @@
 #include "Graphics/VertexBuffer.hpp"
 #include "Utilities/Instrumentation.hpp"
 #include "Input/Input.hpp"
+#include <glm/glm.hpp>
 
 namespace Editor
 {
@@ -84,13 +85,14 @@ namespace Editor
         DockSpace();
 
         glm::ivec2 viewportBounds[2];
+        ImVec2 currentViewportPanelSize;
 
         {
             ImGui::Begin("Viewport");
 
             static glm::vec2 viewportPanelSize = {0, 0};
 
-            auto currentViewportPanelSize = ImGui::GetContentRegionAvail();
+            currentViewportPanelSize = ImGui::GetContentRegionAvail();
 
             if (!m_imageTexture)
             {
@@ -102,10 +104,12 @@ namespace Editor
                 for (size_t x = 0; x < currentViewportPanelSize.x; x++)
                 {
                     size_t i = x + y * currentViewportPanelSize.x;
-                    float uvx = ((float)x / (float)currentViewportPanelSize.x) * 2.f - 1.f;
-                    float uvy = ((float)y / (float)currentViewportPanelSize.y) * 2.f - 1.f;
 
-                    PerPixel(m_imageData[i], uvx, uvy);
+                    glm::vec2 uv = glm::vec2{x, y} / glm::vec2{currentViewportPanelSize.x, currentViewportPanelSize.y} * 2.f - 1.f;
+
+                    glm::vec4 pixel = glm::max(PerPixel(uv) * 255.f, 0.f);
+
+                    m_imageData[i] = (uint8_t(pixel.a) << 24) | (uint8_t(pixel.b) << 16) | (uint8_t(pixel.g) << 8) | uint8_t(pixel.r);
                 }
             }
 
@@ -121,7 +125,7 @@ namespace Editor
             }
 
             auto [x, y] = currentViewportPanelSize;
-            m_imageTexture->SetData(m_imageData, x * y * 4);
+            m_imageTexture->SetData(m_imageData, x * y * sizeof(uint32_t));
             ImGui::Image((void *)(m_imageTexture->GetRendererId()), *(ImVec2 *)&viewportPanelSize.x, ImVec2{0, 1}, ImVec2{1, 0});
 
             auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
@@ -148,6 +152,25 @@ namespace Editor
         ImGui::Text("Mouse in viewport x:%i y:%i", mouseX, mouseY);
         ImGui::NewLine();
 
+        glm::vec2 uv = glm::vec2{mouseX, mouseY} / glm::vec2{currentViewportPanelSize.x, currentViewportPanelSize.y} * 2.f - 1.f;
+        ImGui::Text("Mouse UV coordinates x:%f y:%f", uv.x, uv.y);
+
+        uint32_t pixel = 0;
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_R))
+        {
+            pixel = m_imageData[size_t(mouseX + mouseY * currentViewportPanelSize.x)];
+        }
+
+        ImGui::NewLine();
+
+        ImGui::Text("Mouse color (press R key) r:%i g:%i b:%i a:%i",
+
+                    (pixel & 0x000000ff),       // r
+                    (pixel & 0x0000ff00) >> 8,  // g
+                    (pixel & 0x00ff0000) >> 16, // b
+                    (pixel & 0xff000000) >> 24  // a
+        );
+
         ImGui::End();
     }
 
@@ -164,21 +187,33 @@ namespace Editor
     {
     }
 
-    void EditorLayer::PerPixel(uint32_t &pixel, float x, float y)
+    glm::vec4 EditorLayer::PerPixel(const glm::vec2 &uv)
     {
 
-        if (x < 0)
-            x = -x;
+        glm::vec3 rayOrigin = {0.f, 0.f, 1.f};
+        glm::vec3 rayDirection = {uv.x, uv.y, -1.f};
+        float sphereRadius = 0.5f;
 
-        if (y < 0)
-            y = -y;
+        float a = glm::dot(rayDirection, rayDirection);
+        float b = 2 * glm::dot(rayOrigin, rayDirection);
+        float c = glm::dot(rayOrigin, rayOrigin) - sphereRadius * sphereRadius;
 
-        // pixel = 0xff00ffff;
-        uint8_t r = (uint8_t)(x * 255.f);
-        uint8_t g = (uint8_t)(y * 255.f);
-        uint8_t b = 0x88;
+        float discriminant = b * b - 4.f * a * c;
 
-        pixel = 0xff000000 | (b << 16) | (g << 8) | r;
+        if (discriminant < 0.0f)
+            return glm::vec4(0, 0, 0, 1);
+
+        float scalar = (-b - sqrt(discriminant)) / (2.f * a); // using only one soliution with the closer hit point
+
+        glm::vec3 hitPoint = rayDirection * scalar + rayOrigin; // y = ax + b
+        glm::vec3 normal = glm::normalize(hitPoint);            // normal = hitPoint - sphereOrigin(0,0,0)
+        glm::vec3 lightDir = glm::normalize(glm::vec3((-1.f, -1.f, -1.f)));
+
+        glm::vec3 color(1, 1, 0);
+
+        float d = glm::dot(normal, -lightDir); // cos(angle)
+
+        return {color, d};
     }
 
 }

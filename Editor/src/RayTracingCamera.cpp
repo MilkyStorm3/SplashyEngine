@@ -3,9 +3,69 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <Input/Input.hpp>
+#include <imgui.h>
 
 namespace Sandbox
 {
+    void RayTracingCamera::OnUpdate(ant::TimeStep ts)
+    {
+        glm::ivec2 mouseCords = ant::Input::MousePos();
+        glm::ivec2 mouseDelta = m_mousePrev - mouseCords;
+        m_mousePrev = mouseCords;
+        mouseDelta.x = -mouseDelta.x;
+        // ImGui::Text("x: %i y:%i", mouseDelta.x, mouseDelta.y);
+
+        float t = ts.Seconds();
+        glm::vec3 rightDirection = glm::cross(m_forwardDirection, m_upDirection);
+
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_W))
+        {
+            m_position += m_forwardDirection * t;
+            m_moved = true;
+        }
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_S))
+        {
+            m_position -= m_forwardDirection * t;
+            m_moved = true;
+        }
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_D))
+        {
+            m_position += rightDirection * t;
+            m_moved = true;
+        }
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_A))
+        {
+            m_position -= rightDirection * t;
+            m_moved = true;
+        }
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_SPACE))
+        {
+            m_position += m_upDirection * t;
+            m_moved = true;
+        }
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_LEFT_SHIFT))
+        {
+            m_position -= m_upDirection * t;
+            m_moved = true;
+        }
+
+        if(m_moved){
+            CalculateView();
+            CalculateRays();
+            m_moved = false;
+        }
+        if(m_resized){
+            CalculateView(); // first frame
+            CalculateProjection();
+            CalculateRays();
+            m_resized = false;
+        }
+
+        //TODO camera rotarion
+
+        
+    }
 
     void RayTracingCamera::CalculateProjection()
     {
@@ -16,7 +76,7 @@ namespace Sandbox
             m_nearClip,
             m_farClip);
 
-        m_inverseProjection = glm::inverse(m_projection);        
+        m_inverseProjection = glm::inverse(m_projection);
     }
 
     void RayTracingCamera::CalculateView()

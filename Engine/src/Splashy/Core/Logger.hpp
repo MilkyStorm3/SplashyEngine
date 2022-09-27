@@ -24,12 +24,9 @@ namespace ant
     #define CORE_TRACE(...)   ant::Logger::GetCoreLogger()->trace(__VA_ARGS__);
     #define CORE_INFO(...)   ant::Logger::GetCoreLogger()->info(__VA_ARGS__);
     #define CORE_WARN(...)   ant::Logger::GetCoreLogger()->warn(__VA_ARGS__);
-    #define CORE_ERROR(...)  ant::Logger::GetCoreLogger()->error(__VA_ARGS__);
+    #define CORE_ERROR(...)  ant::Logger::GetCoreLogger()->error(__VA_ARGS__);    
 
-    #define APP_TRACE(...)   ant::Logger::GetClientLogger()->trace(__VA_ARGS__);
-    #define APP_INFO(...)   ant::Logger::GetClientLogger()->info(__VA_ARGS__);
-    #define APP_WARN(...)   ant::Logger::GetClientLogger()->warn(__VA_ARGS__);
-    #define APP_ERROR(...)  ant::Logger::GetClientLogger()->error(__VA_ARGS__);
+    #define SPL_SPL_ENABLE_CLIENT_LOGGING 1
 
 } // namespace ant
 
@@ -39,11 +36,7 @@ namespace ant
     #define CORE_INFO(...);
     #define CORE_WARN(...);
     #define CORE_ERROR(...);
-
-    #define APP_TRACE(...);
-    #define APP_INFO(...);
-    #define APP_WARN(...);
-    #define APP_ERROR(...);
+  
 
 namespace ant{ 
 
@@ -57,5 +50,22 @@ namespace ant{
         ~Logger() {}
     };
 }
+
+#endif
+
+
+#ifdef SPL_ENABLE_CLIENT_LOGGING
+
+    #define APP_TRACE(...)   ant::Logger::GetClientLogger()->trace(__VA_ARGS__);
+    #define APP_INFO(...)   ant::Logger::GetClientLogger()->info(__VA_ARGS__);
+    #define APP_WARN(...)   ant::Logger::GetClientLogger()->warn(__VA_ARGS__);
+    #define APP_ERROR(...)  ant::Logger::GetClientLogger()->error(__VA_ARGS__);
+
+#else
+
+    #define APP_TRACE(...);
+    #define APP_INFO(...);
+    #define APP_WARN(...);
+    #define APP_ERROR(...);
 
 #endif

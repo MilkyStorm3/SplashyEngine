@@ -1,6 +1,7 @@
 #pragma once
 #include <Core/Camera.hpp>
 #include <vector>
+#include <Core/Time.hpp>
 
 namespace Sandbox
 {
@@ -8,9 +9,10 @@ namespace Sandbox
     class RayTracingCamera : public ant::Camera
     {
     public:
-        // RayTracingCamera(float verticalFov, float nearClip, float farClip, uint32_t width, uint32_t height);
         RayTracingCamera() {}
         ~RayTracingCamera() {}
+
+        void OnUpdate(ant::TimeStep ts);
 
         // private:
         void CalculateProjection();
@@ -33,6 +35,13 @@ namespace Sandbox
         uint32_t m_viewportWidth, m_viewportHeight;
 
         std::vector<glm::vec3> m_rayDirections;
+
+        float m_movementSpeed = 0.5f;
+
+        bool m_resized = false;
+        bool m_moved = false;
+    private:
+        glm::ivec2 m_mousePrev;
     };
 
 } // namespace Sandbox

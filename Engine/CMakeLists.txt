@@ -32,10 +32,10 @@ target_link_libraries(Engine PUBLIC ImGui)
 
 
 if( ${CMAKE_BUILD_TYPE} MATCHES "(Debug)|(RelWithDebInfo)")
-    target_compile_definitions(Engine PRIVATE SPL_DEBUG=1)
-    
+    target_compile_definitions(Engine PRIVATE SPL_DEBUG=1)    
     target_compile_definitions(Engine PRIVATE SPL_ENABLE_PROFILING=1)
     target_compile_definitions(Engine PRIVATE SPL_ENABLE_ASSERTS=1)
     target_compile_definitions(Engine PRIVATE SPL_ENABLE_RENDERER_STATS=1)
     target_compile_definitions(Engine PRIVATE SPL_ENABLE_LOGGING=1)
+    target_compile_definitions(Engine PRIVATE SPL_ENABLE_CLIENT_LOGGING=1)
 endif()

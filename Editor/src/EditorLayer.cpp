@@ -19,11 +19,11 @@ namespace Sandbox
         ImGuiIO &io = ImGui::GetIO();
         static bool p_open = true;
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+        io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
         // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
         // because it would be confusing to have two docking targets within each others.
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
         ImGuiViewport *viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->WorkPos);
         ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -109,30 +109,9 @@ namespace Sandbox
                     m_camera.m_viewportWidth = currentViewportPanelSize.x;
                     m_camera.m_viewportHeight = currentViewportPanelSize.y;
 
-                    m_camera.CalculateProjection();
-                    m_camera.CalculateView();
-                    m_camera.CalculateRays();
-                    Render(currentViewportPanelSize);
+                    m_camera.m_resized = true;
                 }
             }
-
-            // Ray ray;
-            // for (size_t y = 0; y < currentViewportPanelSize.y; y++)
-            // {
-            //     for (size_t x = 0; x < currentViewportPanelSize.x; x++)
-            //     {
-            //         size_t i = x + y * currentViewportPanelSize.x;
-
-            //         glm::vec2 uv = glm::vec2{x, y} / glm::vec2{currentViewportPanelSize.x, currentViewportPanelSize.y} * 2.f - 1.f;
-
-            //         ray.direction = m_camera.m_rayDirections[i];
-            //         // ray.direction = {uv,-1.f};
-
-            //         glm::vec4 pixel = glm::max(PerPixel(ray) * 255.f, 0.f);
-
-            //         m_imageData[i] = (uint8_t(pixel.a) << 24) | (uint8_t(pixel.b) << 16) | (uint8_t(pixel.g) << 8) | uint8_t(pixel.r);
-            //     }
-            // }
 
             auto [x, y] = currentViewportPanelSize;
             m_imageTexture->SetData(m_imageData, x * y * sizeof(uint32_t));
@@ -184,42 +163,38 @@ namespace Sandbox
         ImGui::Separator();
 
         ImGui::NewLine();
-        if (ImGui::DragFloat3("color", &m_sphereColor[0], 0.02f, 0.f, 1.f))
-            Render(currentViewportPanelSize);
+        ImGui::DragFloat3("color", &m_sphereColor[0], 0.02f, 0.f, 1.f);
 
         ImGui::NewLine();
-        if (ImGui::DragFloat("radius", &m_sphereRadius, 0.02f, 0.1f, 7.f))
-            Render(currentViewportPanelSize);
+        ImGui::DragFloat("radius", &m_sphereRadius, 0.02f, 0.1f, 7.f);
 
         ImGui::NewLine();
         if (ImGui::DragFloat3("camera position", &m_camera.m_position.x, 0.001f, -20.0f, 20.f))
         {
-            m_camera.CalculateView();
-            m_camera.CalculateRays();
-            Render(currentViewportPanelSize);
+            m_camera.m_moved = true;
         }
 
         ImGui::NewLine();
-        if (ImGui::DragFloat3("light direction", &m_lightDirection.x, 0.001f, -20.0f, 20.f))
-            Render(currentViewportPanelSize);
+        ImGui::DragFloat3("light direction", &m_lightDirection.x, 0.001f, -20.0f, 20.f);
 
         ImGui::End();
+
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_B))
+            ant::Input::SetCursor(ant::CursorStyle::Disabled);
+
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_V))
+            ant::Input::SetCursor(ant::CursorStyle::Normal);
+
+        m_camera.OnUpdate(ts);
+        Render(currentViewportPanelSize);
+        
     }
 
     glm::vec4 EditorLayer::PerPixel(const Ray &ray)
     {
-
-        // glm::vec3 rayDirection = {uv.x, uv.y, -1.f};
-        glm::vec3 rayDirection = ray.direction;
-
-        auto &cameraPosition = m_camera.m_position;
-
-        if (cameraPosition.z < 0)
-            rayDirection.z = 1.f;
-
-        float a = glm::dot(rayDirection, rayDirection);
-        float b = 2 * glm::dot(cameraPosition, rayDirection);
-        float c = glm::dot(cameraPosition, cameraPosition) - m_sphereRadius * m_sphereRadius;
+        float a = glm::dot(ray.direction, ray.direction);
+        float b = 2 * glm::dot(m_camera.m_position, ray.direction);
+        float c = glm::dot(m_camera.m_position, m_camera.m_position) - m_sphereRadius * m_sphereRadius;
 
         float discriminant = b * b - 4.f * a * c;
 
@@ -228,8 +203,8 @@ namespace Sandbox
 
         float scalar = (-b - sqrt(discriminant)) / (2.f * a); // using only one soliution with the closer hit point
 
-        glm::vec3 hitPoint = rayDirection * scalar + cameraPosition; // y = ax + b
-        glm::vec3 normal = glm::normalize(hitPoint);                 // normal = hitPoint - sphereOrigin(0,0,0)
+        glm::vec3 hitPoint = ray.direction * scalar + m_camera.m_position; // y = ax + b
+        glm::vec3 normal = glm::normalize(hitPoint);                       // normal = hitPoint - sphereOrigin(0,0,0)
 
         float d = glm::dot(normal, -glm::normalize(m_lightDirection)); // cos(angle)
 
@@ -246,10 +221,7 @@ namespace Sandbox
             {
                 size_t i = x + y * viewport.x;
 
-                glm::vec2 uv = glm::vec2{x, y} / glm::vec2{viewport.x, viewport.y} * 2.f - 1.f;
-
                 ray.direction = m_camera.m_rayDirections[i];
-                // ray.direction = {uv,-1.f};
 
                 glm::vec4 pixel = glm::max(PerPixel(ray) * 255.f, 0.f);
 

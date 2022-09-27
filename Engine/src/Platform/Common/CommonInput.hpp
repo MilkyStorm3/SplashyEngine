@@ -3,7 +3,7 @@
 
 namespace ant::Common
 {
- 
+
     class CommonInput : public ant::Input
     {
     public:
@@ -13,10 +13,9 @@ namespace ant::Common
         virtual bool IsKeyPressed_IMPL(KeyCode key) override;
         virtual bool IsMouseButtonPressed_IMPL(MouseButtonCode buttonCode) override;
         virtual glm::vec2 MousePos_IMPL() override;
+        virtual void SetCursor_IMPL(CursorStyle cursor) override;
 
-        static void* s_activeNativeWindow;
+        static void *s_activeNativeWindow;
     };
 
-
-    
 } // namespace ant::Common

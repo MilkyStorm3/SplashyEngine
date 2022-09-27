@@ -8,22 +8,25 @@
 #include <map>
 #include "Core/Core.hpp"
 
+#endif
+
 namespace ant
 {
-
-    struct ProfileData
-    {
-        std::string Name;
-        int64_t Start, End;
-        uint32_t ThreadID;
-    };
-
     enum class InstrumentationLevel : uint8_t
     {
         None = 0,
         General,
         Intermediate,
         Detailed
+    };
+
+#ifdef SPL_ENABLE_PROFILING
+
+    struct ProfileData
+    {
+        std::string Name;
+        int64_t Start, End;
+        uint32_t ThreadID;
     };
 
     class Instrumentor
@@ -73,5 +76,17 @@ namespace ant
         bool m_stopped = false;
     };
 
-}
+#else
+
+    class Instrumentor
+    {
+    private:
+        Instrumentor() {}
+        ~Instrumentor() {}
+
+    public:
+        inline static void InitSession(const std::string &name, InstrumentationLevel level) {}
+    };
+
 #endif
+} // namespace

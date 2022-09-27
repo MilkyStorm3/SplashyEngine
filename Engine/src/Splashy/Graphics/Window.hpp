@@ -20,7 +20,7 @@ namespace ant
         Window() {}
         virtual ~Window() {}
 
-        virtual void Init(const std::string &title, uint32_t width, uint32_t height, bool resizeable) = 0;
+        virtual void Init(const std::string &title, uint32_t width, uint32_t height, bool resizeable, bool vsync) = 0;
         virtual void Update() = 0;
 
         virtual void SetEventCallback(const EventCallback &callback) = 0;

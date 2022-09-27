@@ -12,7 +12,7 @@ namespace ant::Common
         CommonWindow();
         virtual ~CommonWindow();
 
-        virtual void Init(const std::string &title, uint32_t width, uint32_t height, bool resizeable) override;
+        virtual void Init(const std::string &title, uint32_t width, uint32_t height, bool resizeable, bool vsync) override;
         virtual void Update() override;
 
         virtual void SetEventCallback(const EventCallback &callback) override;

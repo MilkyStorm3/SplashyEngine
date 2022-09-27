@@ -21,7 +21,7 @@ namespace ant::Common
             glfwTerminate();
     }
 
-    void CommonWindow::Init(const std::string &title, uint32_t width, uint32_t height, bool resizeable)
+    void CommonWindow::Init(const std::string &title, uint32_t width, uint32_t height, bool resizeable, bool vsync)
     {
 
         if (s_windowCount == 0)
@@ -47,7 +47,7 @@ namespace ant::Common
 
         m_context = GraphicsContext::Create(m_window);
         m_context->Init();
-        SetVsync(true);
+        SetVsync(vsync);
 
         int res = resizeable ? GL_TRUE : GL_FALSE;
         glfwWindowHint(GLFW_RESIZABLE, res);

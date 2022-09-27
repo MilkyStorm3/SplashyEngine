@@ -112,26 +112,27 @@ namespace Sandbox
                     m_camera.CalculateProjection();
                     m_camera.CalculateView();
                     m_camera.CalculateRays();
+                    Render(currentViewportPanelSize);
                 }
             }
 
-            Ray ray;
-            for (size_t y = 0; y < currentViewportPanelSize.y; y++)
-            {
-                for (size_t x = 0; x < currentViewportPanelSize.x; x++)
-                {
-                    size_t i = x + y * currentViewportPanelSize.x;
+            // Ray ray;
+            // for (size_t y = 0; y < currentViewportPanelSize.y; y++)
+            // {
+            //     for (size_t x = 0; x < currentViewportPanelSize.x; x++)
+            //     {
+            //         size_t i = x + y * currentViewportPanelSize.x;
 
-                    glm::vec2 uv = glm::vec2{x, y} / glm::vec2{currentViewportPanelSize.x, currentViewportPanelSize.y} * 2.f - 1.f;
+            //         glm::vec2 uv = glm::vec2{x, y} / glm::vec2{currentViewportPanelSize.x, currentViewportPanelSize.y} * 2.f - 1.f;
 
-                    ray.direction = m_camera.m_rayDirections[i];
-                    // ray.direction = {uv,-1.f};
+            //         ray.direction = m_camera.m_rayDirections[i];
+            //         // ray.direction = {uv,-1.f};
 
-                    glm::vec4 pixel = glm::max(PerPixel(ray) * 255.f, 0.f);
+            //         glm::vec4 pixel = glm::max(PerPixel(ray) * 255.f, 0.f);
 
-                    m_imageData[i] = (uint8_t(pixel.a) << 24) | (uint8_t(pixel.b) << 16) | (uint8_t(pixel.g) << 8) | uint8_t(pixel.r);
-                }
-            }
+            //         m_imageData[i] = (uint8_t(pixel.a) << 24) | (uint8_t(pixel.b) << 16) | (uint8_t(pixel.g) << 8) | uint8_t(pixel.r);
+            //     }
+            // }
 
             auto [x, y] = currentViewportPanelSize;
             m_imageTexture->SetData(m_imageData, x * y * sizeof(uint32_t));
@@ -183,20 +184,24 @@ namespace Sandbox
         ImGui::Separator();
 
         ImGui::NewLine();
-        ImGui::DragFloat3("color", &m_sphereColor[0], 0.02f, 0.f, 1.f);
+        if (ImGui::DragFloat3("color", &m_sphereColor[0], 0.02f, 0.f, 1.f))
+            Render(currentViewportPanelSize);
 
         ImGui::NewLine();
-        ImGui::DragFloat("radius", &m_sphereRadius, 0.02f, 0.1f, 7.f);
+        if (ImGui::DragFloat("radius", &m_sphereRadius, 0.02f, 0.1f, 7.f))
+            Render(currentViewportPanelSize);
 
         ImGui::NewLine();
         if (ImGui::DragFloat3("camera position", &m_camera.m_position.x, 0.001f, -20.0f, 20.f))
         {
             m_camera.CalculateView();
             m_camera.CalculateRays();
+            Render(currentViewportPanelSize);
         }
 
         ImGui::NewLine();
-        ImGui::DragFloat3("light direction", &m_lightDirection.x, 0.001f, -20.0f, 20.f);
+        if (ImGui::DragFloat3("light direction", &m_lightDirection.x, 0.001f, -20.0f, 20.f))
+            Render(currentViewportPanelSize);
 
         ImGui::End();
     }
@@ -230,10 +235,27 @@ namespace Sandbox
 
         return {m_sphereColor, d};
     }
-    
+
     void EditorLayer::Render(const ImVec2 &viewport)
     {
-        
+
+        Ray ray;
+        for (size_t y = 0; y < viewport.y; y++)
+        {
+            for (size_t x = 0; x < viewport.x; x++)
+            {
+                size_t i = x + y * viewport.x;
+
+                glm::vec2 uv = glm::vec2{x, y} / glm::vec2{viewport.x, viewport.y} * 2.f - 1.f;
+
+                ray.direction = m_camera.m_rayDirections[i];
+                // ray.direction = {uv,-1.f};
+
+                glm::vec4 pixel = glm::max(PerPixel(ray) * 255.f, 0.f);
+
+                m_imageData[i] = (uint8_t(pixel.a) << 24) | (uint8_t(pixel.b) << 16) | (uint8_t(pixel.g) << 8) | uint8_t(pixel.r);
+            }
+        }
     }
 
     void EditorLayer::OnDraw()

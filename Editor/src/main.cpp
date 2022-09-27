@@ -3,7 +3,7 @@
 int main()
 {
     
-    ant::Application::s_instance = new Editor::EditorApp();
+    ant::Application::s_instance = new Sandbox::SandboxApp();
     auto app = ant::Application::GetInstance();
     app->Init();
     app->Run();

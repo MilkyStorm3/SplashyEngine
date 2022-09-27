@@ -2,20 +2,20 @@
 #include <Core/Application.hpp>
 #include "EditorLayer.hpp"
 
-namespace Editor
+namespace Sandbox
 {
 
-    class EditorApp : public ant::Application
+    class SandboxApp : public ant::Application
     {
     public:
-        EditorApp(){
+        SandboxApp(){
 
             m_appInitFn = [this](){
                 m_layerStack.PushLayer(ant::MakeRef<EditorLayer>());
             };
 
         }
-        ~EditorApp() {}
+        ~SandboxApp() {}
 
     private:
 

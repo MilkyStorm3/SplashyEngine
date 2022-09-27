@@ -25,7 +25,7 @@ namespace ant
             
 
     private:
-        void CalculateProjection();
+    void CalculateProjection();
 
     private:
         float m_size = 10.f;

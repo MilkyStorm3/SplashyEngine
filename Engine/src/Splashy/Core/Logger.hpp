@@ -45,4 +45,17 @@ namespace ant
     #define APP_WARN(...);
     #define APP_ERROR(...);
 
+namespace ant{ 
+
+    class Logger
+    {
+    public:
+        inline static void Init(){}
+
+    private:
+        Logger() {}
+        ~Logger() {}
+    };
+}
+
 #endif

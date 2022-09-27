@@ -31,7 +31,7 @@ target_link_libraries(Engine PUBLIC glm::glm)
 target_link_libraries(Engine PUBLIC ImGui) 
 
 
-if( ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if( ${CMAKE_BUILD_TYPE} MATCHES "(Debug)|(RelWithDebInfo)")
     target_compile_definitions(Engine PRIVATE SPL_DEBUG=1)
     
     target_compile_definitions(Engine PRIVATE SPL_ENABLE_PROFILING=1)

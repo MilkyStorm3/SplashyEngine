@@ -5,6 +5,13 @@
 
 namespace ant
 {
+    enum class CursorStyle
+    {
+        Disabled = 0,
+        Hidden,
+        Normal
+    };
+
     class Input
     {
     public:
@@ -15,11 +22,13 @@ namespace ant
         static bool IsKeyPressed(KeyCode key);
         static bool IsMouseButtonPressed(MouseButtonCode buttonCode);
         static glm::vec2 MousePos();
+        static void SetCursor(CursorStyle cursor);
 
     protected:
         virtual bool IsKeyPressed_IMPL(KeyCode key) = 0;
         virtual bool IsMouseButtonPressed_IMPL(MouseButtonCode buttonCode) = 0;
         virtual glm::vec2 MousePos_IMPL() = 0;
+        virtual void SetCursor_IMPL(CursorStyle cursor) = 0;
 
     private:
         static Scope<Input> s_instance;

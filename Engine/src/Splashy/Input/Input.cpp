@@ -36,4 +36,10 @@ namespace ant
         CORE_ASSERT(s_instance, "Input handler not initialized!");
         return s_instance->MousePos_IMPL();
     }
+    
+    void Input::SetCursor(CursorStyle cursor)
+    {
+        CORE_ASSERT(s_instance, "Input handler not initialized!");
+        return s_instance->SetCursor_IMPL(cursor);
+    }
 } // namespace ant

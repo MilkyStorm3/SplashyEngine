@@ -30,7 +30,7 @@ namespace ant
 
         m_window->SetEventCallback(CORE_BIND_EVENT_FN(this, Application::OnEvent));
 
-        m_window->Init(m_appdata.windowSettings.title, m_appdata.windowSettings.width, m_appdata.windowSettings.height, true);
+        m_window->Init(m_appdata.windowSettings.title, m_appdata.windowSettings.width, m_appdata.windowSettings.height, true, true);
 
         RendererCommands::Init(); //?call when context is initialized
 
@@ -44,7 +44,7 @@ namespace ant
         static TimePoint lastFrameTime = Time::Now();
 
         while (m_appdata.running)
-        {            
+        {
             TimePoint time = Time::Now();
             TimeStep frameTime = time - lastFrameTime;
             lastFrameTime = time;

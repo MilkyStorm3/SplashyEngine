@@ -10,8 +10,9 @@
 #include "Utilities/Instrumentation.hpp"
 #include "Input/Input.hpp"
 #include <glm/glm.hpp>
+#include "Input/Event.hpp"
 
-namespace Editor
+namespace Sandbox
 {
     static void DockSpace()
     {
@@ -94,25 +95,6 @@ namespace Editor
 
             currentViewportPanelSize = ImGui::GetContentRegionAvail();
 
-            if (!m_imageTexture)
-            {
-                m_imageTexture = ant::Texture2D::Create(currentViewportPanelSize.x, currentViewportPanelSize.y);
-            }
-
-            for (size_t y = 0; y < currentViewportPanelSize.y; y++)
-            {
-                for (size_t x = 0; x < currentViewportPanelSize.x; x++)
-                {
-                    size_t i = x + y * currentViewportPanelSize.x;
-
-                    glm::vec2 uv = glm::vec2{x, y} / glm::vec2{currentViewportPanelSize.x, currentViewportPanelSize.y} * 2.f - 1.f;
-
-                    glm::vec4 pixel = glm::max(PerPixel(uv) * 255.f, 0.f);
-
-                    m_imageData[i] = (uint8_t(pixel.a) << 24) | (uint8_t(pixel.b) << 16) | (uint8_t(pixel.g) << 8) | uint8_t(pixel.r);
-                }
-            }
-
             if (viewportPanelSize != *(glm::vec2 *)&currentViewportPanelSize.x)
             {
                 viewportPanelSize = *(glm::vec2 *)&currentViewportPanelSize.x;
@@ -121,6 +103,33 @@ namespace Editor
                 {
                     auto [x, y] = currentViewportPanelSize;
                     m_imageTexture = ant::Texture2D::Create(x, y);
+                    m_camera.m_verticalFOV = 45.f;
+                    m_camera.m_nearClip = 1.f;
+                    m_camera.m_farClip = 100.f;
+                    m_camera.m_viewportWidth = currentViewportPanelSize.x;
+                    m_camera.m_viewportHeight = currentViewportPanelSize.y;
+
+                    m_camera.CalculateProjection();
+                    m_camera.CalculateView();
+                    m_camera.CalculateRays();
+                }
+            }
+
+            Ray ray;
+            for (size_t y = 0; y < currentViewportPanelSize.y; y++)
+            {
+                for (size_t x = 0; x < currentViewportPanelSize.x; x++)
+                {
+                    size_t i = x + y * currentViewportPanelSize.x;
+
+                    glm::vec2 uv = glm::vec2{x, y} / glm::vec2{currentViewportPanelSize.x, currentViewportPanelSize.y} * 2.f - 1.f;
+
+                    ray.direction = m_camera.m_rayDirections[i];
+                    // ray.direction = {uv,-1.f};
+
+                    glm::vec4 pixel = glm::max(PerPixel(ray) * 255.f, 0.f);
+
+                    m_imageData[i] = (uint8_t(pixel.a) << 24) | (uint8_t(pixel.b) << 16) | (uint8_t(pixel.g) << 8) | uint8_t(pixel.r);
                 }
             }
 
@@ -171,7 +180,60 @@ namespace Editor
                     (pixel & 0xff000000) >> 24  // a
         );
 
+        ImGui::Separator();
+
+        ImGui::NewLine();
+        ImGui::DragFloat3("color", &m_sphereColor[0], 0.02f, 0.f, 1.f);
+
+        ImGui::NewLine();
+        ImGui::DragFloat("radius", &m_sphereRadius, 0.02f, 0.1f, 7.f);
+
+        ImGui::NewLine();
+        if (ImGui::DragFloat3("camera position", &m_camera.m_position.x, 0.001f, -20.0f, 20.f))
+        {
+            m_camera.CalculateView();
+            m_camera.CalculateRays();
+        }
+
+        ImGui::NewLine();
+        ImGui::DragFloat3("light direction", &m_lightDirection.x, 0.001f, -20.0f, 20.f);
+
         ImGui::End();
+    }
+
+    glm::vec4 EditorLayer::PerPixel(const Ray &ray)
+    {
+
+        // glm::vec3 rayDirection = {uv.x, uv.y, -1.f};
+        glm::vec3 rayDirection = ray.direction;
+
+        auto &cameraPosition = m_camera.m_position;
+
+        if (cameraPosition.z < 0)
+            rayDirection.z = 1.f;
+
+        float a = glm::dot(rayDirection, rayDirection);
+        float b = 2 * glm::dot(cameraPosition, rayDirection);
+        float c = glm::dot(cameraPosition, cameraPosition) - m_sphereRadius * m_sphereRadius;
+
+        float discriminant = b * b - 4.f * a * c;
+
+        if (discriminant < 0.0f)
+            return glm::vec4(0, 0, 0, 1);
+
+        float scalar = (-b - sqrt(discriminant)) / (2.f * a); // using only one soliution with the closer hit point
+
+        glm::vec3 hitPoint = rayDirection * scalar + cameraPosition; // y = ax + b
+        glm::vec3 normal = glm::normalize(hitPoint);                 // normal = hitPoint - sphereOrigin(0,0,0)
+
+        float d = glm::dot(normal, -glm::normalize(m_lightDirection)); // cos(angle)
+
+        return {m_sphereColor, d};
+    }
+    
+    void EditorLayer::Render(const ImVec2 &viewport)
+    {
+        
     }
 
     void EditorLayer::OnDraw()
@@ -185,35 +247,6 @@ namespace Editor
 
     void EditorLayer::OnEvent(ant::Event *event)
     {
-    }
-
-    glm::vec4 EditorLayer::PerPixel(const glm::vec2 &uv)
-    {
-
-        glm::vec3 rayOrigin = {0.f, 0.f, 1.f};
-        glm::vec3 rayDirection = {uv.x, uv.y, -1.f};
-        float sphereRadius = 0.5f;
-
-        float a = glm::dot(rayDirection, rayDirection);
-        float b = 2 * glm::dot(rayOrigin, rayDirection);
-        float c = glm::dot(rayOrigin, rayOrigin) - sphereRadius * sphereRadius;
-
-        float discriminant = b * b - 4.f * a * c;
-
-        if (discriminant < 0.0f)
-            return glm::vec4(0, 0, 0, 1);
-
-        float scalar = (-b - sqrt(discriminant)) / (2.f * a); // using only one soliution with the closer hit point
-
-        glm::vec3 hitPoint = rayDirection * scalar + rayOrigin; // y = ax + b
-        glm::vec3 normal = glm::normalize(hitPoint);            // normal = hitPoint - sphereOrigin(0,0,0)
-        glm::vec3 lightDir = glm::normalize(glm::vec3((-1.f, -1.f, -1.f)));
-
-        glm::vec3 color(1, 1, 0);
-
-        float d = glm::dot(normal, -lightDir); // cos(angle)
-
-        return {color, d};
     }
 
 }

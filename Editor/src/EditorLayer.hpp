@@ -9,9 +9,16 @@
 #include <Scene/SceneCamera.hpp>
 #include <glm/vec4.hpp>
 #include <glm/vec2.hpp>
+#include "RayTracingCamera.hpp"
 
-namespace Editor
+#include <imgui.h>
+
+namespace Sandbox
 {
+    struct Ray
+    {
+        glm::vec3 direction;
+    };
 
     class EditorLayer : public ant::Layer
     {
@@ -26,10 +33,18 @@ namespace Editor
         virtual void OnEvent(ant::Event *event) override;
 
     private:
+        glm::vec4 PerPixel(const Ray &ray);
+        void Render(const ImVec2 &viewport);
+
+    private:
         uint32_t *m_imageData = nullptr;
         ant::Ref<ant::Texture2D> m_imageTexture;
 
-        glm::vec4 PerPixel(const glm::vec2 &uv);
+        glm::vec3 m_sphereColor = {1.f, 1.f, 0.f};
+        float m_sphereRadius = 0.5f;
+
+        glm::vec3 m_lightDirection = {-1.f, -1.f, -1.f};
+        RayTracingCamera m_camera;
     };
 
 }

@@ -94,6 +94,7 @@ namespace Sandbox
             static glm::vec2 viewportPanelSize = {0, 0};
 
             currentViewportPanelSize = ImGui::GetContentRegionAvail();
+            m_viewportFocus = ImGui::IsWindowFocused();
 
             if (viewportPanelSize != *(glm::vec2 *)&currentViewportPanelSize.x)
             {
@@ -169,6 +170,12 @@ namespace Sandbox
         ImGui::DragFloat("radius", &m_sphereRadius, 0.02f, 0.1f, 7.f);
 
         ImGui::NewLine();
+        ImGui::DragFloat("cameraMovementSpeed", &m_camera.m_movementSpeed, 0.0001f, 0.000001f, 0.7f);
+
+        ImGui::NewLine();
+        ImGui::DragFloat("cameraMouseSpeed", &m_camera.m_mouseSpeed, 0.02f, 0.1f, 10.f);
+
+        ImGui::NewLine();
         if (ImGui::DragFloat3("camera position", &m_camera.m_position.x, 0.001f, -20.0f, 20.f))
         {
             m_camera.m_moved = true;
@@ -176,7 +183,6 @@ namespace Sandbox
 
         ImGui::NewLine();
         ImGui::DragFloat3("light direction", &m_lightDirection.x, 0.001f, -20.0f, 20.f);
-
         ImGui::End();
 
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_B))
@@ -185,9 +191,10 @@ namespace Sandbox
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_V))
             ant::Input::SetCursor(ant::CursorStyle::Normal);
 
-        m_camera.OnUpdate(ts);
+        if (m_viewportFocus)
+            m_camera.OnUpdate(ts);
+
         Render(currentViewportPanelSize);
-        
     }
 
     glm::vec4 EditorLayer::PerPixel(const Ray &ray)

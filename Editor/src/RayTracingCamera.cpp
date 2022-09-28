@@ -14,57 +14,75 @@ namespace Sandbox
         glm::ivec2 mouseDelta = m_mousePrev - mouseCords;
         m_mousePrev = mouseCords;
         mouseDelta.x = -mouseDelta.x;
-        // ImGui::Text("x: %i y:%i", mouseDelta.x, mouseDelta.y);
 
         float t = ts.Seconds();
         glm::vec3 rightDirection = glm::cross(m_forwardDirection, m_upDirection);
 
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_W))
         {
-            m_position += m_forwardDirection * t;
+            m_position += m_forwardDirection * m_movementSpeed * t;
             m_moved = true;
         }
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_S))
         {
-            m_position -= m_forwardDirection * t;
+            m_position -= m_forwardDirection * m_movementSpeed * t;
             m_moved = true;
         }
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_D))
         {
-            m_position += rightDirection * t;
+            m_position += rightDirection * m_movementSpeed * t;
             m_moved = true;
         }
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_A))
         {
-            m_position -= rightDirection * t;
+            m_position -= rightDirection * m_movementSpeed * t;
             m_moved = true;
         }
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_SPACE))
         {
-            m_position += m_upDirection * t;
+            m_position += m_upDirection * m_movementSpeed * t;
             m_moved = true;
         }
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_LEFT_SHIFT))
         {
-            m_position -= m_upDirection * t;
+            m_position -= m_upDirection * m_movementSpeed * t;
             m_moved = true;
         }
 
-        if(m_moved){
-            CalculateView();
-            CalculateRays();
-            m_moved = false;
-        }
-        if(m_resized){
-            CalculateView(); // first frame
-            CalculateProjection();
-            CalculateRays();
-            m_resized = false;
+        // camera rotation
+
+        if (m_rotated && !ant::Input::IsKeyPressed(ant::KeyCode::KEY_LEFT_CONTROL))
+        {
+            ant::Input::SetCursor(ant::CursorStyle::Normal);
+            m_rotated = false;
         }
 
-        //TODO camera rotarion
+        if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_LEFT_CONTROL) && (mouseDelta.x != 0.f || mouseDelta.y != 0.f))
+        {
+            ant::Input::SetCursor(ant::CursorStyle::Disabled);
 
-        
+            float yawDelta = mouseDelta.x * m_mouseSpeed;
+            float pitchDelta = mouseDelta.y * m_mouseSpeed;
+
+            glm::quat q = glm::normalize(
+
+                glm::cross(
+                    glm::angleAxis(-pitchDelta, rightDirection),
+                    glm::angleAxis(-yawDelta, m_upDirection))
+
+            );
+            m_forwardDirection = glm::rotate(q, m_forwardDirection);
+
+            m_rotated = true;
+        }
+
+        if (m_rotated || m_moved || m_resized) // apply transformations
+        {
+            CalculateView();       // moved, rotated
+            CalculateProjection(); // resize
+            CalculateRays();
+            m_moved = m_resized = false;
+        }
     }
 
     void RayTracingCamera::CalculateProjection()
@@ -101,6 +119,7 @@ namespace Sandbox
                 auto direction = m_inverseView * glm::vec4(
                                                      glm::normalize(glm::vec3(target) / target.w), // convert to non homogeneous 3d coordinate system and normalize to get directional vector
                                                      0);
+
                 m_rayDirections[x + y * m_viewportWidth] = direction; // direction in world space
             }
         }

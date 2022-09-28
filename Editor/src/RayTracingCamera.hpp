@@ -36,10 +36,12 @@ namespace Sandbox
 
         std::vector<glm::vec3> m_rayDirections;
 
-        float m_movementSpeed = 0.5f;
+        float m_movementSpeed = 0.7f;
+        float m_mouseSpeed = 0.002f;
 
         bool m_resized = false;
         bool m_moved = false;
+        bool m_rotated = false;
     private:
         glm::ivec2 m_mousePrev;
     };

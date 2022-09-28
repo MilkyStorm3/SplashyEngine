@@ -45,6 +45,8 @@ namespace Sandbox
 
         glm::vec3 m_lightDirection = {-1.f, -1.f, -1.f};
         RayTracingCamera m_camera;
+
+        bool m_viewportFocus = false;
     };
 
 }

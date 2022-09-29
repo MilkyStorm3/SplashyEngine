@@ -70,6 +70,7 @@ namespace Sandbox
         ImGui::End();
     }
 
+    constexpr uint32_t c_imageDataSize = 1000000;
     void EditorLayer::OnAttach()
     {
         CORE_TRACE("Editor Layer Attached");
@@ -78,7 +79,16 @@ namespace Sandbox
 
         ant::RendererCommands::SetBlendingMode(ant::BlendingMode::SourceAlpha, ant::BlendingMode::OneMinusSourceAlpha);
 
-        m_imageData = new uint32_t[1000000]; // BIG buffer of pixels
+        m_imageData = new uint32_t[c_imageDataSize]; // BIG buffer of pixels
+
+        m_spheres.reserve(2);
+        m_spheres.push_back({0.5f,
+                             {0, 0, 0},
+                             {1, 1, 0}});
+
+        m_spheres.push_back({0.5f,
+                             {-3, -1, 0},
+                             {0.8, 0.2, 0.2}});
     }
 
     void EditorLayer::OnUpdate(ant::TimeStep ts)
@@ -111,6 +121,8 @@ namespace Sandbox
             }
 
             auto [x, y] = currentViewportPanelSize;
+            // Clear({1.f,1.f,1.f,1.f});
+
             m_imageTexture->SetData(m_imageData, x * y * sizeof(uint32_t));
             ImGui::Image((void *)(m_imageTexture->GetRendererId()), *(ImVec2 *)&viewportPanelSize.x, ImVec2{0, 1}, ImVec2{1, 0});
 
@@ -160,12 +172,6 @@ namespace Sandbox
         ImGui::Separator();
 
         ImGui::NewLine();
-        ImGui::DragFloat3("color", &m_sphereColor[0], 0.02f, 0.f, 1.f);
-
-        ImGui::NewLine();
-        ImGui::DragFloat("radius", &m_sphereRadius, 0.02f, 0.1f, 7.f);
-
-        ImGui::NewLine();
         ImGui::DragFloat("cameraMovementSpeed", &m_camera.movementSpeed, 0.0001f, 0.000001f, 0.7f);
 
         ImGui::NewLine();
@@ -178,12 +184,8 @@ namespace Sandbox
             m_camera.SetPosition(cpos);
         }
 
-        ImGui::NewLine();
-        ImGui::DragFloat3("light direction", &m_lightDirection.x, 0.001f, -20.0f, 20.f);
-
-        ImGui::NewLine();
-        ImGui::DragFloat3("light origin", &m_lightOrigin.x, 0.001f, -20.0f, 20.f);
-        ImGui::End();
+        // ImGui::NewLine();
+        // ImGui::DragFloat3("light direction", &m_lightDirection.x, 0.001f, -20.0f, 20.f);
 
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_B))
             ant::Input::SetCursor(ant::CursorStyle::Disabled);
@@ -194,62 +196,88 @@ namespace Sandbox
         if (m_viewportFocus)
             m_camera.OnUpdate(ts);
 
+        Clear({0, 0, 0, 1});
         Render(currentViewportPanelSize);
+        ImGui::End();
+
+        // ImGui::ShowDemoWindow();
     }
 
-    glm::vec4 EditorLayer::PerPixel(const Ray &ray)
+    glm::vec4 EditorLayer::TraceRay(const Ray &ray, const Sphere &sphere, const RayTracingCamera &camera)
     {
-        const glm::vec3 &cpos = m_camera.GetPosition();
+        const glm::vec3 &cpos = camera.GetPosition();
+        glm::vec3 lightDirection = {-1.f, -1.f, -1.f};
 
         float a = glm::dot(ray.direction, ray.direction);
-        float b = 2 * glm::dot(cpos, ray.direction);
-        float c = glm::dot(cpos, cpos) - m_sphereRadius * m_sphereRadius;
+        float b = 2 * (glm::dot(cpos, ray.direction) - glm::dot(ray.direction, sphere.origin));
+        float c = glm::dot(cpos, cpos) + glm::dot(sphere.origin, sphere.origin) - 2 * glm::dot(cpos, sphere.origin) - sphere.radius * sphere.radius;
 
         float discriminant = b * b - 4.f * a * c;
 
         if (discriminant < 0.0f)
-            return glm::vec4(0, 0, 0, 1);
+            return glm::vec4(-1.f);
 
-        float scalar = (-b - sqrt(discriminant)) / (2.f * a); // using only one soliution with the closer hit point
+        float scalar = (-b - sqrt(discriminant)) / (2.f * a); // using only one solution with the closer hit point
 
-        glm::vec3 hitPoint = ray.direction * scalar + cpos; // y = ax + b
-        glm::vec3 normal = glm::normalize(hitPoint);        // normal = hitPoint - sphereOrigin(0,0,0)
+        glm::vec3 hitPoint = ray.direction * scalar + cpos;          // y = ax + b
+        glm::vec3 normal = glm::normalize(hitPoint - sphere.origin); // perpendicular to a point on a surface
 
-        float d = glm::dot(normal, -glm::normalize(m_lightDirection)); // cos(angle)
+        float d = glm::dot(normal, -glm::normalize(lightDirection)); // cos(angle between vectors)
 
-        return {m_sphereColor, d};
+        return {sphere.color, d};
     }
 
     void EditorLayer::Render(const ImVec2 &viewport)
     {
 
-        Ray ray;
-        for (size_t y = 0; y < viewport.y; y++)
+        for (auto &&sphere : m_spheres)
         {
-            for (size_t x = 0; x < viewport.x; x++)
+            // SphereImGuiPanel(sphere);
+            Ray ray;
+            for (size_t y = 0; y < viewport.y; y++)
             {
-                size_t i = x + y * viewport.x;
+                for (size_t x = 0; x < viewport.x; x++)
+                {
+                    size_t i = x + y * viewport.x;
 
-                ray.direction = m_camera.GetRayDirection(i);
+                    ray.direction = m_camera.GetRayDirection(i);
 
-                glm::vec4 pixel = glm::max(PerPixel(ray) * 255.f, 0.f);
+                    glm::vec4 pixel = TraceRay(ray, sphere, m_camera);
 
-                m_imageData[i] = (uint8_t(pixel.a) << 24) | (uint8_t(pixel.b) << 16) | (uint8_t(pixel.g) << 8) | uint8_t(pixel.r);
+                    if (pixel != glm::vec4(-1))
+                        m_imageData[i] = Vec4ToPixel(pixel);
+                }
             }
         }
     }
 
-    void EditorLayer::OnDraw()
+    void EditorLayer::Clear(const glm::vec4 &color)
     {
+        uint32_t val = Vec4ToPixel(color);
+
+        for (size_t i = 0; i < c_imageDataSize; i++)
+            m_imageData[i] = val;
     }
+
+    uint32_t EditorLayer::Vec4ToPixel(const glm::vec4 &color)
+    {
+        glm::vec4 pixel = glm::max(color * 255.f, 0.f);
+        return (uint8_t(pixel.a) << 24) | (uint8_t(pixel.b) << 16) | (uint8_t(pixel.g) << 8) | uint8_t(pixel.r);
+    }
+
+    // void EditorLayer::SphereImGuiPanel(const Sphere &sphere)
+    // {
+    //     if (ImGui::CollapsingHeader("sphere", ImGuiTreeNodeFlags_None)) //! WHY EVERY PANEL RELATES TO THE SAME THING??
+    //     {
+    //         ImGui::DragFloat3("color", (float *)&sphere.color.x, 0.02, 0.0, 1);
+    //         ImGui::DragFloat3("position", (float *)&sphere.origin.x, 0.02, -20.0, 20);
+    //         ImGui::DragFloat("radius", (float *)&sphere.radius, 0.01, 0.02, 2);
+    //     }
+    // }
 
     void EditorLayer::OnDetach()
     {
         delete[] m_imageData;
-    }
-
-    void EditorLayer::OnEvent(ant::Event *event)
-    {
     }
 
 }

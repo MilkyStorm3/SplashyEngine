@@ -12,13 +12,10 @@
 #include "RayTracingCamera.hpp"
 
 #include <imgui.h>
+#include "Sphere.hpp"
 
 namespace Sandbox
 {
-    struct Ray
-    {
-        glm::vec3 direction;
-    };
 
     class EditorLayer : public ant::Layer
     {
@@ -28,25 +25,27 @@ namespace Sandbox
 
         virtual void OnAttach() override;
         virtual void OnUpdate(ant::TimeStep ts) override;
-        virtual void OnDraw() override;
+        virtual void OnDraw() override {}
         virtual void OnDetach() override;
-        virtual void OnEvent(ant::Event *event) override;
+        virtual void OnEvent(ant::Event *event) override {}
 
     private:
-        glm::vec4 PerPixel(const Ray &ray);
+        static glm::vec4 TraceRay(const Ray &ray, const Sphere &sphere, const RayTracingCamera &camera);
         void Render(const ImVec2 &viewport);
+        void Clear(const glm::vec4 &color);
+
+        static uint32_t Vec4ToPixel(const glm::vec4 &color);
+
+        // static void SphereImGuiPanel(const Sphere& sphere);
 
     private:
         uint32_t *m_imageData = nullptr;
         ant::Ref<ant::Texture2D> m_imageTexture;
 
-        glm::vec3 m_sphereColor = {1.f, 1.f, 0.f};
-        float m_sphereRadius = 0.5f;
-
-        glm::vec3 m_lightDirection = {-1.f, -1.f, -1.f};
-        RayTracingCamera m_camera;
-
         bool m_viewportFocus = false;
+
+        RayTracingCamera m_camera;
+        std::vector<Sphere> m_spheres;
     };
 
 }

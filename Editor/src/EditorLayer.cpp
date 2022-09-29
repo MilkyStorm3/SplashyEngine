@@ -104,13 +104,13 @@ namespace Sandbox
                 {
                     auto [x, y] = currentViewportPanelSize;
                     m_imageTexture = ant::Texture2D::Create(x, y);
-                    m_camera.m_verticalFOV = 45.f;
-                    m_camera.m_nearClip = 1.f;
-                    m_camera.m_farClip = 100.f;
-                    m_camera.m_viewportWidth = currentViewportPanelSize.x;
-                    m_camera.m_viewportHeight = currentViewportPanelSize.y;
 
-                    m_camera.m_resized = true;
+                    m_camera.SetProjection(45, 1, 100);
+                    m_camera.Resize(*(glm::vec2 *)&currentViewportPanelSize[0]);
+                    // m_camera.m_viewportWidth = currentViewportPanelSize.x;
+                    // m_camera.m_viewportHeight = currentViewportPanelSize.y;
+
+                    // m_camera.m_resized = true;
                 }
             }
 
@@ -176,9 +176,10 @@ namespace Sandbox
         ImGui::DragFloat("cameraMouseSpeed", &m_camera.m_mouseSpeed, 0.02f, 0.1f, 10.f);
 
         ImGui::NewLine();
-        if (ImGui::DragFloat3("camera position", &m_camera.m_position.x, 0.001f, -20.0f, 20.f))
+        static glm::vec3 cpos = {0, 0, 3};
+        if (ImGui::DragFloat3("camera position", &cpos.x, 0.001f, -20.0f, 20.f))
         {
-            m_camera.m_moved = true;
+            m_camera.SetPosition(cpos);
         }
 
         ImGui::NewLine();
@@ -199,9 +200,11 @@ namespace Sandbox
 
     glm::vec4 EditorLayer::PerPixel(const Ray &ray)
     {
+        const glm::vec3 &cpos = m_camera.GetPosition();
+
         float a = glm::dot(ray.direction, ray.direction);
-        float b = 2 * glm::dot(m_camera.m_position, ray.direction);
-        float c = glm::dot(m_camera.m_position, m_camera.m_position) - m_sphereRadius * m_sphereRadius;
+        float b = 2 * glm::dot(cpos, ray.direction);
+        float c = glm::dot(cpos, cpos) - m_sphereRadius * m_sphereRadius;
 
         float discriminant = b * b - 4.f * a * c;
 
@@ -210,8 +213,8 @@ namespace Sandbox
 
         float scalar = (-b - sqrt(discriminant)) / (2.f * a); // using only one soliution with the closer hit point
 
-        glm::vec3 hitPoint = ray.direction * scalar + m_camera.m_position; // y = ax + b
-        glm::vec3 normal = glm::normalize(hitPoint);                       // normal = hitPoint - sphereOrigin(0,0,0)
+        glm::vec3 hitPoint = ray.direction * scalar + cpos; // y = ax + b
+        glm::vec3 normal = glm::normalize(hitPoint);        // normal = hitPoint - sphereOrigin(0,0,0)
 
         float d = glm::dot(normal, -glm::normalize(m_lightDirection)); // cos(angle)
 
@@ -228,7 +231,7 @@ namespace Sandbox
             {
                 size_t i = x + y * viewport.x;
 
-                ray.direction = m_camera.m_rayDirections[i];
+                ray.direction = m_camera.GetRayDirection(i);
 
                 glm::vec4 pixel = glm::max(PerPixel(ray) * 255.f, 0.f);
 

@@ -13,39 +13,38 @@ namespace Sandbox
         glm::ivec2 mouseCords = ant::Input::MousePos();
         glm::ivec2 mouseDelta = m_mousePrev - mouseCords;
         m_mousePrev = mouseCords;
-        mouseDelta.x = -mouseDelta.x;
 
         float t = ts.Seconds();
         glm::vec3 rightDirection = glm::cross(m_forwardDirection, m_upDirection);
 
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_W))
         {
-            m_position += m_forwardDirection * m_movementSpeed * t;
+            m_position += m_forwardDirection * movementSpeed * t;
             m_moved = true;
         }
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_S))
         {
-            m_position -= m_forwardDirection * m_movementSpeed * t;
+            m_position -= m_forwardDirection * movementSpeed * t;
             m_moved = true;
         }
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_D))
         {
-            m_position += rightDirection * m_movementSpeed * t;
+            m_position += rightDirection * movementSpeed * t;
             m_moved = true;
         }
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_A))
         {
-            m_position -= rightDirection * m_movementSpeed * t;
+            m_position -= rightDirection * movementSpeed * t;
             m_moved = true;
         }
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_SPACE))
         {
-            m_position += m_upDirection * m_movementSpeed * t;
+            m_position += m_upDirection * movementSpeed * t;
             m_moved = true;
         }
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_LEFT_SHIFT))
         {
-            m_position -= m_upDirection * m_movementSpeed * t;
+            m_position -= m_upDirection * movementSpeed * t;
             m_moved = true;
         }
 
@@ -61,14 +60,14 @@ namespace Sandbox
         {
             ant::Input::SetCursor(ant::CursorStyle::Disabled);
 
-            float yawDelta = mouseDelta.x * m_mouseSpeed;
-            float pitchDelta = mouseDelta.y * m_mouseSpeed;
+            float yawDelta = mouseDelta.x * mouseSpeed;
+            float pitchDelta = mouseDelta.y * mouseSpeed;
 
             glm::quat rotationQ = glm::normalize(
 
                 glm::cross(
-                    glm::angleAxis(-pitchDelta, rightDirection),
-                    glm::angleAxis(-yawDelta, m_upDirection))
+                    glm::angleAxis(pitchDelta, rightDirection),
+                    glm::angleAxis(yawDelta, m_upDirection))
 
             );
 
@@ -90,7 +89,7 @@ namespace Sandbox
         m_viewportDims = viewport;
         m_resized = true;
     }
-    
+
     void RayTracingCamera::SetProjection(float vFov, float nearClip, float farClip)
     {
         m_farClip = farClip;
@@ -98,8 +97,8 @@ namespace Sandbox
         m_nearClip = nearClip;
         m_resized = true;
     }
-    
-    void RayTracingCamera::SetPosition(const glm::vec3& position)
+
+    void RayTracingCamera::SetPosition(const glm::vec3 &position)
     {
         m_position = position;
         m_moved = true;

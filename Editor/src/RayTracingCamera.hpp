@@ -23,8 +23,8 @@ namespace Sandbox
         inline const glm::vec3 &GetRayDirection(size_t index) const { return m_rayDirections.at(index); }
 
     public:
-        float m_movementSpeed = 0.7f;
-        float m_mouseSpeed = 0.002f;
+        float movementSpeed = 0.7f;
+        float mouseSpeed = 0.002f;
 
     private:
         void CalculateProjection();

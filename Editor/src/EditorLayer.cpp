@@ -107,10 +107,6 @@ namespace Sandbox
 
                     m_camera.SetProjection(45, 1, 100);
                     m_camera.Resize(*(glm::vec2 *)&currentViewportPanelSize[0]);
-                    // m_camera.m_viewportWidth = currentViewportPanelSize.x;
-                    // m_camera.m_viewportHeight = currentViewportPanelSize.y;
-
-                    // m_camera.m_resized = true;
                 }
             }
 
@@ -170,13 +166,13 @@ namespace Sandbox
         ImGui::DragFloat("radius", &m_sphereRadius, 0.02f, 0.1f, 7.f);
 
         ImGui::NewLine();
-        ImGui::DragFloat("cameraMovementSpeed", &m_camera.m_movementSpeed, 0.0001f, 0.000001f, 0.7f);
+        ImGui::DragFloat("cameraMovementSpeed", &m_camera.movementSpeed, 0.0001f, 0.000001f, 0.7f);
 
         ImGui::NewLine();
-        ImGui::DragFloat("cameraMouseSpeed", &m_camera.m_mouseSpeed, 0.02f, 0.1f, 10.f);
+        ImGui::DragFloat("cameraMouseSpeed", &m_camera.mouseSpeed, 0.02f, 0.1f, 10.f);
 
         ImGui::NewLine();
-        static glm::vec3 cpos = {0, 0, 3};
+        static glm::vec3 cpos = m_camera.GetPosition();
         if (ImGui::DragFloat3("camera position", &cpos.x, 0.001f, -20.0f, 20.f))
         {
             m_camera.SetPosition(cpos);
@@ -184,6 +180,9 @@ namespace Sandbox
 
         ImGui::NewLine();
         ImGui::DragFloat3("light direction", &m_lightDirection.x, 0.001f, -20.0f, 20.f);
+
+        ImGui::NewLine();
+        ImGui::DragFloat3("light origin", &m_lightOrigin.x, 0.001f, -20.0f, 20.f);
         ImGui::End();
 
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_B))

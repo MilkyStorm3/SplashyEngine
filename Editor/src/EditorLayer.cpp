@@ -172,10 +172,10 @@ namespace Sandbox
         ImGui::Separator();
 
         ImGui::NewLine();
-        ImGui::DragFloat("cameraMovementSpeed", &m_camera.movementSpeed, 0.0001f, 0.000001f, 0.7f);
+        ImGui::DragFloat("cameraMovementSpeed", &m_camera.movementSpeed, 0.0001f, 0.000001f, 4.f);
 
         ImGui::NewLine();
-        ImGui::DragFloat("cameraMouseSpeed", &m_camera.mouseSpeed, 0.02f, 0.1f, 10.f);
+        ImGui::DragFloat("cameraMouseSpeed", &m_camera.mouseSpeed, 0.0001f, 0.0001f, 3.f);
 
         ImGui::NewLine();
         static glm::vec3 cpos = m_camera.GetPosition();
@@ -196,11 +196,13 @@ namespace Sandbox
         if (m_viewportFocus)
             m_camera.OnUpdate(ts);
 
-        Clear({0, 0, 0, 1});
-        Render(currentViewportPanelSize);
-        ImGui::End();
+        ImGui::Separator();
+        ImGui::NewLine();
 
-        // ImGui::ShowDemoWindow();
+        // Clear({1, 0, 1, 1});
+        Render(currentViewportPanelSize);
+
+        ImGui::End();
     }
 
     glm::vec4 EditorLayer::TraceRay(const Ray &ray, const Sphere &sphere, const RayTracingCamera &camera)
@@ -229,10 +231,11 @@ namespace Sandbox
 
     void EditorLayer::Render(const ImVec2 &viewport)
     {
-
-        for (auto &&sphere : m_spheres)
+        for (size_t i = 0; i < m_spheres.size(); i++)
         {
-            // SphereImGuiPanel(sphere);
+            auto &&sphere = m_spheres.at(i);
+
+            SphereImGuiPanel(sphere, i);
             Ray ray;
             for (size_t y = 0; y < viewport.y; y++)
             {
@@ -265,15 +268,17 @@ namespace Sandbox
         return (uint8_t(pixel.a) << 24) | (uint8_t(pixel.b) << 16) | (uint8_t(pixel.g) << 8) | uint8_t(pixel.r);
     }
 
-    // void EditorLayer::SphereImGuiPanel(const Sphere &sphere)
-    // {
-    //     if (ImGui::CollapsingHeader("sphere", ImGuiTreeNodeFlags_None)) //! WHY EVERY PANEL RELATES TO THE SAME THING??
-    //     {
-    //         ImGui::DragFloat3("color", (float *)&sphere.color.x, 0.02, 0.0, 1);
-    //         ImGui::DragFloat3("position", (float *)&sphere.origin.x, 0.02, -20.0, 20);
-    //         ImGui::DragFloat("radius", (float *)&sphere.radius, 0.01, 0.02, 2);
-    //     }
-    // }
+    void EditorLayer::SphereImGuiPanel(const Sphere &sphere, size_t id)
+    {
+        ImGui::PushID(id);
+        if (ImGui::CollapsingHeader(std::string("Sphere").c_str(), ImGuiTreeNodeFlags_None))
+        {
+            ImGui::ColorEdit3("color", (float *)&sphere.color.x);
+            ImGui::DragFloat3("position", (float *)&sphere.origin.x, 0.02, -20.0, 20);
+            ImGui::DragFloat("radius", (float *)&sphere.radius, 0.01, 0.02, 2);
+        }
+        ImGui::PopID();
+    }
 
     void EditorLayer::OnDetach()
     {

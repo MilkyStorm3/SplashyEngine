@@ -36,7 +36,7 @@ namespace Sandbox
 
         static uint32_t Vec4ToPixel(const glm::vec4 &color);
 
-        // static void SphereImGuiPanel(const Sphere& sphere);
+        static void SphereImGuiPanel(const Sphere& sphere, size_t id);
 
     private:
         uint32_t *m_imageData = nullptr;

@@ -81,14 +81,14 @@ namespace Sandbox
 
         m_imageData = new uint32_t[c_imageDataSize]; // BIG buffer of pixels
 
-        m_spheres.reserve(2);
-        m_spheres.push_back({0.5f,
-                             {0, 0, 0},
-                             {1, 1, 0}});
+        m_scene.spheres.reserve(2);
+        m_scene.spheres.push_back({0.5f,
+                                   {0, 1, 0},
+                                   {1, 1, 0}});
 
-        m_spheres.push_back({0.5f,
-                             {-3, -1, 0},
-                             {0.8, 0.2, 0.2}});
+        m_scene.spheres.push_back({0.5f,
+                                   {-3, -1, 0},
+                                   {0.8, 0.2, 0.2}});
     }
 
     void EditorLayer::OnUpdate(ant::TimeStep ts)
@@ -199,57 +199,85 @@ namespace Sandbox
         ImGui::Separator();
         ImGui::NewLine();
 
-        // Clear({1, 0, 1, 1});
+        for (size_t i = 0; i < m_scene.spheres.size(); i++)
+        {
+            Sphere &sphere = m_scene.spheres.at(i);
+            ImGui::PushID(i);
+            if (ImGui::CollapsingHeader(std::string("Sphere").c_str(), ImGuiTreeNodeFlags_None))
+            {
+                ImGui::ColorEdit3("color", (float *)&sphere.color.x);
+                ImGui::DragFloat3("position", (float *)&sphere.origin.x, 0.02, -20.0, 20);
+                ImGui::DragFloat("radius", (float *)&sphere.radius, 0.01, 0.02, 2);
+                ImGui::NewLine();
+            }
+            ImGui::PopID();
+        }
+
+        if (ImGui::Button("new sphere"))
+        {
+            m_scene.spheres.emplace_back();
+        }
+
+        Clear({74.f / 255.f, 70.f / 255.f, 166.f / 255.f, 1});
         Render(currentViewportPanelSize);
 
         ImGui::End();
     }
 
-    glm::vec4 EditorLayer::TraceRay(const Ray &ray, const Sphere &sphere, const RayTracingCamera &camera)
+    glm::vec4 EditorLayer::TraceRay(const Ray &ray, const Scene &scene, const RayTracingCamera &camera)
     {
+
         const glm::vec3 &cpos = camera.GetPosition();
         glm::vec3 lightDirection = {-1.f, -1.f, -1.f};
 
-        float a = glm::dot(ray.direction, ray.direction);
-        float b = 2 * (glm::dot(cpos, ray.direction) - glm::dot(ray.direction, sphere.origin));
-        float c = glm::dot(cpos, cpos) + glm::dot(sphere.origin, sphere.origin) - 2 * glm::dot(cpos, sphere.origin) - sphere.radius * sphere.radius;
+        Sphere *closestSphere = nullptr;
+        float scalar = FLT_MAX;
+        for (auto &&sphere : scene.spheres)
+        {
+            float a = glm::dot(ray.direction, ray.direction);
+            float b = 2 * (glm::dot(cpos, ray.direction) - glm::dot(ray.direction, sphere.origin));
+            float c = glm::dot(cpos, cpos) + glm::dot(sphere.origin, sphere.origin) - 2 * glm::dot(cpos, sphere.origin) - sphere.radius * sphere.radius;
 
-        float discriminant = b * b - 4.f * a * c;
+            float discriminant = b * b - 4.f * a * c;
 
-        if (discriminant < 0.0f)
+            if (discriminant < 0.0f)
+                continue;
+
+            float t = ((-b - sqrt(discriminant)) / (2.f * a)); // using only one solution with the closer hit point
+
+            if (t < scalar)
+            {
+                scalar = t;
+                closestSphere = (Sphere *)&sphere;
+            }
+        }
+
+        if (!closestSphere)
             return glm::vec4(-1.f);
 
-        float scalar = (-b - sqrt(discriminant)) / (2.f * a); // using only one solution with the closer hit point
-
-        glm::vec3 hitPoint = ray.direction * scalar + cpos;          // y = ax + b
-        glm::vec3 normal = glm::normalize(hitPoint - sphere.origin); // perpendicular to a point on a surface
+        glm::vec3 hitPoint = ray.direction * scalar + cpos;                  // y = ax + b
+        glm::vec3 normal = glm::normalize(hitPoint - closestSphere->origin); // perpendicular to a point on a surface
 
         float d = glm::dot(normal, -glm::normalize(lightDirection)); // cos(angle between vectors)
 
-        return {sphere.color, d};
+        return {closestSphere->color, d};
     }
 
     void EditorLayer::Render(const ImVec2 &viewport)
     {
-        for (size_t i = 0; i < m_spheres.size(); i++)
+        Ray ray;
+        for (size_t y = 0; y < viewport.y; y++)
         {
-            auto &&sphere = m_spheres.at(i);
-
-            SphereImGuiPanel(sphere, i);
-            Ray ray;
-            for (size_t y = 0; y < viewport.y; y++)
+            for (size_t x = 0; x < viewport.x; x++)
             {
-                for (size_t x = 0; x < viewport.x; x++)
-                {
-                    size_t i = x + y * viewport.x;
+                size_t i = x + y * viewport.x;
 
-                    ray.direction = m_camera.GetRayDirection(i);
+                ray.direction = m_camera.GetRayDirection(i);
 
-                    glm::vec4 pixel = TraceRay(ray, sphere, m_camera);
+                glm::vec4 pixel = TraceRay(ray, m_scene, m_camera);
 
-                    if (pixel != glm::vec4(-1))
-                        m_imageData[i] = Vec4ToPixel(pixel);
-                }
+                if (pixel != glm::vec4(-1))
+                    m_imageData[i] = Vec4ToPixel(pixel);
             }
         }
     }
@@ -266,18 +294,6 @@ namespace Sandbox
     {
         glm::vec4 pixel = glm::max(color * 255.f, 0.f);
         return (uint8_t(pixel.a) << 24) | (uint8_t(pixel.b) << 16) | (uint8_t(pixel.g) << 8) | uint8_t(pixel.r);
-    }
-
-    void EditorLayer::SphereImGuiPanel(const Sphere &sphere, size_t id)
-    {
-        ImGui::PushID(id);
-        if (ImGui::CollapsingHeader(std::string("Sphere").c_str(), ImGuiTreeNodeFlags_None))
-        {
-            ImGui::ColorEdit3("color", (float *)&sphere.color.x);
-            ImGui::DragFloat3("position", (float *)&sphere.origin.x, 0.02, -20.0, 20);
-            ImGui::DragFloat("radius", (float *)&sphere.radius, 0.01, 0.02, 2);
-        }
-        ImGui::PopID();
     }
 
     void EditorLayer::OnDetach()

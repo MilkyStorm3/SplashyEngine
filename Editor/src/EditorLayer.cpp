@@ -224,19 +224,17 @@ namespace Sandbox
         ImGui::End();
     }
 
-    glm::vec4 EditorLayer::TraceRay(const Ray &ray, const Scene &scene, const RayTracingCamera &camera)
+    EditorLayer::RayTracerPayload EditorLayer::TraceRay(const Ray &ray)
     {
-
-        const glm::vec3 &cpos = camera.GetPosition();
-        glm::vec3 lightDirection = {-1.f, -1.f, -1.f};
-
-        Sphere *closestSphere = nullptr;
+        int32_t closestSphereIndex = -1;
         float scalar = FLT_MAX;
-        for (auto &&sphere : scene.spheres)
+
+        for (size_t index = 0; index < m_scene.spheres.size(); index++)
         {
+            auto &&sphere = m_scene.spheres.at(index);
             float a = glm::dot(ray.direction, ray.direction);
-            float b = 2 * (glm::dot(cpos, ray.direction) - glm::dot(ray.direction, sphere.origin));
-            float c = glm::dot(cpos, cpos) + glm::dot(sphere.origin, sphere.origin) - 2 * glm::dot(cpos, sphere.origin) - sphere.radius * sphere.radius;
+            float b = 2 * (glm::dot(ray.origin, ray.direction) - glm::dot(ray.direction, sphere.origin));
+            float c = glm::dot(ray.origin, ray.origin) + glm::dot(sphere.origin, sphere.origin) - 2 * glm::dot(ray.origin, sphere.origin) - sphere.radius * sphere.radius;
 
             float discriminant = b * b - 4.f * a * c;
 
@@ -248,33 +246,66 @@ namespace Sandbox
             if (t < scalar)
             {
                 scalar = t;
-                closestSphere = (Sphere *)&sphere;
+                closestSphereIndex = index;
             }
         }
 
-        if (!closestSphere)
-            return glm::vec4(-1.f);
+        if (closestSphereIndex == -1)
+        {
+            return Miss();
+        }
 
-        glm::vec3 hitPoint = ray.direction * scalar + cpos;                  // y = ax + b
-        glm::vec3 normal = glm::normalize(hitPoint - closestSphere->origin); // perpendicular to a point on a surface
+        return ClosestHit(ray, scalar, closestSphereIndex);
+    }
 
-        float d = glm::dot(normal, -glm::normalize(lightDirection)); // cos(angle between vectors)
+    EditorLayer::RayTracerPayload EditorLayer::ClosestHit(const Ray &ray, float hitDistance, size_t sphereIndex)
+    {
+        Sphere *closestSphere = &m_scene.spheres.at(sphereIndex);
+        RayTracerPayload payload;
 
-        return {closestSphere->color, d};
+        payload.hitPoint = ray.direction * hitDistance + ray.origin;                      // y = ax + b
+        payload.surfaceNormal = glm::normalize(payload.hitPoint - closestSphere->origin); // perpendicular to a point on a surface
+        payload.hitObjectIndex = sphereIndex;
+
+        return payload;
+    }
+
+    EditorLayer::RayTracerPayload EditorLayer::Miss()
+    {
+        RayTracerPayload payload;
+        payload.hitObjectIndex = -1;
+
+        return payload;
+    }
+
+    glm::vec4 EditorLayer::PerPixel(size_t index)
+    {
+        Ray ray;
+        ray.direction = m_camera.GetRayDirection(index);
+        ray.origin = m_camera.GetPosition();
+
+        RayTracerPayload data = TraceRay(ray);
+
+        if (data.hitObjectIndex != -1)
+        {
+            glm::vec3 lightDirection = {-1.f, -1.f, -1.f};
+            Sphere *closestSphere = &m_scene.spheres.at(data.hitObjectIndex);
+
+            float d = glm::dot(data.surfaceNormal, -glm::normalize(lightDirection)); // cos(angle between vectors)
+            return {closestSphere->color, d};
+        }
+        return glm::vec4(-1);
     }
 
     void EditorLayer::Render(const ImVec2 &viewport)
     {
-        Ray ray;
         for (size_t y = 0; y < viewport.y; y++)
         {
             for (size_t x = 0; x < viewport.x; x++)
             {
                 size_t i = x + y * viewport.x;
 
-                ray.direction = m_camera.GetRayDirection(i);
-
-                glm::vec4 pixel = TraceRay(ray, m_scene, m_camera);
+                glm::vec4 pixel = PerPixel(i);
 
                 if (pixel != glm::vec4(-1))
                     m_imageData[i] = Vec4ToPixel(pixel);

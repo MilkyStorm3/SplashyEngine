@@ -30,11 +30,23 @@ namespace Sandbox
         virtual void OnEvent(ant::Event *event) override {}
 
     private:
-        static glm::vec4 TraceRay(const Ray &ray, const Scene &scene, const RayTracingCamera &camera);
         void Render(const ImVec2 &viewport);
         void Clear(const glm::vec4 &color);
 
         static uint32_t Vec4ToPixel(const glm::vec4 &color);
+
+        struct RayTracerPayload
+        {
+            glm::vec3 hitPoint;
+            glm::vec3 surfaceNormal;
+
+            uint32_t hitObjectIndex;
+        };
+
+        glm::vec4 PerPixel(size_t index);
+        RayTracerPayload TraceRay(const Ray &ray);
+        RayTracerPayload ClosestHit(const Ray &ray, float hitDistance, size_t sphereIndex);
+        RayTracerPayload Miss();
 
     private:
         uint32_t *m_imageData = nullptr;

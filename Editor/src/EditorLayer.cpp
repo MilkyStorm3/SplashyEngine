@@ -11,6 +11,7 @@
 #include "Input/Input.hpp"
 #include <glm/glm.hpp>
 #include "Input/Event.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Sandbox
 {
@@ -87,7 +88,7 @@ namespace Sandbox
                                    {1, 1, 0}});
 
         m_scene.spheres.push_back({0.5f,
-                                   {-3, -1, 0},
+                                   {1.3, 1, 0},
                                    {0.8, 0.2, 0.2}});
     }
 
@@ -184,8 +185,11 @@ namespace Sandbox
             m_camera.SetPosition(cpos);
         }
 
-        // ImGui::NewLine();
-        // ImGui::DragFloat3("light direction", &m_lightDirection.x, 0.001f, -20.0f, 20.f);
+        ImGui::NewLine();
+        ImGui::DragFloat3("light direction", &m_lightDirection.x, 0.001f, -20.0f, 20.f);
+
+        ImGui::NewLine();
+        ImGui::ColorEdit4("clear color", glm::value_ptr(m_clearColor));
 
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_B))
             ant::Input::SetCursor(ant::CursorStyle::Disabled);
@@ -218,7 +222,7 @@ namespace Sandbox
             m_scene.spheres.emplace_back();
         }
 
-        Clear({74.f / 255.f, 70.f / 255.f, 166.f / 255.f, 1});
+        Clear(m_clearColor);
         Render(currentViewportPanelSize);
 
         ImGui::End();
@@ -243,7 +247,7 @@ namespace Sandbox
 
             float t = ((-b - sqrt(discriminant)) / (2.f * a)); // using only one solution with the closer hit point
 
-            if (t < scalar)
+            if (t > 0.f && t < scalar)
             {
                 scalar = t;
                 closestSphereIndex = index;
@@ -278,23 +282,47 @@ namespace Sandbox
         return payload;
     }
 
+    glm::vec3 ScreenBlend(const glm::vec3 &a, const glm::vec3 &b)
+    {
+        return a + b - a * b;
+    }
+
     glm::vec4 EditorLayer::PerPixel(size_t index)
     {
         Ray ray;
         ray.direction = m_camera.GetRayDirection(index);
         ray.origin = m_camera.GetPosition();
 
-        RayTracerPayload data = TraceRay(ray);
-
-        if (data.hitObjectIndex != -1)
+        glm::vec3 color(0.f);
+        float multiplier = 1.f;
+        size_t bounceLimit = 2;
+        bool flag = false;
+        for (size_t b = 0; b < bounceLimit; b++)
         {
-            glm::vec3 lightDirection = {-1.f, -1.f, -1.f};
-            Sphere *closestSphere = &m_scene.spheres.at(data.hitObjectIndex);
+            RayTracerPayload data = TraceRay(ray);
 
-            float d = glm::dot(data.surfaceNormal, -glm::normalize(lightDirection)); // cos(angle between vectors)
-            return {closestSphere->color, d};
+            if (data.hitObjectIndex == -1)
+            {
+                if (b == 0)
+                    flag = true;
+                break;
+            }
+
+            float d = glm::max(glm::dot(data.surfaceNormal, -glm::normalize(m_lightDirection)), 0.f); // cos(angle between vectors)
+
+            Sphere *currentSphere = &m_scene.spheres.at(data.hitObjectIndex);
+            glm::vec3 col = currentSphere->color;
+            col *= d;
+            color += col * multiplier;
+            multiplier *= 0.7f;
+
+            ray.direction = glm::reflect(ray.direction, data.surfaceNormal);
+            ray.origin = data.hitPoint + data.surfaceNormal * 0.0001f;
         }
-        return glm::vec4(-1);
+        if (flag)
+            return glm::vec4(-1);
+
+        return {color, 1.f};
     }
 
     void EditorLayer::Render(const ImVec2 &viewport)
@@ -323,7 +351,7 @@ namespace Sandbox
 
     uint32_t EditorLayer::Vec4ToPixel(const glm::vec4 &color)
     {
-        glm::vec4 pixel = glm::max(color * 255.f, 0.f);
+        glm::vec4 pixel = glm::clamp(color, 0.f, 1.f) * 255.f;
         return (uint8_t(pixel.a) << 24) | (uint8_t(pixel.b) << 16) | (uint8_t(pixel.g) << 8) | uint8_t(pixel.r);
     }
 

@@ -39,7 +39,6 @@ namespace Sandbox
         {
             glm::vec3 hitPoint;
             glm::vec3 surfaceNormal;
-
             uint32_t hitObjectIndex;
         };
 
@@ -55,6 +54,8 @@ namespace Sandbox
         bool m_viewportFocus = false;
 
         RayTracingCamera m_camera;
+        glm::vec3 m_lightDirection{-1, -1, -1};
+        glm::vec4 m_clearColor{74.f / 255.f, 70.f / 255.f, 166.f / 255.f, 1};
         Scene m_scene;
     };
 

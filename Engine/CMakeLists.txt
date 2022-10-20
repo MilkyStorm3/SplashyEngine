@@ -3,9 +3,16 @@ include(vendor/vendors.cmake)
 cmake_minimum_required(VERSION 3.16.0)
 project(Engine VERSION 0.1.0)
 file(GLOB_RECURSE ENGINE_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
-add_library(Engine SHARED ${ENGINE_SRC})
 
-target_compile_definitions(Engine PUBLIC SPL_BUILD_SHARED=1)
+if(ENGINE_SHARED_BUILD)
+    add_library(Engine SHARED ${ENGINE_SRC})
+    target_compile_definitions(Engine PUBLIC SPL_BUILD_SHARED=1)
+    message("ENGINE-> Building shared engine library")
+else()
+    add_library(Engine STATIC ${ENGINE_SRC})
+    message("ENGINE-> Building static engine library")
+endif()
+
 target_compile_definitions(Engine PRIVATE SPL_CORE=1)
 
 target_precompile_headers(Engine PRIVATE ${PROJECT_SOURCE_DIR}/src/Pch/Pch.h)
@@ -47,4 +54,3 @@ if( ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     target_compile_definitions(Engine PRIVATE SPL_ENABLE_RENDERER_STATS=1)
     target_compile_definitions(Engine PRIVATE SPL_ENABLE_LOGGING=1)
 endif()
-

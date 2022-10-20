@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16.0)
+project(SplashyEngine VERSION 0.1.0)
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 if(NOT DEFINED CMAKE_BUILD_TYPE)
@@ -6,11 +7,19 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
 endif()
 
 if(UNIX AND NOT APPLE)
-    set(LINUX TRUE)
+set(LINUX TRUE)
 endif()
 
-if (WIN32)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+if(LINUX) # engine is build as shared library only for linux
+    set(ENGINE_SHARED_BUILD ON)
+else()
+    set(ENGINE_SHARED_BUILD OFF)
+endif()
+
+if (WIN32)    
+    if(ENGINE_SHARED_BUILD)
+        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    endif(ENGINE_SHARED_BUILD)
 endif()
 
 # global dependencies

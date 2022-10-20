@@ -16,11 +16,12 @@ file(GLOB_RECURSE imgui_src_add
 list(REMOVE_ITEM imgui_src ${forbidden_imgui_src})
 list(APPEND imgui_src ${imgui_src_add})
 
-add_library(ImGui ${imgui_src} )
+add_library(ImGui STATIC ${imgui_src})
 
 set_property(TARGET ImGui PROPERTY CXX_STANDARD 17)
 set_target_properties(ImGui PROPERTIES LINKER_LANGUAGE CXX)
 
 target_include_directories(ImGui PUBLIC ${PROJECT_SOURCE_DIR}/imgui)
+target_compile_definitions(ImGui PRIVATE IMGUI_PROJECT=1)
 
 target_link_libraries(ImGui PRIVATE glfw)

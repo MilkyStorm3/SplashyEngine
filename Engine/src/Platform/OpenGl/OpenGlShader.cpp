@@ -8,6 +8,7 @@
 #include <fstream>
 #include <functional>
 #include <Core/Core.hpp>
+#include <sstream>
 
 #include <nlohmann/json.hpp>
 #include <shaderc/shaderc.hpp>
@@ -272,7 +273,7 @@ namespace ant::OpenGl
         shaderc_optimization_level optimization = optimize ? shaderc_optimization_level_performance : shaderc_optimization_level_zero;
         options.SetOptimizationLevel(optimization);
 
-        shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(source, Utils::GlEnumToShadercKind(stage), m_filePath.c_str(), options);
+        shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(source, Utils::GlEnumToShadercKind(stage), m_filePath.string().c_str(), options);
         CORE_ASSERT(result.GetCompilationStatus() == shaderc_compilation_status_success, "Shader {" + m_name + "} failed to compile: " + result.GetErrorMessage());
 
         target = std::vector<uint32_t>(result.begin(), result.end());

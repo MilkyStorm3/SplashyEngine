@@ -5,10 +5,23 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
     message(FATAL_ERROR "NO BUILD TYPE SET")    
 endif()
 
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
+if (WIN32)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+
 # global dependencies
 add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/glm)
 add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/json)
 add_subdirectory(${CMAKE_SOURCE_DIR}/vendor) # ImguiCmake
+
+# requiered include paths for imgui user configs
+target_include_directories(ImGui PUBLIC "${CMAKE_SOURCE_DIR}/Engine/src/Splashy")
+target_include_directories(ImGui PUBLIC "${CMAKE_SOURCE_DIR}/Engine/src/Splashy/Configs")
+target_compile_definitions(ImGui PUBLIC IMGUI_USER_CONFIG="ImguiUserConfig.hpp")
 
 # projects
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)

@@ -11,7 +11,7 @@ void test();
 
 namespace ant
 {
-    Application *Application::s_instance;
+    SPL_DEF Application *Application::s_instance;
 
     Application::~Application()
     {
@@ -44,7 +44,7 @@ namespace ant
         static TimePoint lastFrameTime = Time::Now();
 
         while (m_appdata.running)
-        {            
+        {
             TimePoint time = Time::Now();
             TimeStep frameTime = time - lastFrameTime;
             lastFrameTime = time;

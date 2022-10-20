@@ -41,7 +41,7 @@ namespace ant
 
         static Application *GetInstance() { return s_instance; }
 
-        static Application *s_instance;
+        static SPL_DEF Application *s_instance;
 
     protected:
         Application() {}

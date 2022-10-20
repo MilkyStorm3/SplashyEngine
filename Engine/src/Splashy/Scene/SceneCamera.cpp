@@ -3,12 +3,11 @@
 
 namespace ant
 {
-    void SceneCamera::SetOrtographic(float size, float near, float far)
+    void SceneCamera::SetOrtographic(float p_size, float p_near, float p_far)
     {
-        m_size = size;
-        m_near = near;
-        m_far = far;
-
+        m_size = p_size;
+        m_near = p_near;
+        m_far = p_far;
         CalculateProjection();
     }
 

@@ -3,3 +3,4 @@ build
 .cache
 **imgui.ini
 bin
+**.code-workspace

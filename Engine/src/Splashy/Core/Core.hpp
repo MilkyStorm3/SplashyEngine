@@ -26,16 +26,15 @@
 #endif
 
 
-#ifdef SPL_BUILD_SHARED
+#if defined(SPL_BUILD_SHARED) && defined(_WIN32)
 
-    #ifdef _WIN32
-        #ifdef SPL_CORE
-            #define SPL_DEF  __declspec(dllexport)
-        #else
-            #define SPL_DEF __declspec(dllimport)
-        #endif
+    #ifdef SPL_CORE
+        #define SPL_DEF  __declspec(dllexport)
+    #else
+        #define SPL_DEF __declspec(dllimport)
     #endif
 
 #else
     #define SPL_DEF 
 #endif
+

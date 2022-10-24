@@ -24,7 +24,11 @@ target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/Splashy
 
 target_link_libraries(Engine PRIVATE glfw) 
 target_link_libraries(Engine PRIVATE libglew_static)
-target_link_libraries(Engine PRIVATE libGL.so) 
+
+if(LINUX)
+    target_link_libraries(Engine PRIVATE libGL.so) 
+endif()
+
 target_link_libraries(Engine PRIVATE EnTT::EnTT) 
 target_link_libraries(Engine PRIVATE stbimage) 
 

@@ -33,6 +33,7 @@ namespace ant::OpenGl
         CORE_INFO(" Vendor {0}", glGetString(GL_VENDOR));
         CORE_INFO(" Renderer {0}", glGetString(GL_RENDERER));
         CORE_INFO(" Version {0}", glGetString(GL_VERSION));
+        CORE_INFO("Glfw version: {0}",glfwGetVersionString());
 
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);

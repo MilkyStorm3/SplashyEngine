@@ -1,8 +1,9 @@
-#include <GL/glew.h> 
+#include <GL/glew.h>
 #include "OpenGlShader.hpp"
 
 #include <Utilities/InstrumentationMacros.hpp>
 #include <Utilities/Timer.hpp>
+#include <Core/Utils.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -19,138 +20,55 @@
 namespace ant::OpenGl
 {
 
-    namespace Utils
+    const char *GlShader::GetOpenGlCacheFileExtension(GLenum stage)
     {
-        static const char *GetCacheDirectory()
-        {
-            return "cache/shaders";
-        }
+        if (stage == GL_VERTEX_SHADER)
+            return ".vertglshader";
+        if (stage == GL_FRAGMENT_SHADER)
+            return ".pixelglshader";
 
-        static const char *GetVulcanCacheFileExtension(GLenum stage)
-        {
-            if (stage == GL_VERTEX_SHADER)
-                return ".vertvshader";
-            if (stage == GL_FRAGMENT_SHADER)
-                return ".pixelvshader";
+        CORE_ASSERT(false, "Unsupported shader stage");
+        return "FAIL";
+    }
 
-            CORE_ASSERT(false, "Unsupported shader stage");
-            return "FAIL";
-        }
-
-        static const char *GetOpenGlCacheFileExtension(GLenum stage)
-        {
-            if (stage == GL_VERTEX_SHADER)
-                return ".vertglshader";
-            if (stage == GL_FRAGMENT_SHADER)
-                return ".pixelglshader";
-
-            CORE_ASSERT(false, "Unsupported shader stage");
-            return "FAIL";
-        }
-
-        static const char *GetDescriptiorFileExtension(GLenum stage)
-        {
-            if (stage == GL_VERTEX_SHADER)
-                return ".vertdesc.json";
-            if (stage == GL_FRAGMENT_SHADER)
-                return ".pixeldesc.json";
-
-            CORE_ASSERT(false, "Unsupported shader stage");
-            return "FAIL";
-        }
-
-        static void CreateCacheDirectoryIfNeeded()
-        {
-            auto dir = GetCacheDirectory();
-            if (!std::filesystem::exists(dir))
-                std::filesystem::create_directories(dir);
-        }
-
-        static std::filesystem::path GetVulcanCachePath(const std::string &name, GLenum stage)
-        {
-            std::filesystem::path path = Utils::GetCacheDirectory();
-            path.append(name + Utils::GetVulcanCacheFileExtension(stage));
-            return path;
-        }
-
-        static std::filesystem::path GetOpenGlCachePath(const std::string &name, GLenum stage)
-        {
-            std::filesystem::path path = Utils::GetCacheDirectory();
-            path.append(name + Utils::GetOpenGlCacheFileExtension(stage));
-            return path;
-        }
-
-        static bool HasCacheFile(const std::filesystem::path &path)
-        {
-            return std::filesystem::exists(path) && std::filesystem::file_size(path);
-        }
-
-        static shaderc_shader_kind GlEnumToShadercKind(GLenum type)
-        {
-            if (type == GL_VERTEX_SHADER)
-                return shaderc_vertex_shader;
-            if (type == GL_FRAGMENT_SHADER)
-                return shaderc_fragment_shader;
-
-            CORE_ASSERT(false, "Unsupported shader stage");
-            return shaderc_miss_shader;
-        }
-
-        static const char *GlEnumToStageString(GLenum type)
-        {
-            if (type == GL_VERTEX_SHADER)
-                return "vertex";
-            if (type == GL_FRAGMENT_SHADER)
-                return "fragment";
-
-            CORE_ASSERT(false, "Unsupported shader stage");
-            return "none";
-        }
-
-        static void LoadBinary(const std::filesystem::path &path, std::vector<uint32_t> *destination)
-        {
-            size_t dataSize = std::filesystem::file_size(path);
-
-            std::ifstream inputCache(path, std::ios::binary);
-            if (inputCache.is_open())
-            {
-                destination->resize(dataSize / sizeof(uint32_t));
-                inputCache.read((char *)destination->data(), dataSize);
-                inputCache.close();
-            }
-        }
-
-        static void SaveBinary(const std::filesystem::path &path, std::vector<uint32_t> *data)
-        {
-            std::fstream outputCache(path, std::ios::binary | std::ios::out);
-
-            if (outputCache.is_open())
-            {
-                outputCache.write((char *)data->data(), data->size() * sizeof(uint32_t));
-                outputCache.flush();
-                outputCache.close();
-            }
-        }
-
-        static shaderc_target_env RenderApiEnumToShaderc(RenderApi api)
-        {
-            {
-
-                if (api == RenderApi::OpenGl)
-                    return shaderc_target_env_opengl;
-                if (api == RenderApi::Vulcan)
-                    return shaderc_target_env_vulkan;
-
-                CORE_ASSERT(false, "unsupported target/api");
-                return shaderc_target_env_default;
-            }
-        }
-
-    } // namespace Utils
-
-    GlShader::GlShader(bool trackSource)
-        : m_trackingSource(trackSource)
+    std::filesystem::path GlShader::GetOpenGlCachePath(const std::string &name, GLenum stage)
     {
+        std::filesystem::path path = Shader::Utils::GetCacheDirectory();
+        path.append(name + GetOpenGlCacheFileExtension(stage));
+        return path;
+    }
+
+    static bool HasCacheFile(const std::filesystem::path &path)
+    {
+        return std::filesystem::exists(path) && std::filesystem::file_size(path);
+    }
+
+    static shaderc_target_env RenderApiEnumToShaderc(RenderApi api)
+    {
+        if (api == RenderApi::OpenGl)
+            return shaderc_target_env_opengl;
+        if (api == RenderApi::Vulcan)
+            return shaderc_target_env_vulkan;
+
+        CORE_ASSERT(false, "unsupported target/api");
+        return shaderc_target_env_default;
+    }
+
+    static shaderc_shader_kind ShaderStageToShadercKind(Shader::Stage stage)
+    {
+        if (stage == Shader::Stage::Vertex)
+            return shaderc_vertex_shader;
+        if (stage == Shader::Shader::Fragment)
+            return shaderc_fragment_shader;
+
+        CORE_ASSERT(false, "Unsupported shader stage");
+        return shaderc_miss_shader;
+    }
+
+    GlShader::GlShader(bool trackSource, bool useTextShaders)
+        : m_useTextShaders(useTextShaders)
+    {
+        dm_trackSourceFile = trackSource;
         CORE_DETAILED_PROFILE_FUNC();
         m_glProgram = GL_INVALID_INDEX;
         m_glProgram = glCreateProgram();
@@ -164,87 +82,19 @@ namespace ant::OpenGl
         glDeleteProgram(m_glProgram);
     }
 
-    void GlShader::LoadFromFile(const std::filesystem::path &filePath)
+    void GlShader::OnInit()
     {
-        CORE_INTERMEDIATE_PROFILE_FUNC();
-
-        CORE_ASSERT(!filePath.empty(), "GlShader path not provided!");
-        CORE_ASSERT(std::filesystem::exists(filePath), "Cannot find GlShader file! " + filePath.string());
-
-        auto fname = filePath.filename().string();
-        m_name = fname.substr(0, fname.find_last_of('.'));
-
-        m_filePath = filePath;
-
-        Parse(filePath);
-    }
-
-    void GlShader::FromSource(const std::string &name, const std::string &vertexSrc, const std::string &fragmentSrc)
-    {
-        CORE_INTERMEDIATE_PROFILE_FUNC();
-        CORE_ASSERT(!name.empty(), "Name not provided!");
-        CORE_ASSERT(!vertexSrc.empty(), "Vertex shader source not provided!");
-        CORE_ASSERT(!fragmentSrc.empty(), "Fragment shader source not provided!");
-
-        m_name = name;
-        m_sources[GL_VERTEX_SHADER] = vertexSrc;
-        m_sources[GL_FRAGMENT_SHADER] = fragmentSrc;
-    }
-
-    void GlShader::Init()
-    {
-        CORE_INTERMEDIATE_PROFILE_FUNC();
-        Timer timer;
-        Utils::CreateCacheDirectoryIfNeeded();
-
-        std::hash<std::string> hasher;
-
-        for (auto &[stage, source] : m_sources)
+        if (m_useTextShaders)
         {
-            if (source.length() == 0)
-            {
-                std::stringstream msg;
-                msg << "There has to be a " << Utils::GlEnumToStageString(stage) << " source!";
-                CORE_ASSERT(false, msg.str().c_str());
-            }
-
-            if (m_trackingSource)
-            {
-                bool forceRecompilation = true;
-                if (LoadSpecification(stage))
-                {
-                    size_t sourceHash = hasher(source);
-                    size_t previousHash = 0;
-                    if (m_specifications[stage].contains("hash"))
-                        previousHash = m_specifications[stage]["hash"];
-
-                    forceRecompilation = sourceHash != previousHash;
-                }
-
-                if (forceRecompilation)
-                    CreateSpecification(source, stage);
-
-                GetVulcanBinary(source, stage, forceRecompilation);
-                GetOpenGlBinary(stage, forceRecompilation);
-                // binary gets recompiled if there is no specification
-            }
-            else
-            {
-                if (!LoadSpecification(stage))
-                {
-                    CreateSpecification(source, stage);
-                }
-                GetVulcanBinary(source, stage, false);
-                GetOpenGlBinary(stage, false);
-            }
+            ComposeGlProgramFromSource();
         }
-
-        ComposeGlProgram();
-        m_vulcanSPIRV.clear();
-        m_openglSPIRV.clear();
-        m_sources.clear();
-
-        CORE_INFO("Shader [{0}] created in {1} ms", m_name, timer.ElapsedMillis());
+        else
+        {
+            // cross compile to glspirv
+            ComposeGlProgram();
+        }
+        // compose opengl binary
+        // clear buffers
     }
 
     void GlShader::Bind() const
@@ -259,139 +109,54 @@ namespace ant::OpenGl
         glUseProgram(0);
     }
 
-    void GlShader::CompileSpirv(std::vector<uint32_t> &target, const std::string &source, GLenum stage, RenderApi targetEnv, bool optimize)
+    void GlShader::GetOpenGlBinary(Shader::Stage stage, bool forceRecompilation)
     {
         CORE_DETAILED_PROFILE_FUNC();
-        shaderc::Compiler compiler;
-        shaderc::CompileOptions options;
+        m_openglBinaries[stage].clear();
 
-        CORE_ASSERT(targetEnv == RenderApi::Vulcan || targetEnv == RenderApi::OpenGl, "Unsuported target environment");
+        const std::filesystem::path &path = GetOpenGlCachePath(dm_name, ShaderStageToGl(stage));
 
-        uint32_t version = targetEnv == RenderApi::Vulcan ? shaderc_env_version_vulkan_1_2 : shaderc_env_version_opengl_4_5;
-        options.SetTargetEnvironment(Utils::RenderApiEnumToShaderc(targetEnv), version);
-
-        shaderc_optimization_level optimization = optimize ? shaderc_optimization_level_performance : shaderc_optimization_level_zero;
-        options.SetOptimizationLevel(optimization);
-
-        shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(source, Utils::GlEnumToShadercKind(stage), m_filePath.string().c_str(), options);
-        CORE_ASSERT(result.GetCompilationStatus() == shaderc_compilation_status_success, "Shader {" + m_name + "} failed to compile: " + result.GetErrorMessage());
-
-        target = std::vector<uint32_t>(result.begin(), result.end());
-    }
-
-    bool GlShader::LoadSpecification(GLenum stage)
-    {
-        CORE_DETAILED_PROFILE_FUNC();
-        std::filesystem::path path = Utils::GetCacheDirectory();
-        path.append(m_name + Utils::GetDescriptiorFileExtension(stage));
-
-        if (Utils::HasCacheFile(path))
+        if (HasCacheFile(path) && !forceRecompilation)
         {
-            std::ifstream file(path);
-            CORE_ASSERT(file.is_open(), "cannot open file");
-            size_t size = std::filesystem::file_size(path);
-
-            std::string text;
-            text.resize(size);
-            file.read(text.data(), size);
-            file.close();
-
-            m_specifications[stage] = nlohmann::json::parse(text);
-            return true;
-        }
-        return false;
-    }
-
-    void GlShader::GetVulcanBinary(const std::string &source, GLenum stage, bool forceRecompilation)
-    {
-        CORE_DETAILED_PROFILE_FUNC();
-        m_vulcanSPIRV[stage].clear();
-
-        const std::filesystem::path &path = Utils::GetVulcanCachePath(m_name, stage);
-
-        if (Utils::HasCacheFile(path) && !forceRecompilation)
-        {
-            Utils::LoadBinary(path, &m_vulcanSPIRV[stage]);
+            ant::Utils::LoadBinary(path, &m_openglBinaries[stage]);
         }
         else
         {
-            CompileSpirv(m_vulcanSPIRV[stage], source, stage, RenderApi::Vulcan, true);
-            Utils::SaveBinary(path, &m_vulcanSPIRV[stage]);
+            spirv_cross::CompilerGLSL glslCompiler(dm_SpirvBinaries[stage]);
+            std::string c = glslCompiler.compile();
+            CORE_WARN("glsl source {0}", c.c_str());
+            SpirvCompileOpenGL(m_openglBinaries[stage], c, stage, true);
+            ant::Utils::SaveBinary(path, &m_openglBinaries[stage]);
         }
-    }
-
-    void GlShader::GetOpenGlBinary(GLenum stage, bool forceRecompilation)
-    {
-        CORE_DETAILED_PROFILE_FUNC();
-        m_openglSPIRV[stage].clear();
-
-        const std::filesystem::path &path = Utils::GetOpenGlCachePath(m_name, stage);
-
-        if (Utils::HasCacheFile(path) && !forceRecompilation)
-        {
-            Utils::LoadBinary(path, &m_openglSPIRV[stage]);
-        }
-        else
-        {
-            spirv_cross::CompilerGLSL glslCompiler(m_vulcanSPIRV[stage]);
-            CompileSpirv(m_openglSPIRV[stage], glslCompiler.compile(), stage, RenderApi::OpenGl, true);
-            Utils::SaveBinary(path, &m_openglSPIRV[stage]);
-        }
-    }
-
-    void GlShader::Parse(const std::filesystem::path &filePath)
-    {
-        CORE_DETAILED_PROFILE_FUNC();
-        std::ifstream file(filePath);
-        GLenum type = GL_INVALID_ENUM;
-        std::string line;
-
-        while (std::getline(file, line))
-        {
-            if (!line.compare("#vertexShader"))
-            {
-                type = GL_VERTEX_SHADER;
-                continue;
-            }
-
-            if (!line.compare("#fragmentShader"))
-            {
-                type = GL_FRAGMENT_SHADER;
-                continue;
-            }
-
-            line.push_back('\n');
-            CORE_ASSERT(type != GL_INVALID_ENUM, "Check shader definitions");
-            m_sources[type].append(line);
-            line.clear();
-        }
-
-        file.close();
     }
 
     void GlShader::ComposeGlProgram()
     {
         CORE_DETAILED_PROFILE_FUNC();
+        CORE_ASSERT(m_openglBinaries.size() > 0, "no opengl binary");
         std::vector<GLenum> componentIds;
-        for (auto &[stage, binary] : m_openglSPIRV)
+        for (auto &[stage, bvinary] : dm_SpirvBinaries)
         {
-            GLuint shaderId = glCreateShader(stage);
+            GetOpenGlBinary(stage, true); // It always recompiles binary, change that
+            std::vector<uint32_t> &binary = m_openglBinaries[stage];
+
+            GLuint shaderId = glCreateShader(ShaderStageToGl(stage));
             componentIds.push_back(shaderId);
 
-            glShaderBinary(1, &shaderId, GL_SHADER_BINARY_FORMAT_SPIR_V_ARB, binary.data(), binary.size() * sizeof(uint32_t));
-            glSpecializeShader(shaderId, "main", 0, 0, 0);
+            glShaderBinary(1, &shaderId, GL_SHADER_BINARY_FORMAT_SPIR_V, binary.data(), binary.size() * sizeof(uint32_t));
+            glSpecializeShaderARB(shaderId, "main", 0, 0, 0);
 
             int res;
-            glGetShaderiv(shaderId, GL_COMPILE_STATUS, &res);
+            glGetObjectParameterivARB(shaderId, GL_COMPILE_STATUS, &res);
 
             if (res == GL_FALSE)
             {
                 std::stringstream ss;
                 int len;
-                glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &len);
+                glGetObjectParameterivARB(shaderId, GL_INFO_LOG_LENGTH, &len);
                 char *mes = (char *)alloca(len);
                 glGetShaderInfoLog(shaderId, len, &len, mes);
-                ss << Utils::GlEnumToStageString(stage) << " GlShader injection failed! " << mes;
+                ss << Shader::Convert::StageEnumToStageString(stage) << " GlShader injection failed! " << mes;
                 for (auto id : componentIds)
                     glDeleteShader(id);
                 CORE_ASSERT(false, ss.str());
@@ -407,29 +172,87 @@ namespace ant::OpenGl
             glDeleteShader(id);
     }
 
-    void GlShader::CreateSpecification(const std::string &source, GLenum stage)
+    void GlShader::ComposeGlProgramFromSource()
     {
         CORE_DETAILED_PROFILE_FUNC();
-        std::filesystem::path path = Utils::GetCacheDirectory();
-        path.append(m_name + Utils::GetDescriptiorFileExtension(stage));
+        CORE_ASSERT(dm_SpirvBinaries.size() > 0, "no shader source");
 
-        std::vector<uint32_t> binary;
-        CompileSpirv(binary, source, stage, RenderApi::Vulcan, false);
-
-        spirv_cross::CompilerReflection reflectionCompiler(binary);
-        reflectionCompiler.set_format("json");
-        m_specifications[stage] = nlohmann::json::parse(reflectionCompiler.compile());
-
-        if (m_trackingSource)
+        std::vector<GLenum> componentIds;
+        for (auto &[stage, vbinarry] : dm_SpirvBinaries)
         {
-            std::hash<std::string> hasher;
-            m_specifications[stage]["hash"] = hasher(source);
+            spirv_cross::CompilerGLSL glslCompiler(dm_SpirvBinaries[stage]);
+            std::string source = glslCompiler.compile();
+
+            GLuint shaderId = glCreateShader(ShaderStageToGl(stage));
+            componentIds.push_back(shaderId);
+            const GLchar *codeArray[] = {source.c_str()};
+            glShaderSource(shaderId, 1, codeArray, NULL);
+            glCompileShader(shaderId);
+
+            int res;
+            glGetObjectParameterivARB(shaderId, GL_COMPILE_STATUS, &res);
+
+            if (res == GL_FALSE)
+            {
+                std::stringstream ss;
+                int len;
+                glGetObjectParameterivARB(shaderId, GL_INFO_LOG_LENGTH, &len);
+                char *mes = (char *)alloca(len);
+                glGetShaderInfoLog(shaderId, len, &len, mes);
+                ss << Convert::StageEnumToStageString(stage) << " GlShader injection failed! " << mes;
+                for (auto id : componentIds)
+                    glDeleteShader(id);
+                CORE_ASSERT(false, ss.str());
+            }
+
+            glAttachShader(m_glProgram, shaderId);
         }
 
-        std::string text = m_specifications[stage].dump(4);
-        std::ofstream file(path);
-        CORE_ASSERT(file.is_open(), "cannot create file");
-        file.write(text.data(), text.size());
+        glLinkProgram(m_glProgram);
+        glValidateProgram(m_glProgram);
+
+        for (auto id : componentIds)
+            glDeleteShader(id);
+    }
+
+    GLenum GlShader::ShaderStageToGl(Shader::Stage stage)
+    {
+        CORE_ASSERT(stage != Stage::Invalid, "Invalid stage");
+
+        switch (stage)
+        {
+        case Stage::Fragment:
+            return GL_FRAGMENT_SHADER;
+            break;
+
+        case Stage::Vertex:
+            return GL_VERTEX_SHADER;
+            break;
+
+        default:
+            break;
+        }
+
+        CORE_ASSERT(false, "Not implemented stage conversion");
+    }
+
+    void GlShader::SpirvCompileOpenGL(std::vector<uint32_t> &target, const std::string &source, Shader::Stage stage, bool optimize)
+    {
+        CORE_DETAILED_PROFILE_FUNC();
+        shaderc::Compiler compiler;
+        shaderc::CompileOptions options;
+
+        options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
+
+        shaderc_optimization_level optimization = optimize ? shaderc_optimization_level_performance : shaderc_optimization_level_zero;
+        options.SetOptimizationLevel(optimization);
+
+        shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(source, ShaderStageToShadercKind(stage), dm_filePath.string().c_str(), options);
+        CORE_ASSERT(result.GetCompilationStatus() == shaderc_compilation_status_success, "Shader {" + dm_name + "} failed to compile: " + result.GetErrorMessage());
+
+        target = std::vector<uint32_t>(result.begin(), result.end());
+
+        // TODO handle compiler errors
     }
 
 }

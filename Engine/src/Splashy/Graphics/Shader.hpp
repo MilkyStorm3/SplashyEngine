@@ -7,13 +7,15 @@
 
 namespace ant
 {
-    enum class RenderApi;
-
     class Shader
     {
     public:
-        Shader() {}
+        Shader(bool sourceTracking);
+
         virtual ~Shader() {}
+
+        Shader(const Shader &) = delete;
+        Shader(Shader &&) = delete;
 
         /**
          * @param  filePath: path to a shader file in a custom hash separated format #vertexShader ... #fragmentShader ...
@@ -38,15 +40,15 @@ namespace ant
 
         // todo material interface
 
-    // protected:
+    protected:
         friend class Lutils;
-        enum Stage // make it protected later
+
+        enum Stage
         {
             Invalid = 0,
             Vertex,
             Fragment
         };
-    protected:
 
         class Utils
         {
@@ -62,16 +64,20 @@ namespace ant
             static const char *StageEnumToStageString(Shader::Stage stage);
         };
 
+        template <class T>
+        using StageMap = std::unordered_map<Shader::Stage, T>;
+
     protected:
         virtual void OnInit() = 0;
 
     protected:
         std::string dm_name;
-        bool dm_trackSourceFile = true;
         std::filesystem::path dm_filePath;
-        std::unordered_map<Stage, std::string> dm_sources;
-        std::unordered_map<Shader::Stage, nlohmann::json> dm_specifications;
-        std::unordered_map<Shader::Stage, std::vector<uint32_t>> dm_SpirvBinaries;
+
+        StageMap<nlohmann::json> dm_specifications;
+        StageMap<bool> dm_recompilePlatformShaders;
+
+        Scope<StageMap<std::vector<uint32_t>>> dm_SpirvBinaries;
 
     private:
         void Parse(const std::filesystem::path &filePath);
@@ -81,6 +87,10 @@ namespace ant
         /* returns true if specification is loaded, false if there is no specs file */
         bool LoadSpecification(Shader::Stage stage);
         void CreateSpecification(const std::string &source, Shader::Stage stage);
+
+    private:
+        Scope<StageMap<std::string>> m_sources;
+        bool m_trackSourceFile = true;
     };
 
 }

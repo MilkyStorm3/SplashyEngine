@@ -9,6 +9,12 @@
 
 namespace ant
 {
+    Shader::Shader(bool sourceTracking)
+        : m_trackSourceFile(sourceTracking)
+    {
+        dm_SpirvBinaries = ant::MakeScope<StageMap<std::vector<uint32_t>>>();
+        m_sources = ant::MakeScope<StageMap<std::string>>();
+    }
 
     const char *Shader::Utils::GetCacheDirectory()
     {
@@ -106,7 +112,7 @@ namespace ant
 
             line.push_back('\n');
             CORE_ASSERT(type != Shader::Stage::Invalid, "Check shader definitions");
-            dm_sources[type].append(line);
+            (*m_sources)[type].append(line);
             line.clear();
         }
 
@@ -136,8 +142,8 @@ namespace ant
         CORE_ASSERT(!fragmentSrc.empty(), "Fragment shader source not provided!");
 
         dm_name = name;
-        dm_sources[Shader::Stage::Vertex] = vertexSrc;
-        dm_sources[Shader::Stage::Fragment] = fragmentSrc;
+        (*m_sources)[Shader::Stage::Vertex] = vertexSrc;
+        (*m_sources)[Shader::Stage::Fragment] = fragmentSrc;
     }
 
     bool Shader::LoadSpecification(Shader::Stage stage)
@@ -165,25 +171,19 @@ namespace ant
 
     void Shader::Init()
     {
-
         CORE_INTERMEDIATE_PROFILE_FUNC();
         Timer timer;
         Utils::CreateCacheDirectoryIfNeeded();
 
         std::hash<std::string> hasher;
 
-        for (auto &[stage, source] : dm_sources)
+        for (auto &[stage, source] : *m_sources)
         {
-            if (source.length() == 0)
-            {
-                std::stringstream msg;
-                msg << "There has to be a " << Convert::StageEnumToStageString(stage) << " source!";
-                CORE_ASSERT(false, msg.str().c_str());
-            }
+            CORE_ASSERT(source.length() != 0, "There has to be {0} source", Convert::StageEnumToStageString(stage));
 
-            if (dm_trackSourceFile)
+            bool recompile = true;
+            if (m_trackSourceFile)
             {
-                bool recompile = true;
                 if (LoadSpecification(stage))
                 {
                     size_t sourceHash = hasher(source);
@@ -201,19 +201,20 @@ namespace ant
             }
             else
             {
-                bool compile = !LoadSpecification(stage);
+                recompile = !LoadSpecification(stage);
 
-                if (compile)
+                if (recompile)
                     CreateSpecification(source, stage);
 
-                LoadOrCompileVBinary(source, stage, compile);
+                LoadOrCompileVBinary(source, stage, recompile);
             }
+            dm_recompilePlatformShaders[stage] = recompile;
         }
 
         OnInit();
 
-        dm_sources.clear();
-        dm_SpirvBinaries.clear();
+        m_sources.reset();        // drop sources
+        dm_SpirvBinaries.reset(); // drop spirv binary
 
         CORE_INFO("Shader [{0}] created in {1} ms", dm_name, timer.ElapsedMillis());
     }
@@ -231,7 +232,7 @@ namespace ant
         reflectionCompiler.set_format("json");
         dm_specifications[stage] = nlohmann::json::parse(reflectionCompiler.compile());
 
-        if (dm_trackSourceFile)
+        if (m_trackSourceFile)
         {
             std::hash<std::string> hasher;
             dm_specifications[stage]["hash"] = hasher(source);
@@ -256,26 +257,23 @@ namespace ant
 
         shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(source, Lutils::ShaderStageToShadercKind(stage), dm_filePath.string().c_str(), options);
         CORE_ASSERT(result.GetCompilationStatus() == shaderc_compilation_status_success, "Shader {" + dm_name + "} failed to compile: " + result.GetErrorMessage());
-
         target = std::vector<uint32_t>(result.begin(), result.end());
-
-        // TODO handle compiler errors
     }
 
     void Shader::LoadOrCompileVBinary(const std::string &source, Stage stage, bool recompile)
     {
-        dm_SpirvBinaries[stage].clear();
+        (*dm_SpirvBinaries)[stage].clear();
 
         const std::filesystem::path &path = Lutils::GetVCachePath(dm_name, stage);
 
         if (Lutils::HasCacheFile(path) && !recompile)
         {
-            ant::Utils::LoadBinary(path, &dm_SpirvBinaries[stage]);
+            ant::Utils::LoadBinary(path, &(*dm_SpirvBinaries)[stage]);
         }
         else
         {
-            SpirvCompile(dm_SpirvBinaries[stage], source, stage, true);
-            ant::Utils::SaveBinary(path, &dm_SpirvBinaries[stage]);
+            SpirvCompile((*dm_SpirvBinaries)[stage], source, stage, true);
+            ant::Utils::SaveBinary(path, &dm_SpirvBinaries->at(stage));
         }
     }
 }

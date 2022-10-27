@@ -6,6 +6,7 @@
 #include "Input/Input.hpp"
 #include "ImGuiLayer.hpp"
 #include "Utilities/InstrumentationMacros.hpp"
+#include <Eventing/Eventing.hpp>
 
 void test();
 
@@ -28,7 +29,9 @@ namespace ant
 
         m_window = Window::Create();
 
-        m_window->SetEventCallback(CORE_BIND_EVENT_FN(this, Application::OnEvent));
+        EventEmitter::SetMainEventCallback(CORE_BIND_EVENT_FN(this, Application::OnEvent));
+
+        m_window->SetEventCallback(EventEmitter::GetMainCallback());
 
         m_window->Init(m_appdata.windowSettings.title, m_appdata.windowSettings.width, m_appdata.windowSettings.height, true);
 

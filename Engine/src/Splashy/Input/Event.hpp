@@ -28,7 +28,8 @@ namespace ant
         WindowMinimalized, // missing implemenration
         WindowClosed,
         WindowFocused,
-        WindowUnfocused
+        WindowUnfocused,
+        Application
     };
 
     enum class EventCategory
@@ -36,7 +37,8 @@ namespace ant
         None = 0,
         Keyboard,
         Mouse,
-        Window
+        Window,
+        Application
     };
 
 #define SET_EVENT_TYPE(event_type)                                          \
@@ -65,6 +67,11 @@ namespace ant
 
         EventType m_type;
         bool m_handled = false;
+    };
+
+    class EventCallback
+        : public std::function<void(Event &)>
+    {
     };
 
     class EventDispatcher
@@ -134,7 +141,7 @@ namespace ant
         SET_EVENT_TYPE(KeyReleased);
     };
 
-    //MouseEvents
+    // MouseEvents
 
     class MouseButtonEvent
         : public Event
@@ -212,7 +219,7 @@ namespace ant
         MousePosData m_position;
     };
 
-    //WindowEvents
+    // WindowEvents
 
     class WindowRezisedEvent
         : public Event

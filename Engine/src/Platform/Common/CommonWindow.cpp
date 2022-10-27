@@ -1,7 +1,8 @@
 #include "CommonWindow.hpp"
-#include <GLFW/glfw3.h> 
+#include <GLFW/glfw3.h>
 #include <Input/Event.hpp>
 #include "CommonInput.hpp"
+#include <Eventing/Eventing.hpp>
 
 namespace ant::Common
 {
@@ -23,7 +24,6 @@ namespace ant::Common
 
     void CommonWindow::Init(const std::string &title, uint32_t width, uint32_t height, bool resizeable)
     {
-
         if (s_windowCount == 0)
         {
             CORE_ASSERT(glfwInit(), "Failed to initialize GLFW ");
@@ -65,7 +65,7 @@ namespace ant::Common
 
     void CommonWindow::SetEventCallback(const EventCallback &callback)
     {
-        m_callback = callback;
+        m_callback = &callback;
     }
 
     void CommonWindow::SetVsync(bool vsync)
@@ -84,9 +84,9 @@ namespace ant::Common
         return m_window;
     }
 
-    const Window::EventCallback &CommonWindow::GetEventCallback() const
+    const EventCallback &CommonWindow::GetEventCallback() const
     {
-        return m_callback;
+        return *m_callback;
     }
 
     glm::ivec2 CommonWindow::GetSize() const
@@ -104,7 +104,7 @@ namespace ant::Common
         glfwSetKeyCallback(m_window, [](GLFWwindow *window, int key, int scancode, int action, int mods)
                            {
                                    auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
-                                   auto EventCallback = windowPtr->GetEventCallback();
+                                   auto& callback = windowPtr->GetEventCallback();
 
                                    KeyCode myKey = KeyCode(key);
                                    KeyModifier myMod = KeyModifier(mods);
@@ -114,19 +114,19 @@ namespace ant::Common
                                    case GLFW_PRESS:
                                    {
                                        KeyPressedEvent e(myKey, myMod);
-                                       EventCallback(e);
+                                       callback(e);
                                        break;
                                    }
                                    case GLFW_RELEASE:
                                    {
                                        KeyReleasedEvent e(myKey, myMod);
-                                       EventCallback(e);
+                                       callback(e);
                                        break;
                                    }
                                    case GLFW_REPEAT:
                                    {
                                        KeyPressedEvent e(myKey, myMod, true);
-                                       EventCallback(e);
+                                       callback(e);
                                        break;
                                    }
                                    default:
@@ -136,7 +136,7 @@ namespace ant::Common
         glfwSetMouseButtonCallback(m_window, [](GLFWwindow *window, int button, int action, int mods)
                                    {
                                            auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
-                                           auto EventCallback = windowPtr->GetEventCallback();
+                                           auto& callback = windowPtr->GetEventCallback();
 
                                            auto myButton = MouseButtonCode(button);
                                            KeyModifier myMod = KeyModifier(mods);
@@ -145,13 +145,13 @@ namespace ant::Common
                                            case GLFW_PRESS:
                                            {
                                                MouseButtonPressedEvent e(myButton, myMod);
-                                               EventCallback(e);
+                                               callback(e);
                                                break;
                                            }
                                            case GLFW_RELEASE:
                                            {
                                                MouseButtonReleasedEvent e(myButton, myMod);
-                                               EventCallback(e);
+                                               callback(e);
                                                break;
                                            }
 
@@ -162,45 +162,45 @@ namespace ant::Common
         glfwSetScrollCallback(m_window, [](GLFWwindow *window, double xoffset, double yoffset)
                               {
                                       auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
-                                      auto EventCallback = windowPtr->GetEventCallback();
+                                      auto& callback = windowPtr->GetEventCallback();
 
                                       MouseScrolledEvent e({xoffset, yoffset});
-                                      EventCallback(e); });
+                                      callback(e); });
 
         glfwSetCursorPosCallback(m_window, [](GLFWwindow *window, double xpos, double ypos)
                                  {
                                          auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
-                                         auto EventCallback = windowPtr->GetEventCallback();
+                                         auto& callback = windowPtr->GetEventCallback();
 
                                          MouseMovedEvent e({xpos, ypos});
-                                         EventCallback(e); });
+                                         callback(e); });
 
         glfwSetWindowCloseCallback(m_window, [](GLFWwindow *window)
                                    {
                                            auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
-                                           auto EventCallback = windowPtr->GetEventCallback();
+                                           auto& callback = windowPtr->GetEventCallback();
 
                                            WindowClosedEvent e;
-                                           EventCallback(e); });
+                                           callback(e); });
 
         glfwSetWindowFocusCallback(m_window, [](GLFWwindow *window, int iconified)
                                    {
                                            auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
-                                           auto EventCallback = windowPtr->GetEventCallback();
+                                           auto& callback = windowPtr->GetEventCallback();
 
                                            switch (iconified)
                                            {
                                            case GLFW_TRUE:
                                            {
                                                WindowFocusedEvent e;
-                                               EventCallback(e);
+                                               callback(e);
                                                CommonInput::s_activeNativeWindow = window;
                                                break;
                                            }
                                            case GLFW_FALSE:
                                            {
                                                WindowUnfocusedEvent e;
-                                               EventCallback(e);
+                                               callback(e);
                                                break;
                                            }
                                            default:
@@ -210,10 +210,10 @@ namespace ant::Common
         glfwSetWindowSizeCallback(m_window, [](GLFWwindow *window, int width, int height)
                                   {
                                           auto *windowPtr = (CommonWindow *)glfwGetWindowUserPointer(window);
-                                          auto EventCallback = windowPtr->GetEventCallback();
+                                          auto& callback = windowPtr->GetEventCallback();
 
                                           WindowRezisedEvent e({width, height});
                                           glViewport(0, 0, width, height);
-                                          EventCallback(e); });
+                                          callback(e); });
     }
 }

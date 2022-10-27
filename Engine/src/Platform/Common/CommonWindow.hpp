@@ -30,7 +30,7 @@ namespace ant::Common
         GLFWwindow *m_window;
         bool m_vSync;
         Scope<GraphicsContext> m_context;
-        EventCallback m_callback;
+        const EventCallback *m_callback;
     };
 
 }

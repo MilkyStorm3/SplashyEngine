@@ -1,6 +1,6 @@
 #include "CommonWindow.hpp"
 #include <GLFW/glfw3.h>
-#include <Input/Event.hpp>
+#include <Eventing/InputEvents.hpp>
 #include "CommonInput.hpp"
 #include <Eventing/Eventing.hpp>
 

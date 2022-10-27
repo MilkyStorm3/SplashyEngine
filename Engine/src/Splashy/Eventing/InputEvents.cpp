@@ -1,6 +1,6 @@
 #include "Pch.h"
-#include "Input/Event.hpp"
 #include <sstream>
+#include "InputEvents.hpp"
 
 namespace ant
 {
@@ -23,14 +23,14 @@ namespace ant
     std::string KeyEvent::GetStringLog()
     {
         std::stringstream o;
-        o << GetLog() << " " << int(m_key)<<" modifier - "<< int16_t(m_modifier);
+        o << GetLog() << " " << int(m_key) << " modifier - " << int16_t(m_modifier);
         return o.str();
     }
 
     std::string KeyPressedEvent::GetStringLog()
     {
         std::stringstream o;
-        o << GetLog() << " " << int(m_key) <<" modifier - "<< int16_t(m_modifier) <<" repeatig - " << (m_repeating ? "true" : "false");
+        o << GetLog() << " " << int(m_key) << " modifier - " << int16_t(m_modifier) << " repeatig - " << (m_repeating ? "true" : "false");
         return o.str();
     }
 
@@ -66,7 +66,7 @@ namespace ant
     {
         return int16_t(mod) & int16_t(m_modifier);
     }
-    
+
     bool MouseButtonEvent::HasModifier(KeyModifier mod) const
     {
         return int16_t(mod) & int16_t(m_modifier);

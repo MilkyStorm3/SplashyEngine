@@ -72,7 +72,7 @@ namespace Editor
     {
         CORE_TRACE("Editor Layer Attached");
 
-        auto size = ant::Application::GetInstance()->GetWindow().GetSize();
+        auto size = ant::Application::GetInstance()->GetActiveWindow().GetSize();
 
         ant::FramebufferSpecification spec = {
             size.x, size.y, {ant::FramebufferTextureFormat::RGBA8, ant::FramebufferTextureFormat::DEPTH24STENCIL8}};

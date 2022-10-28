@@ -55,7 +55,7 @@ namespace ant
         io.KeyMap[ImGuiKey_Y] = int(KeyCode::KEY_Y);
         io.KeyMap[ImGuiKey_Z] = int(KeyCode::KEY_Z);
 
-        auto window = Application::GetInstance()->GetWindow().GetNativeWindow();
+        auto window = Application::GetInstance()->GetActiveWindow().GetNativeWindow();
         ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)window, true);
         ImGui_ImplOpenGL3_Init("#version 450");
     }
@@ -63,7 +63,7 @@ namespace ant
     void ImGuiLayer::OnUpdate(TimeStep ts)
     {
         ImGuiIO &io = ImGui::GetIO();
-        auto size = Application::GetInstance()->GetWindow().GetSize();
+        auto size = Application::GetInstance()->GetActiveWindow().GetSize();
         io.DisplaySize = ImVec2(size.x, size.y);
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();

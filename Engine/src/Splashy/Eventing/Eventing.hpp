@@ -115,8 +115,10 @@ namespace ant
         void SetEventPtr(Event *e) { m_event = e; }
 
         template <class evType>
-        bool DispatchEvent(const std::function<void(evType &)> &handler) //?check these casts
+        bool DispatchEvent(const std::function<void(evType &)> &handler)
         {
+            if (m_event->m_handled)
+                return true;
 
             if (evType::GetStaticType() == m_event->GetEventType())
             {

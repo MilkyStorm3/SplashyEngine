@@ -22,5 +22,11 @@
 //? memory ussage tracking panel
 //? console panel to print logs
 
+/**
+ * memory management
+ * change application initialization procedure
+ * file logging
+*/
+
 
 

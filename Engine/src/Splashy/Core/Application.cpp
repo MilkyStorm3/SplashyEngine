@@ -8,11 +8,11 @@
 #include "Utilities/InstrumentationMacros.hpp"
 #include <Eventing/Eventing.hpp>
 
-void test();
+extern ant::Application *CreateApplication();
 
 namespace ant
 {
-    SPL_DEF Application *Application::s_instance;
+    SPL_DEF Application *Application::s_instance = CreateApplication();
 
     Application::~Application()
     {
@@ -21,6 +21,7 @@ namespace ant
 
     void Application::Init()
     {
+        CORE_ASSERT(m_configuration.windowSettings.title != "Untitled", "Configure application settings in client's constructor");
         Instrumentor::InitSession("CORE", InstrumentationLevel::General);
         Logger::Init();
         Input::Init();
@@ -29,24 +30,25 @@ namespace ant
 
         m_window = Window::Create();
 
-        EventEmitter::SetMainEventCallback(CORE_BIND_EVENT_FN(this, Application::OnEvent));
+        EventEmitter::SetMainEventCallback(CORE_BIND_EVENT_FN(this, Application::HandleEvent));
 
         m_window->SetEventCallback(EventEmitter::GetMainCallback());
 
-        m_window->Init(m_appdata.windowSettings.title, m_appdata.windowSettings.width, m_appdata.windowSettings.height, true);
+        m_window->Init(m_configuration.windowSettings.title, m_configuration.windowSettings.width, m_configuration.windowSettings.height, true);
 
         RendererCommands::Init(); //?call when context is initialized
 
         m_layerStack.PushOverlay(MakeRef<ImGuiLayer>());
 
-        m_appInitFn();
+        OnInit();
     }
 
     void Application::Run()
     {
+        m_running = true;
         static TimePoint lastFrameTime = Time::Now();
 
-        while (m_appdata.running)
+        while (m_running)
         {
             TimePoint time = Time::Now();
             TimeStep frameTime = time - lastFrameTime;
@@ -60,9 +62,10 @@ namespace ant
         }
     }
 
-    void Application::OnEvent(Event &e)
+    void Application::HandleEvent(Event &e)
     {
         // CORE_INFO("Event triggered {0}", e.GetStringLog());
+        OnEvent(e);
 
         m_layerStack.OnEvent(&e);
 
@@ -71,7 +74,7 @@ namespace ant
         d.DispatchEvent<WindowClosedEvent>(
             [this](WindowClosedEvent &wce) -> bool
             {
-                m_appdata.running = false;
+                m_running = false;
                 return true;
             });
     }

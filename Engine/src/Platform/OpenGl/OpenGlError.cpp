@@ -109,17 +109,17 @@ namespace ant::OpenGl::Error
 
         if (severity == GL_DEBUG_SEVERITY_HIGH)
         {
-            CORE_ERROR("[OpenGl]-> id = {0}, type = {1}, source = {2}, message = {3}", id, GetTypeStr(type), GetSourceStr(source), message);
+            TARGET_ERROR(OpenGl, "id = {0}, type = {1}, source = {2}, message = {3}", id, GetTypeStr(type), GetSourceStr(source), message);
             CORE_BREAK();
         }
         else if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
         {
-            CORE_INFO("[OpenGl]-> id = {0}, type = {1}, source = {2}, message = {3}", id, GetTypeStr(type), GetSourceStr(source), message);
+            TARGET_INFO(OpenGl, "id = {0}, type = {1}, source = {2}, message = {3}", id, GetTypeStr(type), GetSourceStr(source), message);
         }
         else
         {
             std::string severityStr = GetSeverityStr(severity);
-            CORE_WARN("[OpenGl]-> id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}", id, GetTypeStr(type), severityStr, GetSourceStr(source), message);
+            TARGET_WARN(OpenGl, "id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}", id, GetTypeStr(type), severityStr, GetSourceStr(source), message);
         }
     }
 

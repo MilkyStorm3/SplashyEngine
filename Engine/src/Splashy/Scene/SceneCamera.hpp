@@ -7,8 +7,8 @@ namespace ant
     class SceneCamera : public Camera
     {
     public:
-        SceneCamera() {
-            
+        SceneCamera()
+        {
         }
         ~SceneCamera() {}
 
@@ -40,6 +40,8 @@ namespace ant
             m_aspectRatio = ratio;
             CalculateProjection();
         }
+
+        virtual void PerUpdate(ant::TimeStep ts) override {}
 
     private:
         void CalculateProjection();

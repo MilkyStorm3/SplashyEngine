@@ -1,4 +1,4 @@
-#include <GL/glew.h> 
+#include <GL/glew.h>
 #include <string>
 #include "Core/Logger.hpp"
 #include "Core/Core.hpp"
@@ -69,7 +69,7 @@ namespace ant::OpenGl::Error
             break;
 
         case GL_DEBUG_SOURCE_OTHER:
-            return "UNKNOWN";
+            return "OTHER";
             break;
 
         default:
@@ -106,21 +106,20 @@ namespace ant::OpenGl::Error
 
     void ErrorFunc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
     {
-        // static std::string formatStr = "OpenGl error: id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}";
-        std::string severityStr = GetSeverityStr(severity);
 
-        if (severityStr == "HIGH")
+        if (severity == GL_DEBUG_SEVERITY_HIGH)
         {
-            CORE_ERROR("OpenGl error: id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}", id, GetTypeStr(type), severityStr, GetSourceStr(source), message);
+            TARGET_ERROR(OpenGl, "id = {0}, type = {1}, source = {2}, message = {3}", id, GetTypeStr(type), GetSourceStr(source), message);
             CORE_BREAK();
         }
-        else if (severityStr == "NOTIFICATION")
+        else if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
         {
-            CORE_INFO("OpenGl error: id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}", id, GetTypeStr(type), severityStr, GetSourceStr(source), message);
+            TARGET_INFO(OpenGl, "id = {0}, type = {1}, source = {2}, message = {3}", id, GetTypeStr(type), GetSourceStr(source), message);
         }
         else
         {
-            CORE_WARN("OpenGl error: id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}", id, GetTypeStr(type), severityStr, GetSourceStr(source), message);
+            std::string severityStr = GetSeverityStr(severity);
+            TARGET_WARN(OpenGl, "id = {0}, type = {1}, severity = {2}, source = {3}, message = {4}", id, GetTypeStr(type), severityStr, GetSourceStr(source), message);
         }
     }
 

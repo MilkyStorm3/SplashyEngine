@@ -59,14 +59,14 @@ namespace ant
         return nullptr;
     }
 
-    Ref<Shader> Shader::Create(const std::filesystem::path &filePath, bool trackSource)
+    Ref<Shader> Shader::Create(const std::filesystem::path &filePath, bool trackSource, bool useTextShaders)
     {
         auto api = RendererCommands::GetRenderApi();
 
         Ref<Shader> shader;
 
         if (api == RenderApi::OpenGl)
-            shader = MakeRef<OpenGl::GlShader>(trackSource);
+            shader = MakeRef<OpenGl::GlShader>(trackSource, useTextShaders);
 
         CORE_ASSERT(shader, "Shader object creation failed");
 

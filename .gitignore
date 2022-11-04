@@ -4,3 +4,5 @@ build
 **imgui.ini
 bin
 **.code-workspace
+**CMakeFiles
+StartVS.bat

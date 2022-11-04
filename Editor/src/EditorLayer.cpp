@@ -10,7 +10,8 @@
 #include "Utilities/Instrumentation.hpp"
 #include "Input/Input.hpp"
 #include <glm/glm.hpp>
-#include "Input/Event.hpp"
+#include <Eventing/Eventing.hpp>
+#include <Eventing/InputEvents.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Sandbox
@@ -76,7 +77,7 @@ namespace Sandbox
     {
         CORE_TRACE("Editor Layer Attached");
 
-        auto size = ant::Application::GetInstance()->GetWindow().GetSize();
+        auto size = ant::Application::GetInstance()->GetActiveWindow().GetSize();
 
         ant::RendererCommands::SetBlendingMode(ant::BlendingMode::SourceAlpha, ant::BlendingMode::OneMinusSourceAlpha);
 

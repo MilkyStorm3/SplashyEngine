@@ -4,6 +4,7 @@
 #include "stb_image.h"
 #include <numeric>
 #include <glm/gtc/type_ptr.hpp>
+#include <Utilities/InstrumentationMacros.hpp>
 
 namespace ant::OpenGl
 {
@@ -75,7 +76,7 @@ namespace ant::OpenGl
         stbi_set_flip_vertically_on_load(true);
         int x, y, channelCount;
         stbi_uc *imageData = nullptr;
-        imageData = stbi_load(path.c_str(), &x, &y, &channelCount, STBI_default);
+        imageData = stbi_load(path.string().c_str(), &x, &y, &channelCount, STBI_default);
         CORE_ASSERT(imageData != nullptr, "Error while loading texture file");
 
         int limit = std::numeric_limits<uint16_t>::max();

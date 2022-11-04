@@ -1,22 +1,34 @@
 include(vendor/vendors.cmake)
 
-cmake_minimum_required(VERSION 3.16.0)
-project(Engine VERSION 0.1.0)
-file(GLOB_RECURSE ENGINE_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
-add_library(Engine SHARED ${ENGINE_SRC})
+file(GLOB_RECURSE ENGINE_SRC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp
+    )
 
-target_precompile_headers(Engine PRIVATE ${PROJECT_SOURCE_DIR}/src/Pch/Pch.h)
+if(LINUX) # engine is build as shared library only for linux
+    add_library(Engine SHARED ${ENGINE_SRC})
+    target_compile_definitions(Engine PRIVATE SPL_BUILD_SHARED)
+else()
+    add_library(Engine STATIC ${ENGINE_SRC})
+    
+endif()
+
+target_precompile_headers(Engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/Pch/Pch.h)
 
 set_property(TARGET Engine PROPERTY CXX_STANDARD 17)
 set_target_properties(Engine PROPERTIES LINKER_LANGUAGE CXX)
 
-target_include_directories(Engine PRIVATE ${PROJECT_SOURCE_DIR}/src)
-target_include_directories(Engine PRIVATE ${PROJECT_SOURCE_DIR}/src/Pch)
-target_include_directories(Engine PUBLIC ${PROJECT_SOURCE_DIR}/src/Splashy)
+target_include_directories(Engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(Engine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/Pch)
+target_include_directories(Engine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/Splashy)
 
 target_link_libraries(Engine PRIVATE glfw) 
-target_link_libraries(Engine PRIVATE libglew_static) 
-target_link_libraries(Engine PRIVATE libGL.so) 
+target_link_libraries(Engine PRIVATE libglew_static)
+
+if(LINUX)
+    target_link_libraries(Engine PRIVATE libGL.so) 
+endif()
+
 target_link_libraries(Engine PRIVATE EnTT::EnTT) 
 target_link_libraries(Engine PRIVATE stbimage) 
 
@@ -30,12 +42,18 @@ target_link_libraries(Engine PUBLIC nlohmann_json)
 target_link_libraries(Engine PUBLIC glm::glm)
 target_link_libraries(Engine PUBLIC ImGui) 
 
+# debug specific compile definitions
+set(ENGINE_DEBUG_COMPILE_DEFINITIONS SPL_DEBUG)
 
-if( ${CMAKE_BUILD_TYPE} MATCHES "(Debug)|(RelWithDebInfo)")
-    target_compile_definitions(Engine PRIVATE SPL_DEBUG=1)    
-    target_compile_definitions(Engine PRIVATE SPL_ENABLE_PROFILING=1)
-    target_compile_definitions(Engine PRIVATE SPL_ENABLE_ASSERTS=1)
-    target_compile_definitions(Engine PRIVATE SPL_ENABLE_RENDERER_STATS=1)
-    target_compile_definitions(Engine PRIVATE SPL_ENABLE_LOGGING=1)
-    target_compile_definitions(Engine PRIVATE SPL_ENABLE_CLIENT_LOGGING=1)
-endif()
+list(APPEND ENGINE_DEBUG_COMPILE_DEFINITIONS SPL_ENABLE_LOGGING)
+list(APPEND ENGINE_DEBUG_COMPILE_DEFINITIONS SPL_ENABLE_PROFILING)
+list(APPEND ENGINE_DEBUG_COMPILE_DEFINITIONS SPL_ENABLE_ASSERTS)
+list(APPEND ENGINE_DEBUG_COMPILE_DEFINITIONS SPL_ENABLE_RENDERER_STATS)
+
+    FOREACH(DEF ${ENGINE_DEBUG_COMPILE_DEFINITIONS})
+        target_compile_definitions(Engine PRIVATE "$<$<CONFIG:DEBUG>:${DEF}>")        
+        target_compile_definitions(Engine PRIVATE "$<$<CONFIG:RELWITHDEBINFO>:${DEF}>")        
+    ENDFOREACH()    
+
+#general compile definitions
+target_compile_definitions(Engine PRIVATE SPL_CORE)

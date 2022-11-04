@@ -1,6 +1,7 @@
 #include "OpenGlIndexBuffer.hpp"
 #include <Core/Core.hpp>
 #include <GL/glew.h> 
+#include <Utilities/InstrumentationMacros.hpp>
 
 namespace ant::OpenGl
 {

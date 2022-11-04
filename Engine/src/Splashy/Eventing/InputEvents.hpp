@@ -15,83 +15,6 @@ namespace ant
     using MouseOffsetType = double;
     using WindowSizeType = int32_t;
 
-    enum class EventType
-    {
-        None = 0,
-        KeyPressed,
-        KeyReleased,
-        MouseButtonPressed,
-        MouseButtonReleased,
-        MouseScrolled,
-        MouseMoved,
-        WindowRezised,
-        WindowMinimalized, // missing implemenration
-        WindowClosed,
-        WindowFocused,
-        WindowUnfocused
-    };
-
-    enum class EventCategory
-    {
-        None = 0,
-        Keyboard,
-        Mouse,
-        Window
-    };
-
-#define SET_EVENT_TYPE(event_type)                                          \
-    virtual const char *GetLog() override { return "Event: " #event_type; } \
-    inline static EventType GetStaticType() { return EventType::event_type; }
-
-#define LOG_FUNC_OVERRIDE() virtual std::string GetStringLog() override;
-
-    class Event
-    {
-    public:
-        virtual ~Event() {}
-
-        virtual std::string GetStringLog() { return GetLog(); } // override manually
-        inline const EventType &GetEventType() { return m_type; }
-        virtual const char *GetLog() = 0;
-        void MarkHandled(bool state = true) { m_handled = state; }
-        friend class EventDispatcher;
-        friend class LayerStack;
-
-        EventCategory GetEventCategory();
-        bool IsInCategory(EventCategory category) { return GetEventCategory() == category; }
-
-    protected:
-        Event(EventType type) : m_type(type) {}
-
-        EventType m_type;
-        bool m_handled = false;
-    };
-
-    class EventDispatcher
-    {
-    public:
-        EventDispatcher() {}
-        EventDispatcher(Event &e) : m_event(&e) {}
-        ~EventDispatcher() {}
-
-        void SetEventPtr(Event *e) { m_event = e; }
-
-        template <class evType>
-        bool DispatchEvent(const std::function<void(evType &)> &handler) //?check these casts
-        {
-
-            if (evType::GetStaticType() == m_event->GetEventType())
-            {
-                handler(static_cast<evType &>(*m_event));
-                return true;
-            }
-            return false;
-        }
-
-    private:
-        Event *m_event;
-    };
-
     // KeyEvents
 
     class KeyEvent
@@ -134,7 +57,7 @@ namespace ant
         SET_EVENT_TYPE(KeyReleased);
     };
 
-    //MouseEvents
+    // MouseEvents
 
     class MouseButtonEvent
         : public Event
@@ -212,7 +135,7 @@ namespace ant
         MousePosData m_position;
     };
 
-    //WindowEvents
+    // WindowEvents
 
     class WindowRezisedEvent
         : public Event

@@ -9,11 +9,9 @@ namespace ant
 {
 
     class Event;
+    class EventCallback;
     class Window
     {
-    protected:
-        using EventCallback = std::function<void(Event &)>;
-
     public:
         static Ref<Window> Create();
 

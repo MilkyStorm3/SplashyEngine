@@ -1,6 +1,6 @@
 #include "OpenGlGraphicsContext.hpp"
 #include <Utilities/InstrumentationMacros.hpp>
-#include <GL/glew.h> 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 namespace ant::OpenGl
@@ -33,6 +33,10 @@ namespace ant::OpenGl
         CORE_INFO(" Vendor {0}", glGetString(GL_VENDOR));
         CORE_INFO(" Renderer {0}", glGetString(GL_RENDERER));
         CORE_INFO(" Version {0}", glGetString(GL_VERSION));
+        CORE_INFO("Glfw version: {0}", glfwGetVersionString());
+
+        ant::Logger::RegisterLogger("OpenGl");
+        CORE_INFO("Registered OpenGl logger");
 
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);

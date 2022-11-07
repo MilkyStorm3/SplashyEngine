@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "Core/Core.hpp"
+#include "Core/Time.hpp"
 
 namespace ant
 {

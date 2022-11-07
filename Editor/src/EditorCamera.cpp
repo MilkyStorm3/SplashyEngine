@@ -1,9 +1,9 @@
-#include "SceneCamera.hpp"
+#include "EditorCamera.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace ant
+namespace Editor
 {
-    void SceneCamera::SetOrtographic(float p_size, float p_near, float p_far)
+    void EditorCamera::SetOrtographic(float p_size, float p_near, float p_far)
     {
         m_size = p_size;
         m_near = p_near;
@@ -11,7 +11,7 @@ namespace ant
         CalculateProjection();
     }
 
-    void SceneCamera::CalculateProjection()
+    void EditorCamera::CalculateProjection()
     {
         float left = -m_size * m_aspectRatio * 0.5f;
         float right = m_size * m_aspectRatio * 0.5f;

@@ -1,16 +1,16 @@
 #pragma once
-#include "Core/Camera.hpp"
+#include <Core/Camera.hpp>
 
-namespace ant
+namespace Editor
 {
 
-    class SceneCamera : public Camera
+    class EditorCamera : public ant::Camera
     {
     public:
-        SceneCamera()
+        EditorCamera()
         {
         }
-        ~SceneCamera() {}
+        ~EditorCamera() {}
 
         void SetOrtographic(float size, float near, float far);
 

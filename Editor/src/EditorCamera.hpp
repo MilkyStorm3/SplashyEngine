@@ -4,53 +4,23 @@
 namespace Editor
 {
 
-    class EditorCamera : public ant::Camera
+    class EditorCamera
+        : public ant::PerspectiveCamera
     {
     public:
-        EditorCamera()
-        {
-        }
+        EditorCamera() {}
         ~EditorCamera() {}
 
-        void SetOrtographic(float size, float near, float far);
+        virtual void OnLogicUpdate(ant::TimeStep ts) override;
 
-        void SetOrtographicSize(float size)
-        {
-            m_size = size;
-            CalculateProjection();
-        }
-        float GetOrtographicSize() const { return m_size; }
-
-        void SetOrtographicNearClip(float n)
-        {
-            m_near = n;
-            CalculateProjection();
-        }
-        float GetOrtographicNearClip() const { return m_near; }
-
-        void SetOrtographicFarClip(float f)
-        {
-            m_far = f;
-            CalculateProjection();
-        }
-        float GetOrtographicFarClip() const { return m_far; }
-
-        void SetAspectRatio(float ratio)
-        {
-            m_aspectRatio = ratio;
-            CalculateProjection();
-        }
-
-        virtual void PerUpdate(ant::TimeStep ts) override {}
+    public:
+        float movementSpeed = 0.7f;
+        float mouseSpeed = 0.002f;
+        bool focused = true;
 
     private:
-        void CalculateProjection();
-
-    private:
-        float m_size = 10.f;
-        float m_near = -1.f, m_far = 1.f;
-
-        float m_aspectRatio = 0.f;
+        glm::ivec2 m_mousePrev{0.f, 0.f};
+        bool m_rotated = false;
     };
 
 }

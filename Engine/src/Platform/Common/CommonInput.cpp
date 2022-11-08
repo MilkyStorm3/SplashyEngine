@@ -91,4 +91,10 @@ namespace ant::Common
         CORE_ASSERT(s_activeNativeWindow, "Active window must be set!");
         glfwSetInputMode((GLFWwindow *)s_activeNativeWindow, GLFW_CURSOR, Utils::CursorStyleToGlfw(cursor));
     }
+
+    void CommonInput::SetMousePos_IMPL(const glm::vec2 &pos)
+    {
+        CORE_ASSERT(s_activeNativeWindow, "Active window must be set!");
+        glfwSetCursorPos((GLFWwindow *)s_activeNativeWindow, pos.x, pos.y);
+    }
 }

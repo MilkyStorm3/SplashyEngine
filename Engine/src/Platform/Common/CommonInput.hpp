@@ -14,7 +14,7 @@ namespace ant::Common
         virtual bool IsMouseButtonPressed_IMPL(MouseButtonCode buttonCode) override;
         virtual glm::vec2 MousePos_IMPL() override;
         virtual void SetCursor_IMPL(CursorStyle cursor) override;
-
+        virtual void SetMousePos_IMPL(const glm::vec2 &pos) override;
         static void *s_activeNativeWindow;
     };
 

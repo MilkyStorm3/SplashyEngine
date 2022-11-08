@@ -22,6 +22,7 @@ namespace ant
         static bool IsKeyPressed(KeyCode key);
         static bool IsMouseButtonPressed(MouseButtonCode buttonCode);
         static glm::vec2 MousePos();
+        static void SetMousePos(const glm::vec2 &pos);
         static void SetCursor(CursorStyle cursor);
 
     protected:
@@ -29,6 +30,7 @@ namespace ant
         virtual bool IsMouseButtonPressed_IMPL(MouseButtonCode buttonCode) = 0;
         virtual glm::vec2 MousePos_IMPL() = 0;
         virtual void SetCursor_IMPL(CursorStyle cursor) = 0;
+        virtual void SetMousePos_IMPL(const glm::vec2 &pos) = 0;
 
     private:
         static Scope<Input> s_instance;

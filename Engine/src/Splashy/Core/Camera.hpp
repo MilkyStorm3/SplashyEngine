@@ -8,23 +8,41 @@ namespace ant
 
     class Camera
     {
+        friend class PerspectiveCamera;
+        friend class OrtographicCamera;
+
     public:
         Camera() {}
         Camera(const glm::mat4 &projection) : m_projection(projection) {}
+        ~Camera() {}
 
-        virtual ~Camera() {}
+        void OnUpdate(ant::TimeStep ts);
 
-        virtual void OnUpdate(ant::TimeStep ts)
-        {
-            PerUpdate(ts);
-        }
+        inline const glm::mat4 &GetCameraMatrix() { return m_projectionView; }
 
-        virtual void PerUpdate(ant::TimeStep ts) = 0;
+        void SetFarClip(float p_far);
+        void SetNearClip(float p_near);
 
-        inline const glm::mat4 &GetProjection() { return m_projection; }
+        inline float GetNearClip() { return m_nearClip; }
+        inline float GetFarClip() { return m_farClip; }
 
     protected:
+        virtual void OnLogicUpdate(ant::TimeStep ts) = 0;
+
+    protected:
+        bool m_reView = true;
+        bool m_reProject = true;
+
+    private:
+        virtual void CalculateProjection() = 0;
+        virtual void CalculateView() = 0;
+
+    private:
         glm::mat4 m_projection = glm::mat4(1.f);
+        glm::mat4 m_view = glm::mat4(1.f);
+        glm::mat4 m_projectionView = glm::mat4(1.f);
+
+        float m_nearClip = 0.1f, m_farClip = 100.f;
     };
 
     class PerspectiveCamera
@@ -34,30 +52,49 @@ namespace ant
         PerspectiveCamera() {}
         ~PerspectiveCamera() {}
 
-        void SetProjection(float vFov, float nearClip, float farClip);
-        void SetPosition(const glm::vec3 &position);
         void Resize(const glm::vec2 &viewport);
+
+        void SetPosition(const glm::vec3 &position);
+        void SetProjection(float vFov, float nearClip, float farClip);
 
         inline const glm::vec3 &GetPosition() const { return m_position; }
 
-        void PerUpdate(ant::TimeStep ts) override;
-
-    protected:
-        void CalculateProjection();
-        void CalculateView();
+    private:
+        virtual void CalculateProjection() override;
+        virtual void CalculateView() override;
 
     protected:
         glm::vec3 m_position{0.f, 0.f, 3.f};
         glm::vec3 m_forwardDirection{0.f, 0.f, -1.f};
         glm::vec3 m_upDirection{0.f, 1.f, 0.f};
 
-        glm::mat4 m_view{1.f};
+        float m_verticalFOV = 45.f;
+        glm::vec2 m_viewportDims{0.f, 0.f};
+    };
 
-        bool m_reView = true;
-        bool m_reProject = true;
+    class OrtographicCamera : public ant::Camera
+    {
+    public:
+        OrtographicCamera() {}
+        ~OrtographicCamera() {}
 
-        float m_nearClip, m_farClip, m_verticalFOV;
-        glm::vec2 m_viewportDims;
+        void SetOrtographic(float size, float near, float far);
+        void SetOrtographicSize(float size);
+
+        float GetOrtographicSize() const { return m_size; }
+        float GetOrtographicNearClip() const { return m_near; }
+        float GetOrtographicFarClip() const { return m_far; }
+
+        void SetAspectRatio(float ratio);
+
+    private:
+        virtual void CalculateProjection() override;
+        virtual void CalculateView() override;
+
+    private:
+        float m_size = 10.f;
+        float m_near = -1.f, m_far = 1.f;
+        float m_aspectRatio = 0.f;
     };
 
 } // namespace ant

@@ -6,7 +6,7 @@
 #include <Graphics/Texture.hpp>
 #include <Graphics/UniformBuffer.hpp>
 #include <Graphics/VertexArray.hpp>
-#include <Scene/SceneCamera.hpp>
+#include "EditorCamera.hpp"
 
 namespace Editor
 {
@@ -29,7 +29,7 @@ namespace Editor
         ant::Ref<ant::Texture2D> m_texture;
         ant::Ref<ant::VertexArray> m_vertexArray;
         ant::Ref<ant::UniformBuffer> m_projectionBuffer;
-        ant::Ref<ant::SceneCamera> m_camera;
+        ant::Ref<EditorCamera> m_camera;
     };
 
 }

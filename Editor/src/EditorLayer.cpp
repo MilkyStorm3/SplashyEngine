@@ -110,7 +110,7 @@ namespace Editor
         m_vertexArray->AddVertexBuffer(vb);
         m_vertexArray->SetIndexBuffer(ib);
 
-        m_camera = ant::MakeRef<ant::SceneCamera>();
+        m_camera = ant::MakeRef<EditorCamera>();
         m_projectionBuffer = ant::UniformBuffer::Create(sizeof(glm::mat4), 0);
     }
 

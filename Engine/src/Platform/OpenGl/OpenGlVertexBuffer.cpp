@@ -1,7 +1,7 @@
 #include "OpenGlVertexBuffer.hpp"
 #include <Utilities/InstrumentationMacros.hpp>
 #include <Core/Core.hpp>
-#include <GL/glew.h> 
+#include <GL/glew.h>
 
 namespace ant::OpenGl
 {
@@ -38,6 +38,7 @@ namespace ant::OpenGl
     void GlVertexBuffer::UploadData(float *data, size_t size)
     {
         CORE_INTERMEDIATE_PROFILE_FUNC();
+        m_sizeBytes = size;
         glNamedBufferData(m_glId, size, data, GL_STATIC_DRAW);
     }
 

@@ -102,8 +102,29 @@ namespace Editor
         m_framebuffer = ant::FrameBuffer::Create(spec);
 
         m_shader = ant::Shader::Create("assets/shaders/cubeShader.glsl", true, true);
+        m_lineShader = ant::Shader::Create("assets/shaders/lineShader.glsl", true, true);
 
         ant::RendererCommands::SetBlendingMode(ant::BlendingMode::SourceAlpha, ant::BlendingMode::OneMinusSourceAlpha);
+
+        float points[] = {
+            1.f, 1.f, 0.5f,      1.f, 0.f, 0.f,
+            -1.f, -1.f, 0.5f,    1.f, 0.f, 0.f
+        };
+
+        auto pointsVB = ant::VertexBuffer::Create();
+        pointsVB->GetLayout()->PushAttribute(ant::AttributeType::vec3f);
+        pointsVB->GetLayout()->PushAttribute(ant::AttributeType::vec3f);
+        pointsVB->UploadData((float *)&points[0], sizeof(points));
+
+        uint32_t indx[] = {
+            0, 1
+        };
+        auto lib = ant::IndexBuffer::Create();
+        lib->UploadData(&indx[0], sizeof(indx));
+        
+        m_linePoints = ant::VertexArray::Create();
+        m_linePoints->AddVertexBuffer(pointsVB);
+        m_linePoints->SetIndexBuffer(lib);        
 
         Vertex vertices[8];
 
@@ -231,6 +252,12 @@ namespace Editor
 
         if (ant::Input::IsKeyPressed(ant::KeyCode::KEY_D))
             ImGui::Text("D pressed");
+
+        static float thickness = 1.f;
+        if(ImGui::DragFloat("Thickness",&thickness,0.003,0.1,10)){
+            ant::RendererCommands::SetLineThickness(thickness);
+        }
+        
         ImGui::End();
     }
 
@@ -241,7 +268,8 @@ namespace Editor
         // ant::RendererCommands::Clear({1.f, 0.f, 1.f, 1.f}); // magenta
         ant::RendererCommands::Clear({0.145f, 0.156f, 0.419f, 1.f});
 
-        ant::RendererCommands::DrawIndexed(m_shader, m_vertexArray);
+        ant::RendererCommands::DrawIndexed<ant::DrawMode::Lines>(m_lineShader, m_linePoints);
+        ant::RendererCommands::DrawIndexed<ant::DrawMode::Triangles>(m_shader, m_vertexArray);
 
         m_framebuffer->UnBind();
     }

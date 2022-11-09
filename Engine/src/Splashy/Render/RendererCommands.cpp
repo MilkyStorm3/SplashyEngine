@@ -14,18 +14,6 @@ namespace ant
         return Application::GetInstance()->GetRenderApi();
     }
 
-    void RendererCommands::DrawIndexed(Ref<Shader> shader, Ref<VertexBuffer> vertices, Ref<IndexBuffer> indices)
-    {
-        CORE_ASSERT(s_instance, "Renderer commands not initialized");
-        s_instance->DrawIndexed_IMPL(shader, vertices, indices);
-    }
-    
-    void RendererCommands::DrawIndexed(Ref<Shader> shader, Ref<VertexArray> verticies)
-    {
-        CORE_ASSERT(s_instance, "Renderer commands not initialized");
-        s_instance->DrawIndexed_IMPL(shader, verticies);
-    }
-
     void RendererCommands::SetBlendingMode(BlendingMode source, BlendingMode current)
     {
         CORE_ASSERT(s_instance, "Renderer commands not initialized");
@@ -71,5 +59,10 @@ namespace ant
     {
         CORE_ASSERT(s_instance, "Renderer commands not initialized");
         s_instance->Clear_IMPL(color);
+    }
+
+    void RendererCommands::SetLineThickness(float thickness)
+    {
+        s_instance->SetLineThickness_IMPL(thickness);
     }
 }

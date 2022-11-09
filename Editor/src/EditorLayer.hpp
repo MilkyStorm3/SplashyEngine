@@ -26,10 +26,13 @@ namespace Editor
     private:
         ant::Ref<ant::FrameBuffer> m_framebuffer;
         ant::Ref<ant::Shader> m_shader;
+        ant::Ref<ant::Shader> m_lineShader;
         ant::Ref<ant::VertexArray> m_vertexArray;
         ant::Ref<ant::UniformBuffer> m_projectionBuffer;
         ant::Ref<ant::UniformBuffer> m_cubeTransformBuffer;
         ant::Ref<EditorCamera> m_camera;
+
+        ant::Ref<ant::VertexArray> m_linePoints;
     };
 
 }

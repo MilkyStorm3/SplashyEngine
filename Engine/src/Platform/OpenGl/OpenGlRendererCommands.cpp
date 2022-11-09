@@ -1,5 +1,5 @@
 #include "OpenGlRendererCommands.hpp"
-#include <GL/glew.h> 
+#include <GL/glew.h>
 #include "Core/Core.hpp"
 #include <stb_image.h>
 #include <Utilities/InstrumentationMacros.hpp>
@@ -44,11 +44,28 @@ namespace ant::OpenGl
             CORE_ASSERT(false, "Unsupported blending mode");
             return 0;
         }
+
+        static GLenum DrawModeToGl(DrawMode mode)
+        {
+            switch (mode)
+            {
+            case DrawMode::Triangles:
+                return GL_TRIANGLES;
+            case DrawMode::Lines:
+                return GL_LINES;
+
+            default:
+                break;
+            }
+            CORE_ASSERT(false, "Unsupported draw mode");
+            return 0;
+        }
     }
     void GlRendererCommands::Init_IMPL()
     {
         glEnable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_LINE_SMOOTH);
         glDepthFunc(GL_LEQUAL);
     }
 
@@ -76,32 +93,42 @@ namespace ant::OpenGl
         Clear();
     }
 
-    void GlRendererCommands::DrawIndexed_IMPL(Ref<Shader> shader, Ref<VertexArray> verticies)
+    void GlRendererCommands::DrawIndexed_IMPL(Ref<Shader> shader, Ref<VertexArray> verticies, DrawMode mode)
     {
         shader->Bind();
         verticies->Bind();
 
         uint32_t count = verticies->GetIndexBuffer()->GetCount();
 
-        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, (void *)0);
+        glDrawElements(Utils::DrawModeToGl(mode), count, GL_UNSIGNED_INT, (void *)0);
     }
 
-    void GlRendererCommands::DrawIndexed_IMPL(const Ref<Shader> &shader, const Ref<VertexBuffer> &vertices, const Ref<IndexBuffer> &indices)
+    void GlRendererCommands::DrawIndexed_IMPL(const Ref<Shader> &shader, const Ref<VertexBuffer> &vertices, const Ref<IndexBuffer> &indices, DrawMode mode)
     {
         shader->Bind();
         vertices->Bind();
         indices->Bind();
 
-        glDrawElements(GL_TRIANGLES, indices->GetCount(), GL_UNSIGNED_INT, (void *)0);
+        glDrawElements(Utils::DrawModeToGl(mode), indices->GetCount(), GL_UNSIGNED_INT, (void *)0);
 
         indices->UnBind();
         vertices->UnBind();
         shader->UnBind();
     }
 
+    void GlRendererCommands::DrawUnIndexed_IMPL(Ref<Shader> shader, Ref<VertexBuffer> vertices, DrawMode mode)
+    {
+        CORE_ASSERT(false, "No implementation");
+    }
+
     void GlRendererCommands::SetBlendingMode_IMPL(BlendingMode source, BlendingMode current)
     {
         glBlendFunc(Utils::BlendingModeToGL(source), Utils::BlendingModeToGL(current));
+    }
+
+    void GlRendererCommands::SetLineThickness_IMPL(float thickness)
+    {
+        glLineWidth(thickness);
     }
 
 }

@@ -21,12 +21,12 @@ namespace ant::OpenGl
 
     void GlIndexBuffer::Bind() const
     {
-        CORE_ASSERT(false, "NO IMPLEMENTATION!");
+        NO_IMPLEMENTATION
     }
 
     void GlIndexBuffer::UnBind() const
     {
-        CORE_ASSERT(false, "NO IMPLEMENTATION!");
+        NO_IMPLEMENTATION
     }
 
     void GlIndexBuffer::UploadData(uint32_t *data, size_t size)

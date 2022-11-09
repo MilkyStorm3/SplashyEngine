@@ -118,7 +118,7 @@ namespace ant::OpenGl
 
     void GlRendererCommands::DrawUnIndexed_IMPL(Ref<Shader> shader, Ref<VertexBuffer> vertices, DrawMode mode)
     {
-        CORE_ASSERT(false, "No implementation");
+        NO_IMPLEMENTATION
     }
 
     void GlRendererCommands::SetBlendingMode_IMPL(BlendingMode source, BlendingMode current)

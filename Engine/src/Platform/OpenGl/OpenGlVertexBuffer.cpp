@@ -27,12 +27,12 @@ namespace ant::OpenGl
 
     void GlVertexBuffer::Bind() const
     {
-        CORE_ASSERT(false, "NO IMPLEMENTATION!");
+        NO_IMPLEMENTATION
     }
 
     void GlVertexBuffer::UnBind() const
     {
-        CORE_ASSERT(false, "NO IMPLEMENTATION!");
+        NO_IMPLEMENTATION
     }
 
     void GlVertexBuffer::UploadData(float *data, size_t size)

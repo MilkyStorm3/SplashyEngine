@@ -10,18 +10,25 @@
     #error Unsupported platform!
 #endif
 
+#if !defined(__PRETTY_FUNCTION__) && !defined(__GNUC__)
+    #define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
+
 #ifdef SPL_ENABLE_ASSERTS
 
-#define CORE_ASSERT(x, ...)      \
-    if (!(x))                    \
-    {                            \
-        CORE_ERROR(__VA_ARGS__); \
-        CORE_BREAK();            \
-    }
+    #define CORE_ASSERT(x, ...)      \
+        if (!(x))                    \
+        {                            \
+            CORE_ERROR(__VA_ARGS__); \
+            CORE_BREAK();            \
+        }
+
+    #define NO_IMPLEMENTATION CORE_ASSERT(false, __PRETTY_FUNCTION__ " HAS NO IMPLEMENTATION");
 
 #else
 
-#define CORE_ASSERT(x, ...) ;
+    #define CORE_ASSERT(x, ...) ;
+    #define NO_IMPLEMENTATION 
 
 #endif
 

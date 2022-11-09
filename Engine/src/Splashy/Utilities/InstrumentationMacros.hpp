@@ -1,11 +1,6 @@
 #include "Instrumentation.hpp"
 
-
 #ifdef SPL_ENABLE_PROFILING
-
-    #if !defined(__PRETTY_FUNCTION__) && !defined(__GNUC__)
-        #define __PRETTY_FUNCTION__ __FUNCSIG__
-    #endif
 
     #define CORE_GENERAL_PROFILE_SCOPE(name) ant::InstrumentationTimer profile ## _ ## __LINE__(name, "CORE", ant::InstrumentationLevel::General)
     #define CORE_GENERAL_PROFILE_FUNC() ant::InstrumentationTimer profile ## _ ## __LINE__(__PRETTY_FUNCTION__, "CORE", ant::InstrumentationLevel::General)

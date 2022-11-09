@@ -23,12 +23,12 @@ namespace ant::OpenGl
 
     void GlVertexLayout::Enable() const
     {
-        CORE_ASSERT(false, "NOT IMPLEMENTED!");
+        NO_IMPLEMENTATION
     }
 
     void GlVertexLayout::Disable() const
     {
-        CORE_ASSERT(false, "NOT IMPLEMENTED!");
+        NO_IMPLEMENTATION
     }
 
     void GlVertexLayout::PushAttribute(AttributeType attribute)

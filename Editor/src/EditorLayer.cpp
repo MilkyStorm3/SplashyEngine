@@ -101,8 +101,8 @@ namespace Editor
 
         m_framebuffer = ant::FrameBuffer::Create(spec);
 
-        m_shader = ant::Shader::Create("assets/shaders/cubeShader.glsl", true, true);
-        m_lineShader = ant::Shader::Create("assets/shaders/lineShader.glsl", true, true);
+        m_shader = ant::Shader::Create("assets/shaders/cubeShader.glsl", true, false);
+        m_lineShader = ant::Shader::Create("assets/shaders/lineShader.glsl", true, false);
 
         ant::RendererCommands::SetBlendingMode(ant::BlendingMode::SourceAlpha, ant::BlendingMode::OneMinusSourceAlpha);
 

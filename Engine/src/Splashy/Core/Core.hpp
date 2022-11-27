@@ -22,8 +22,8 @@
             CORE_ERROR(__VA_ARGS__); \
             CORE_BREAK();            \
         }
-
-    #define NO_IMPLEMENTATION CORE_ASSERT(false, __PRETTY_FUNCTION__ " HAS NO IMPLEMENTATION");
+        
+    #define NO_IMPLEMENTATION CORE_ASSERT(false, "{0} HAS NO IMPLEMENTATION", __PRETTY_FUNCTION__);
 
 #else
 

@@ -46,6 +46,13 @@ set(SHADERC_SKIP_INSTALL ON)
 set(SHADERC_SKIP_COPYRIGHT_CHECK ON)
 add_subdirectory(${PROJECT_SOURCE_DIR}/Engine/vendor/shaderc)
 
+# Assimp ---------------------------------------------------------------
+set (ASSIMP_BUILD_TESTS OFF)
+set (ASSIMP_INSTALL OFF)
+set (ASSIMP_NO_EXPORT ON)
+set (BUILD_SHARED_LIBS OFF)
+add_subdirectory(${PROJECT_SOURCE_DIR}/Engine/vendor/assimp)
+
 #stbimage --------------------------------------------------------------
 add_library(stbimage STATIC ${CMAKE_CURRENT_LIST_DIR}/stbimage/stb_image_impl.cpp) 
 

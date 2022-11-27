@@ -26,3 +26,6 @@
 [submodule "Engine/vendor/spirv_cross"]
 	path = Engine/vendor/spirv_cross
 	url = https://github.com/KhronosGroup/SPIRV-Cross.git
+[submodule "Engine/vendor/assimp"]
+	path = Engine/vendor/assimp
+	url = https://github.com/assimp/assimp.git
